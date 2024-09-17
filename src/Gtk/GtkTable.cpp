@@ -150,21 +150,23 @@ Php::Value GtkTable_::get_homogeneous()
 	return ret;
 }
 
-Php::Value GtkTable_::get_size(Php::Parameters &parameters)
+Php::Value GtkTable_::get_size(Php::Parameters& parameters)
 {
-	
-	guint* rows;
+	// Declare variables as guint (not pointers)
+	guint rows;
+	guint columns;
 
-	guint* columns;
+	// Pass the addresses of these variables to the function
+	gtk_table_get_size(GTK_TABLE(instance), &rows, &columns);
 
-	gtk_table_get_size(GTK_TABLE(instance), rows, columns);
-
+	// Create a Php::Array to hold the size values
 	Php::Value arr;
-	arr["rows"] = rows;
-	arr["columns"] = columns;
+	arr["rows"] = (int)rows;        // Cast to int if needed and assign the value of rows
+	arr["columns"] = (int)columns;  // Cast to int if needed and assign the value of columns
 
 	return arr;
 }
+
 
 void GtkTable_::__construct(Php::Parameters &parameters)
 {

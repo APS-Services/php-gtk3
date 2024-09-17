@@ -197,7 +197,11 @@ Php::Value GdkPixbuf_::get_has_alpha()
 
 Php::Value GdkPixbuf_::get_pixels()
 {
-	return gdk_pixbuf_get_pixels(instance);
+	guchar* pixels = gdk_pixbuf_get_pixels(instance);
+	int length = gdk_pixbuf_get_byte_length(instance);
+
+	// Convert the pixel data to a Php::Value (e.g., a string)
+	return Php::Value(std::string(reinterpret_cast<char*>(pixels), length));
 }
 
 Php::Value GdkPixbuf_::get_width()

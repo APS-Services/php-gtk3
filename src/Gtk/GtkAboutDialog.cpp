@@ -162,10 +162,20 @@ void GtkAboutDialog_::set_website_label(Php::Parameters &parameters)
 
 Php::Value GtkAboutDialog_::get_authors()
 {
-	const gchar * const * c_ret = gtk_about_dialog_get_authors (GTK_ABOUT_DIALOG(instance));
+	const gchar* const* c_ret = gtk_about_dialog_get_authors(GTK_ABOUT_DIALOG(instance));
 
-	return c_ret;
+	// Create a Php::Array to hold the authors
+	Php::Array authors;
+
+	// Iterate over the array of strings
+	for (int i = 0; c_ret[i] != nullptr; ++i) {
+		authors[i] = c_ret[i]; // Add each author to the Php::Array
+	}
+
+	// Return the array as a Php::Value
+	return authors;
 }
+
 
 void GtkAboutDialog_::set_authors(Php::Parameters &parameters)
 {
@@ -179,10 +189,20 @@ void GtkAboutDialog_::set_authors(Php::Parameters &parameters)
 
 Php::Value GtkAboutDialog_::get_artists()
 {
-	const gchar * const * c_ret = gtk_about_dialog_get_artists (GTK_ABOUT_DIALOG(instance));
+	const gchar* const* c_ret = gtk_about_dialog_get_artists(GTK_ABOUT_DIALOG(instance));
 
-	return c_ret;
+	// Create a Php::Array to hold the artist names
+	Php::Array artists;
+
+	// Iterate over the array of strings
+	for (int i = 0; c_ret[i] != nullptr; ++i) {
+		artists[i] = c_ret[i]; // Add each artist's name to the Php::Array
+	}
+
+	// Return the array as a Php::Value
+	return artists;
 }
+
 
 void GtkAboutDialog_::set_artists(Php::Parameters &parameters)
 {
@@ -198,9 +218,18 @@ void GtkAboutDialog_::set_artists(Php::Parameters &parameters)
 
 Php::Value GtkAboutDialog_::get_documenters()
 {
-	const gchar * const * c_ret = gtk_about_dialog_get_documenters (GTK_ABOUT_DIALOG(instance));
+	const gchar* const* c_ret = gtk_about_dialog_get_documenters(GTK_ABOUT_DIALOG(instance));
 
-	return c_ret;
+	// Create a Php::Array to hold the documenters
+	Php::Array documenters;
+
+	// Iterate over the array of strings until a nullptr is encountered
+	for (int i = 0; c_ret[i] != nullptr; ++i) {
+		documenters[i] = c_ret[i]; // Add each documenter to the Php::Array
+	}
+
+	// Return the array as a Php::Value
+	return documenters;
 }
 
 void GtkAboutDialog_::set_documenters(Php::Parameters &parameters)

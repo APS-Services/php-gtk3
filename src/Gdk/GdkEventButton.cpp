@@ -30,7 +30,14 @@ void GdkEventButton_::populate(GdkEventButton event)
     self["time"] = (int)event.time;
     self["x"] = (int)event.x;
     self["y"] = (int)event.y;
-    self["axes"] = (double *)event.axes;
+    // Convert event.axes to a std::vector<double>
+    if (event.axes != nullptr) {
+        std::vector<double> axes(event.axes, event.axes + sizeof(event.axes) / sizeof(event.axes[0]));
+        self["axes"] = axes;
+    }
+    else {
+        self["axes"] = nullptr;
+    }
     self["state"] = (int)event.state;
     self["button"] = (int)event.button;
     // self["device"] = (int)event.device;  // GdkDevice

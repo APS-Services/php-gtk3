@@ -4382,6 +4382,7 @@ Php::Value phpgtk_get_phpvalue(GValue *gvalue)
         break;
     case G_TYPE_OBJECT:
         return g_value_get_object(gvalue);
+       // throw Php::Exception("G_TYPE_OBJECT not implemented");
         break;
     case G_TYPE_INTERFACE:
         throw Php::Exception("G_TYPE_INTERFACE not implemented");

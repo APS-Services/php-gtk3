@@ -265,25 +265,29 @@ Php::Value GtkStatusIcon_::new_from_icon_name(Php::Parameters &parameters)
 }
 
 
-Php::Value GtkStatusIcon_::position_menu(Php::Parameters &parameters)
+Php::Value GtkStatusIcon_::position_menu(Php::Parameters& parameters)
 {
-	GtkMenu *menu;
+	GtkMenu* menu;
 	Php::Value object_menu = parameters[0];
-	GtkMenu_ *phpgtk_menu = (GtkMenu_ *)object_menu.implementation();
+	GtkMenu_* phpgtk_menu = (GtkMenu_*)object_menu.implementation();
 	menu = GTK_MENU(phpgtk_menu->get_instance());
 
-	gint* x;
-	gint* y;
-	gboolean *push_in;
+	// Declare variables as gint and gboolean (not pointers)
+	gint x, y;
+	gboolean push_in;
 
-	gtk_status_icon_position_menu(menu, x, y, push_in, GTK_STATUS_ICON(instance));
+	// Pass the addresses of these variables to the function
+	gtk_status_icon_position_menu(menu, &x, &y, &push_in, GTK_STATUS_ICON(instance));
 
-    Php::Value arr;
-    arr["x"] = x;
-    arr["y"] = y;
+	// Create a Php::Array to hold the position values
+	Php::Value arr;
+	arr["x"] = x;        // Assign the value of x
+	arr["y"] = y;        // Assign the value of y
+	arr["push_in"] = push_in; // Optionally, add push_in to the array if needed
 
-    return arr;
+	return arr;
 }
+
 
 
 

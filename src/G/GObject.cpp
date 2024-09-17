@@ -402,8 +402,15 @@ Php::Value GObject_::get_data(Php::Parameters& parameters)
 
     gpointer value = g_object_get_data(G_OBJECT(instance), key);
 
-    // this will return the pointer, so if not a natural type, it's will crash
-    return value;
+    // Check if value is nullptr
+    if (value == nullptr) {
+        return nullptr;
+    }
+
+    // If you know the data is of a specific type, cast it accordingly:
+    // For example, if you expect the value to be a string:
+    const gchar* str_value = reinterpret_cast<const gchar*>(value);
+    return Php::Value(str_value);
 }
 
 

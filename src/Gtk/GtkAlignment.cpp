@@ -41,22 +41,24 @@ void GtkAlignment_::set_padding(Php::Parameters &parameters)
 
 Php::Value GtkAlignment_::get_padding()
 {
-	guint* top;
-	guint* bottom;
-	guint* left;
-	guint* right;
+	// Declare variables as guint (not pointers)
+	guint top, bottom, left, right;
 
-	gtk_alignment_get_padding(GTK_ALIGNMENT(instance), top, bottom, left, right);
+	// Pass the addresses of these variables to the function
+	gtk_alignment_get_padding(GTK_ALIGNMENT(instance), &top, &bottom, &left, &right);
 
-    Php::Value arr;
-    arr["top"] = top;
-    arr["bottom"] = bottom;
-    arr["left"] = left;
-    arr["right"] = right;
+	// Create a Php::Array to hold the padding values
+	Php::Value arr;
+	arr["top"] = (int)top;        
+	arr["bottom"] = (int)bottom;
+	arr["left"] = (int)left;
+	arr["right"] = (int)right;
 
-    return arr;
-
+	// Return the array
+	return arr;
 }
+
+
 
 void GtkAlignment_::__construct(Php::Parameters &parameters)
 {
