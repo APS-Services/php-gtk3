@@ -37,6 +37,9 @@
              * Populate GdkEvent to PHPGTK::GDKEVENT
              */
             void populate(GdkEvent *event);
+
+            /** Give PHP a way to fetch the raw GdkEvent*’s seat (or NULL) */
+            Php::Value get_seat(Php::Parameters &parameters);
     };
 
 #endif

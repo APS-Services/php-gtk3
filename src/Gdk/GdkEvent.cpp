@@ -1,6 +1,6 @@
 
 #include "GdkEvent.h"
-
+#include "GdkSeat.h"
 
 // 
 GdkEvent *GdkEvent_::get_instance()
@@ -44,33 +44,14 @@ void GdkEvent_::populate(GdkEvent *event)
     Php::Value gdkeventkey = Php::Object("GdkEventKey", eventkey_);
     eventkey_->populate(event->key);
     self["key"] = eventkey_;
-
-
-    /**
-
-    https://developer.gnome.org/gdk3/stable/gdk3-Events.html#gdk-event-get-event-type
-    https://developer.gnome.org/gtk-tutorial/stable/a2767.html
-
-    union _GdkEvent
-    {
-      GdkEventType              type;
-      GdkEventAny               any;
-      GdkEventExpose            expose;
-      GdkEventNoExpose          no_expose;
-      GdkEventVisibility        visibility;
-      GdkEventMotion            motion;
-      GdkEventButton            button;
-      GdkEventKey               key;
-      GdkEventCrossing          crossing;
-      GdkEventFocus             focus_change;
-      GdkEventConfigure         configure;
-      GdkEventProperty          property;
-      GdkEventSelection         selection;
-      GdkEventProximity         proximity;
-      GdkEventClient            client;
-      GdkEventDND               dnd;
-    };
-
-    */
-    
 }
+
+Php::Value GdkEvent_::get_seat(Php::Parameters &)
+{
+    if (!instance) return nullptr;
+    GdkSeat *seat = gdk_event_get_seat(instance);
+    if (!seat)    return nullptr;
+    // If you have a GdkSeat_ wrapper class:
+    return Php::Object("GdkSeat", new GdkSeat_(seat));
+}
+

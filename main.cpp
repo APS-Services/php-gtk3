@@ -534,6 +534,12 @@ extern "C"
         gdkevent.property("type", NULL);
         gdkevent.property("button", NULL);
         gdkevent.property("key", NULL);
+        gdkevent.method<&GdkEvent_::get_seat>("get_seat");
+
+        // GdkEvent
+        Php::Class<GdkSeat_> gdkevent("GdkSeat");
+        gdkseat.method<&GdkSeat_::__construct>("__construct");
+        gdkseat.property("name", NULL);
 
         // GdkEventButton
         Php::Class<GdkEventButton_> gdkeventbutton("GdkEventButton");
@@ -4025,6 +4031,7 @@ extern "C"
         extension.add(std::move(gobject));
         extension.add(std::move(gdk));
         extension.add(std::move(gdkvisual));
+        extension.add(std::move(gdkseat));
         extension.add(std::move(gdkevent));
         extension.add(std::move(gdkeventbutton));
         extension.add(std::move(gdkeventkey));
