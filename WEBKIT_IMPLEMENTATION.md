@@ -12,7 +12,10 @@ This implementation adds WebKitWebView widget support to PHP-GTK3, enabling user
   - `load_uri($uri)` - Loads a URL in the web view (with input validation)
   - `load_html($content, $base_uri)` - Loads HTML content directly (for static HTML)
   - `run_javascript($script)` - Executes JavaScript code in the web view (PHP → JavaScript)
-  - `register_script_message_handler($name)` - Registers a custom message handler (JavaScript → PHP)
+  - `register_script_message_handler($name, $callback)` - Registers a custom message handler (JavaScript → PHP)
+    - JavaScript can send messages using `window.webkit.messageHandlers.name.postMessage(data)`
+    - The callback receives the message data as its first parameter
+    - Properly extracts message values using JavaScriptCore API
   - `get_uri()` - Gets the current URI
   - `reload()` - Reloads the current page
   - `stop_loading()` - Stops loading the current page
