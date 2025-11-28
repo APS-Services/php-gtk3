@@ -148,21 +148,19 @@ MKDIR               =   mkdir -p
 #   file, with the .cpp extension being replaced by .o.
 #
 
-# Base source directories
-BASE_SOURCES = *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/Pango/*.cpp
-
+# Build source file list based on enabled features
 ifdef WITH_MAC_INTEGRATION
-	BASE_SOURCES += src/libwnck/*.cpp
-endif
-
 ifdef WITH_WEBKIT
-	BASE_SOURCES += src/WebKit/*.cpp
-endif
-
-ifdef WITH_MAC_INTEGRATION
-	SOURCES = $(wildcard $(BASE_SOURCES))
+	SOURCES = $(wildcard *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/libwnck/*.cpp src/Pango/*.cpp src/WebKit/*.cpp)
 else
-	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp, $(wildcard src/*.cpp $(BASE_SOURCES)))
+	SOURCES = $(wildcard *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/libwnck/*.cpp src/Pango/*.cpp)
+endif
+else
+ifdef WITH_WEBKIT
+	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp, $(wildcard *.cpp src/*.cpp src/libwnck/*.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/Pango/*.cpp src/WebKit/*.cpp))
+else
+	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp, $(wildcard *.cpp src/*.cpp src/libwnck/*.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/Pango/*.cpp))
+endif
 endif
 
 OBJECTS         = $(SOURCES:%.cpp=%.o)
