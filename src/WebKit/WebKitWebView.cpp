@@ -18,6 +18,10 @@ void WebKitWebView_::__construct()
 
 void WebKitWebView_::load_uri(Php::Parameters &parameters)
 {
+	if (parameters.size() == 0) {
+		throw Php::Exception("load_uri() expects at least 1 parameter, 0 given");
+	}
+
 	std::string s_uri = parameters[0];
 	const gchar *uri = (const gchar *)s_uri.c_str();
 
