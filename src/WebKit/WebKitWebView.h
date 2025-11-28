@@ -5,6 +5,7 @@
     #include <phpcpp.h>
     #include <gtk/gtk.h>
     #include <webkit2/webkit2.h>
+    #include <jsc/jsc.h>
 
     #include "../Gtk/GtkWidget.h"
 

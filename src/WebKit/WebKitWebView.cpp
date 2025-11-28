@@ -132,16 +132,37 @@ struct ScriptMessageData {
 };
 
 // Callback when JavaScript sends a message
-static void script_message_received_cb(WebKitUserContentManager *manager, WebKitJavascriptResult *js_result, gpointer user_data)
+static void script_message_received_cb(WebKitUserContentManager *manager, JSCValue *value, gpointer user_data)
 {
 	ScriptMessageData *data = (ScriptMessageData *)user_data;
 	
+	// Debug output
+	g_print("[DEBUG] Script message received callback triggered for handler: %s\n", data->handler_name.c_str());
+	
 	// Call the PHP callback
 	try {
-		// TODO: In a full implementation, we would extract the value from js_result
-		// using jsc_value_to_string() or jsc_value_to_json() and pass it to the callback
-		// For now, just call with no parameters
-		data->callback();
+		// Extract the message value from JavaScript
+		if (value != nullptr) {
+			// Convert JSCValue to string
+			char *str_value = jsc_value_to_string(value);
+			
+			if (str_value != nullptr) {
+				g_print("[DEBUG] Message value: %s\n", str_value);
+				
+				// Call the PHP callback with the message value
+				data->callback(str_value);
+				
+				g_free(str_value);
+			} else {
+				g_print("[DEBUG] Message value is null\n");
+				// Call with no parameters if value is null
+				data->callback();
+			}
+		} else {
+			g_print("[DEBUG] JSCValue is null\n");
+			// Call with no parameters if JSCValue is null
+			data->callback();
+		}
 	} catch (const std::exception &e) {
 		g_warning("Exception in script message handler callback: %s", e.what());
 	} catch (...) {
@@ -158,16 +179,30 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	std::string s_name = parameters[0];
 	const gchar *name = (const gchar *)s_name.c_str();
 
+	// Debug output
+	g_print("[DEBUG] Registering script message handler: %s\n", name);
+
 	// Get the user content manager
 	WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
 	
+	if (manager == nullptr) {
+		g_warning("[ERROR] User content manager is null!");
+		throw Php::Exception("Failed to get user content manager");
+	}
+	
+	g_print("[DEBUG] User content manager obtained: %p\n", (void*)manager);
+	
 	// Register the script message handler
 	webkit_user_content_manager_register_script_message_handler(manager, name);
+	
+	g_print("[DEBUG] Script message handler registered successfully\n");
 	
 	// If a callback was provided as second parameter, connect it
 	if (parameters.size() > 1 && parameters[1].isCallable()) {
 		// Build the signal name: "script-message-received::handlerName"
 		std::string signal_name = "script-message-received::" + s_name;
+		
+		g_print("[DEBUG] Connecting signal: %s\n", signal_name.c_str());
 		
 		// Create data structure to pass to callback
 		ScriptMessageData *data = new ScriptMessageData();
@@ -182,5 +217,9 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		                          delete (ScriptMessageData *)user_data;
 		                      },
 		                      (GConnectFlags)0);
+		
+		g_print("[DEBUG] Signal connected successfully\n");
+	} else {
+		g_print("[DEBUG] No callback provided or callback is not callable\n");
 	}
 }
