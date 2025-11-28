@@ -129,16 +129,47 @@ To test the fix:
    php -dextension=./php-gtk3.so examples/webkit_js_to_php.php
    ```
 
-3. Click the buttons in the UI:
+3. **Use Web Inspector for Debugging:**
+   - The example now enables WebKit Web Inspector (Developer Tools) automatically
+   - Right-click anywhere in the web page
+   - Select "Inspect Element" from the context menu
+   - The Web Inspector will open with tabs for:
+     - **Console**: See JavaScript errors and console.log() output
+     - **Elements**: Inspect the DOM
+     - **Network**: View network requests
+     - **Debugger**: Debug JavaScript code
+   - Check the Console tab for any JavaScript errors when clicking buttons
+   - You can also type `window.webkit.messageHandlers` in the Console to verify the handler exists
+
+4. Click the buttons in the UI:
    - "Send Simple Message"
    - "Send Text Data"
    - "Send Object Data"
    - "Send Counter Value"
 
-4. Verify:
+5. Verify:
    - Debug output appears in the terminal
    - Messages appear in the text log area in the UI
    - The automatic "Page loaded successfully!" message appears on page load
+   - No JavaScript errors in the Web Inspector Console
+
+## Debugging Tips
+
+If messages still don't work after recompiling:
+
+1. **Check Web Inspector Console** - Look for JavaScript errors or warnings
+2. **Verify handler is registered** - In the Web Inspector Console, type:
+   ```javascript
+   window.webkit.messageHandlers.phpApp
+   ```
+   This should show an object, not `undefined`
+3. **Test message sending manually** - In the Web Inspector Console, type:
+   ```javascript
+   window.webkit.messageHandlers.phpApp.postMessage('test')
+   ```
+   This should trigger the PHP callback
+4. **Check C++ debug output** - You should see `[DEBUG]` messages in the terminal
+5. **Check for signal override warning** - The "Overriding existing handler for signal 10" message is harmless
 
 ## Technical Details
 
