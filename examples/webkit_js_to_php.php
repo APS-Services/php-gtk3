@@ -50,16 +50,11 @@ $scrolledLog->add($logView);
 // Create WebKitWebView widget
 $webView = new WebKitWebView();
 
-// Register a script message handler named "phpApp"
+// Register a script message handler named "phpApp" with a callback
 // JavaScript can send messages using: window.webkit.messageHandlers.phpApp.postMessage(data)
-$webView->register_script_message_handler("phpApp");
-
-// Get the user content manager to connect to script-message-received signal
-// This requires accessing the underlying GObject - we'll do this via connect
-$webView->connect("script-message-received::phpApp", function($webView, $jsResult) use ($buffer) {
-    // Get the JavaScript value sent from the browser
-    // Note: In a full implementation, you'd parse the JSCValue properly
-    // For now, we'll show that the signal was received
+$webView->register_script_message_handler("phpApp", function() use ($buffer) {
+    // Callback is invoked when JavaScript sends a message
+    // Note: In this simplified implementation, we don't yet extract the actual message data
     
     $timestamp = date('H:i:s');
     $message = "[$timestamp] Message received from JavaScript\n";
@@ -170,7 +165,7 @@ $html = <<<'HTML'
         <div class="code">
 window.webkit.messageHandlers.phpApp.postMessage(yourData);
         </div>
-        <p>The PHP application receives these messages via the <code>script-message-received::phpApp</code> signal.</p>
+        <p>The PHP application receives these messages via a callback function passed to <code>register_script_message_handler()</code>.</p>
     </div>
     
     <script>

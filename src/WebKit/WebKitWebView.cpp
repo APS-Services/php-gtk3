@@ -125,6 +125,32 @@ void WebKitWebView_::run_javascript(Php::Parameters &parameters)
 	webkit_web_view_evaluate_javascript(WEBKIT_WEB_VIEW(instance), script, -1, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
+// Structure to hold callback data for script message handler
+struct ScriptMessageData {
+	Php::Value callback;
+	std::string handler_name;
+};
+
+// Callback when JavaScript sends a message
+static void script_message_received_cb(WebKitUserContentManager *manager, WebKitJavascriptResult *js_result, gpointer user_data)
+{
+	ScriptMessageData *data = (ScriptMessageData *)user_data;
+	
+	// TODO: In a full implementation, we would:
+	// 1. Extract the value from js_result using jsc_value_* functions
+	// 2. Convert it to a Php::Value
+	// 3. Call the PHP callback with the value
+	
+	// For now, we'll just call the callback if it's callable
+	if (data->callback.isCallable()) {
+		try {
+			data->callback();
+		} catch (...) {
+			// Ignore exceptions in callback
+		}
+	}
+}
+
 void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters)
 {
 	if (parameters.size() == 0) {
@@ -134,6 +160,29 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	std::string s_name = parameters[0];
 	const gchar *name = (const gchar *)s_name.c_str();
 
+	// Optional: second parameter can be a PHP callback
+	Php::Value callback = parameters.size() > 1 ? parameters[1] : Php::Value(nullptr);
+
 	WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
 	webkit_user_content_manager_register_script_message_handler(manager, name);
+	
+	// If a callback was provided, connect it
+	if (callback.isCallable()) {
+		// Build the signal name: "script-message-received::handlerName"
+		std::string signal_name = "script-message-received::" + s_name;
+		
+		// Create data structure to pass to callback
+		ScriptMessageData *data = new ScriptMessageData();
+		data->callback = callback;
+		data->handler_name = s_name;
+		
+		// Connect the signal
+		g_signal_connect_data(manager, signal_name.c_str(), 
+		                      G_CALLBACK(script_message_received_cb), 
+		                      data, 
+		                      [](gpointer user_data, GClosure *closure) {
+		                          delete (ScriptMessageData *)user_data;
+		                      },
+		                      (GConnectFlags)0);
+	}
 }
