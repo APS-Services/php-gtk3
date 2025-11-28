@@ -5,6 +5,7 @@
     #include <phpcpp.h>
     #include <gtk/gtk.h>
     #include <webkit2/webkit2.h>
+    #include <jsc/jsc.h>
 
     #include "../Gtk/GtkWidget.h"
 
@@ -55,6 +56,16 @@
             void run_javascript(Php::Parameters &parameters);
 
             void register_script_message_handler(Php::Parameters &parameters);
+
+            void enable_developer_extras();
+
+            Php::Value get_settings();
+
+        /**
+         * Private members
+         */
+        private:
+            WebKitUserContentManager *user_content_manager;
     };
 
 #endif

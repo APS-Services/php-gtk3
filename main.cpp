@@ -4032,6 +4032,8 @@ extern "C"
         webkitwebview.method<&WebKitWebView_::load_html>("load_html");
         webkitwebview.method<&WebKitWebView_::run_javascript>("run_javascript");
         webkitwebview.method<&WebKitWebView_::register_script_message_handler>("register_script_message_handler");
+        webkitwebview.method<&WebKitWebView_::enable_developer_extras>("enable_developer_extras");
+        webkitwebview.method<&WebKitWebView_::get_settings>("get_settings");
 #endif
 
 #ifdef WITH_MAC_INTEGRATION

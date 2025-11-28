@@ -14,6 +14,9 @@
 // Initialize GTK
 Gtk::init();
 
+echo "[PHP] Starting JavaScript → PHP Messaging Example\n";
+echo "[PHP] ================================================\n";
+
 // Callback for when window is closed
 function onWindowDestroy()
 {
@@ -47,24 +50,50 @@ $buffer = $logView->get_buffer();
 $scrolledLog->add($logView);
 
 // Create WebKitWebView widget
+echo "[PHP] Creating WebKitWebView widget...\n";
 $webView = new WebKitWebView();
+echo "[PHP] WebKitWebView created successfully\n";
+
+// Enable developer extras for debugging (if method exists)
+echo "[PHP] Enabling Web Inspector (Developer Tools)...\n";
+if (method_exists($webView, 'enable_developer_extras')) {
+    $webView->enable_developer_extras();
+    echo "[PHP] Web Inspector enabled. Right-click in the web page and select 'Inspect Element'.\n";
+} else {
+    echo "[PHP] WARNING: enable_developer_extras() method not available.\n";
+    echo "[PHP] Please recompile the extension: make clean && make WITH_WEBKIT=1 -j 4 && sudo make install\n";
+}
 
 // Register a script message handler named "phpApp" with a callback
 // JavaScript can send messages using: window.webkit.messageHandlers.phpApp.postMessage(data)
-$webView->register_script_message_handler("phpApp", function () use ($buffer) {
+echo "[PHP] Registering script message handler 'phpApp'...\n";
+$webView->register_script_message_handler("phpApp", function ($messageData = null) use ($buffer) {
     // Callback is invoked when JavaScript sends a message
-    // Note: In this simplified implementation, we don't yet extract the actual message data
-
+    // The message data sent from JavaScript is passed as the first parameter
+    
+    echo "[PHP DEBUG] ========================================\n";
+    echo "[PHP DEBUG] Callback invoked!\n";
+    echo "[PHP DEBUG] Message data: " . var_export($messageData, true) . "\n";
+    echo "[PHP DEBUG] Message data type: " . gettype($messageData) . "\n";
+    echo "[PHP DEBUG] ========================================\n";
+    
     $timestamp = date('H:i:s');
-    $message = "[$timestamp] Message received from JavaScript\n";
+    
+    if ($messageData !== null) {
+        $message = "[$timestamp] Message from JavaScript: $messageData\n";
+    } else {
+        $message = "[$timestamp] Message received from JavaScript (no data)\n";
+    }
 
     $endIter = $buffer->get_end_iter();
     $buffer->insert($endIter, $message, -1);
 
-    // Auto-scroll to bottom
-    $mark = $buffer->create_mark(null, $endIter, false);
+    // Get a fresh end iterator after the insert to create the mark
+    $newEndIter = $buffer->get_end_iter();
+    $mark = $buffer->create_mark(null, $newEndIter, false);
     // Note: scroll_to_mark would be called here in a full implementation
 });
+echo "[PHP] Script message handler registered successfully\n";
 
 // Create a scrolled window to contain the web view
 $scrolled = new GtkScrolledWindow();
@@ -244,14 +273,20 @@ window.webkit.messageHandlers.phpApp.postMessage(yourData);
 HTML;
 
 // Load the HTML content
+echo "[PHP] Loading HTML content into WebView...\n";
 $webView->load_html($html, "about:blank");
+echo "[PHP] HTML content loaded\n";
 
 // Show all widgets
+echo "[PHP] Showing all widgets...\n";
 $window->show_all();
+echo "[PHP] Widgets shown\n";
 
 // Log initial message
 $endIter = $buffer->get_end_iter();
 $buffer->insert($endIter, "Waiting for messages from JavaScript...\n", -1);
 
 // Start GTK main loop
+echo "[PHP] Starting GTK main loop...\n";
+echo "[PHP] Application is now running. You can interact with the UI.\n";
 Gtk::main();
