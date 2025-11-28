@@ -43,7 +43,6 @@ $vbox->pack_start($scrolledLog, false, true, 0);
 // Create text view for logging messages
 $logView = new GtkTextView();
 $logView->set_editable(false);
-$logView->set_wrap_mode(Gtk::WRAP_WORD);
 $buffer = $logView->get_buffer();
 $scrolledLog->add($logView);
 
@@ -52,16 +51,16 @@ $webView = new WebKitWebView();
 
 // Register a script message handler named "phpApp" with a callback
 // JavaScript can send messages using: window.webkit.messageHandlers.phpApp.postMessage(data)
-$webView->register_script_message_handler("phpApp", function() use ($buffer) {
+$webView->register_script_message_handler("phpApp", function () use ($buffer) {
     // Callback is invoked when JavaScript sends a message
     // Note: In this simplified implementation, we don't yet extract the actual message data
-    
+
     $timestamp = date('H:i:s');
     $message = "[$timestamp] Message received from JavaScript\n";
-    
+
     $endIter = $buffer->get_end_iter();
     $buffer->insert($endIter, $message, -1);
-    
+
     // Auto-scroll to bottom
     $mark = $buffer->create_mark(null, $endIter, false);
     // Note: scroll_to_mark would be called here in a full implementation
