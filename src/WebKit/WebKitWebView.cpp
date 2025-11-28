@@ -1,0 +1,293 @@
+
+#include "WebKitWebView.h"
+
+/**
+ * Constructor
+ */
+WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
+
+/**
+ * Destructor
+ */
+WebKitWebView_::~WebKitWebView_()
+{
+	// Unref the UserContentManager we created in __construct()
+	// The WebView takes its own reference, so we need to release ours
+	if (user_content_manager != nullptr) {
+		g_object_unref(user_content_manager);
+		user_content_manager = nullptr;
+	}
+}
+
+void WebKitWebView_::__construct()
+{
+	// Create a new UserContentManager
+	// This will be used to register script message handlers
+	user_content_manager = webkit_user_content_manager_new();
+	
+	if (user_content_manager == nullptr) {
+		throw Php::Exception("Failed to create WebKitUserContentManager");
+	}
+	
+	// Create the WebView with our UserContentManager
+	// This ensures that any script message handlers registered on the manager
+	// will be available in the WebView's JavaScript context
+	instance = (gpointer *)webkit_web_view_new_with_user_content_manager(user_content_manager);
+	
+	if (instance == nullptr) {
+		g_object_unref(user_content_manager);
+		user_content_manager = nullptr;
+		throw Php::Exception("Failed to create WebKitWebView");
+	}
+}
+
+void WebKitWebView_::load_uri(Php::Parameters &parameters)
+{
+	if (parameters.size() == 0) {
+		throw Php::Exception("load_uri() expects at least 1 parameter, 0 given");
+	}
+
+	std::string s_uri = parameters[0];
+	const gchar *uri = (const gchar *)s_uri.c_str();
+
+	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(instance), uri);
+}
+
+Php::Value WebKitWebView_::get_uri()
+{
+	const gchar *ret = webkit_web_view_get_uri(WEBKIT_WEB_VIEW(instance));
+
+	if (ret == nullptr) {
+		return nullptr;
+	}
+
+	return std::string(ret);
+}
+
+void WebKitWebView_::reload()
+{
+	webkit_web_view_reload(WEBKIT_WEB_VIEW(instance));
+}
+
+void WebKitWebView_::stop_loading()
+{
+	webkit_web_view_stop_loading(WEBKIT_WEB_VIEW(instance));
+}
+
+Php::Value WebKitWebView_::can_go_back()
+{
+	gboolean ret = webkit_web_view_can_go_back(WEBKIT_WEB_VIEW(instance));
+
+	return (bool)ret;
+}
+
+void WebKitWebView_::go_back()
+{
+	webkit_web_view_go_back(WEBKIT_WEB_VIEW(instance));
+}
+
+Php::Value WebKitWebView_::can_go_forward()
+{
+	gboolean ret = webkit_web_view_can_go_forward(WEBKIT_WEB_VIEW(instance));
+
+	return (bool)ret;
+}
+
+void WebKitWebView_::go_forward()
+{
+	webkit_web_view_go_forward(WEBKIT_WEB_VIEW(instance));
+}
+
+Php::Value WebKitWebView_::get_title()
+{
+	const gchar *ret = webkit_web_view_get_title(WEBKIT_WEB_VIEW(instance));
+
+	if (ret == nullptr) {
+		return nullptr;
+	}
+
+	return std::string(ret);
+}
+
+Php::Value WebKitWebView_::is_loading()
+{
+	gboolean ret = webkit_web_view_is_loading(WEBKIT_WEB_VIEW(instance));
+
+	return (bool)ret;
+}
+
+void WebKitWebView_::load_html(Php::Parameters &parameters)
+{
+    if (parameters.size() == 0) {
+        throw Php::Exception("load_html() expects at least 1 parameter, 0 given");
+    }
+
+    // First parameter: HTML content
+    std::string s_content = parameters[0].stringValue();
+    const gchar *content = s_content.c_str();
+
+    // Optional second parameter: base URI
+    std::string s_base_uri;
+    const gchar *base_uri = nullptr;
+
+    if (parameters.size() > 1 && !parameters[1].isNull()) {
+        s_base_uri = parameters[1].stringValue();
+        base_uri = s_base_uri.c_str();
+    }
+
+    webkit_web_view_load_html(WEBKIT_WEB_VIEW(instance), content, base_uri);
+}
+
+void WebKitWebView_::run_javascript(Php::Parameters &parameters)
+{
+	if (parameters.size() == 0) {
+		throw Php::Exception("run_javascript() expects at least 1 parameter, 0 given");
+	}
+
+	std::string s_script = parameters[0];
+	const gchar *script = (const gchar *)s_script.c_str();
+
+	webkit_web_view_evaluate_javascript(WEBKIT_WEB_VIEW(instance), script, -1, nullptr, nullptr, nullptr, nullptr, nullptr);
+}
+
+// Structure to hold callback data for script message handler
+struct ScriptMessageData {
+	Php::Value callback;
+	std::string handler_name;
+};
+
+// Callback when JavaScript sends a message
+static void script_message_received_cb(WebKitUserContentManager *manager, WebKitJavascriptResult *js_result, gpointer user_data)
+{
+	ScriptMessageData *data = (ScriptMessageData *)user_data;
+	
+	// Debug output with flush to ensure it appears immediately
+	g_print("[DEBUG] Script message received callback triggered for handler: %s\n", data->handler_name.c_str());
+	fflush(stdout);
+	
+	// Call the PHP callback
+	try {
+		// Extract the JSCValue from the WebKitJavascriptResult
+		char *str_value = nullptr;
+		
+		if (js_result != nullptr) {
+			// Get the JSCValue from the result
+			JSCValue *value = webkit_javascript_result_get_js_value(js_result);
+			
+			if (value != nullptr && jsc_value_is_string(value)) {
+				str_value = jsc_value_to_string(value);
+			} else if (value != nullptr) {
+				// Try to convert non-string values to string
+				str_value = jsc_value_to_string(value);
+			}
+		}
+		
+		if (str_value != nullptr) {
+			g_print("[DEBUG] Message value: %s\n", str_value);
+			fflush(stdout);
+			data->callback(str_value);
+			g_free(str_value);
+		} else {
+			g_print("[DEBUG] Message value is null, calling callback with no parameters\n");
+			fflush(stdout);
+			data->callback();
+		}
+	} catch (const std::exception &e) {
+		g_warning("Exception in script message handler callback: %s", e.what());
+		fflush(stderr);
+	} catch (...) {
+		g_warning("Unknown exception in script message handler callback");
+		fflush(stderr);
+	}
+}
+
+void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters)
+{
+	if (parameters.size() == 0) {
+		throw Php::Exception("register_script_message_handler() expects at least 1 parameter, 0 given");
+	}
+
+	std::string s_name = parameters[0];
+	const gchar *name = (const gchar *)s_name.c_str();
+
+	// Debug output with flush
+	g_print("[DEBUG] Registering script message handler: %s\n", name);
+	fflush(stdout);
+
+	// Check that we have a user content manager
+	if (user_content_manager == nullptr) {
+		g_warning("User content manager is null!");
+		fflush(stderr);
+		throw Php::Exception("Failed to get user content manager");
+	}
+	
+	g_print("[DEBUG] User content manager: %p\n", (void*)user_content_manager);
+	fflush(stdout);
+	
+	// Register the script message handler
+	webkit_user_content_manager_register_script_message_handler(user_content_manager, name);
+	
+	g_print("[DEBUG] Script message handler registered successfully\n");
+	fflush(stdout);
+	
+	// If a callback was provided as second parameter, connect it
+	if (parameters.size() > 1 && parameters[1].isCallable()) {
+		// Build the signal name: "script-message-received::handlerName"
+		std::string signal_name = "script-message-received::" + s_name;
+		
+		g_print("[DEBUG] Connecting signal: %s\n", signal_name.c_str());
+		fflush(stdout);
+		
+		// Create data structure to pass to callback
+		ScriptMessageData *data = new ScriptMessageData();
+		data->callback = parameters[1];
+		data->handler_name = s_name;
+		
+		// Connect the signal to the user content manager (not the webview)
+		g_signal_connect_data(user_content_manager, signal_name.c_str(), 
+		                      G_CALLBACK(script_message_received_cb), 
+		                      data, 
+		                      [](gpointer user_data, GClosure *closure) {
+		                          delete (ScriptMessageData *)user_data;
+		                      },
+		                      (GConnectFlags)0);
+		
+		g_print("[DEBUG] Signal connected successfully\n");
+		fflush(stdout);
+	} else {
+		g_print("[DEBUG] No callback provided or callback is not callable\n");
+		fflush(stdout);
+	}
+}
+
+void WebKitWebView_::enable_developer_extras()
+{
+	// Get the WebView's settings
+	WebKitSettings *settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(instance));
+	
+	if (settings == nullptr) {
+		g_warning("Failed to get WebKit settings!");
+		fflush(stderr);
+		return;
+	}
+	
+	// Enable developer extras (Web Inspector)
+	webkit_settings_set_enable_developer_extras(settings, TRUE);
+	
+	g_print("[DEBUG] Developer extras enabled. Right-click in the WebView and select 'Inspect Element' to open Web Inspector.\n");
+	fflush(stdout);
+}
+
+Php::Value WebKitWebView_::get_settings()
+{
+	// Get the WebView's settings
+	WebKitSettings *settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(instance));
+	
+	if (settings == nullptr) {
+		return nullptr;
+	}
+	
+	// Return true to indicate settings are available
+	// This is safer than returning a raw pointer
+	return true;
+}
