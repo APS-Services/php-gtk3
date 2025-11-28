@@ -53,6 +53,8 @@
             void load_html(Php::Parameters &parameters);
 
             void run_javascript(Php::Parameters &parameters);
+
+            void register_script_message_handler(Php::Parameters &parameters);
     };
 
 #endif

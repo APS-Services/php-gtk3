@@ -11,7 +11,8 @@ This implementation adds WebKitWebView widget support to PHP-GTK3, enabling user
   - `__construct()` - Creates a new WebKitWebView instance
   - `load_uri($uri)` - Loads a URL in the web view (with input validation)
   - `load_html($content, $base_uri)` - Loads HTML content directly (for static HTML)
-  - `run_javascript($script)` - Executes JavaScript code in the web view
+  - `run_javascript($script)` - Executes JavaScript code in the web view (PHP → JavaScript)
+  - `register_script_message_handler($name)` - Registers a custom message handler (JavaScript → PHP)
   - `get_uri()` - Gets the current URI
   - `reload()` - Reloads the current page
   - `stop_loading()` - Stops loading the current page
@@ -25,7 +26,8 @@ This implementation adds WebKitWebView widget support to PHP-GTK3, enabling user
 ### Examples
 - **examples/webkit_simple.php** - Minimal example showing basic usage
 - **examples/webkit_browser.php** - Full-featured browser with navigation controls
-- **examples/webkit_communication.php** - Bidirectional JavaScript ↔ PHP communication demo
+- **examples/webkit_communication.php** - PHP → JavaScript communication demo
+- **examples/webkit_js_to_php.php** - JavaScript → PHP messaging with custom handlers
 - **examples/README.md** - Documentation for the examples
 
 ### Documentation
