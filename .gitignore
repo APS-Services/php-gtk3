@@ -6,3 +6,4 @@ thumbs.db
 .vscode/settings.json
 .vscode/c_cpp_properties.json
 build.sh
+_codeql_detected_source_root
