@@ -3,8 +3,18 @@
 ## Problem
 When running `php8.4 examples/webkit_js_to_php.php`, button clicks on the test page were not triggering events. Messages sent from JavaScript using `window.webkit.messageHandlers.phpApp.postMessage()` were not being received by the PHP callback.
 
-## Root Cause
-The callback signature for the `script-message-received` signal was incorrect. The implementation was using `WebKitJavascriptResult*` as the second parameter, but WebKit2GTK's `script-message-received::handlerName` signal actually passes a `JSCValue*` parameter according to the WebKit2GTK API documentation.
+## Root Causes
+
+### 1. Incorrect Callback Signature
+The callback signature for the `script-message-received` signal was incorrect. The implementation was using `WebKitJavascriptResult*` as the second parameter, but WebKit2GTK's `script-message-received::handlerName` signal actually passes a `JSCValue*` parameter.
+
+### 2. Improper WebView Initialization
+More critically, WebKit2GTK requires a specific initialization pattern for script message handlers to work:
+- The `UserContentManager` must be created **first**
+- Script message handlers must be registered on that manager
+- The `WebView` must be created **with** that manager using `webkit_web_view_new_with_user_content_manager()`
+
+The previous approach of creating the WebView first and then getting its manager didn't work properly for script message handlers.
 
 ## Solution
 
@@ -25,22 +35,61 @@ static void script_message_received_cb(WebKitUserContentManager *manager,
                                        gpointer user_data)
 ```
 
-### 2. Added Message Extraction
+### 2. Proper WebView Initialization Pattern
+Changed the initialization in `src/WebKit/WebKitWebView.cpp`:
+
+**Before:**
+```cpp
+void WebKitWebView_::__construct()
+{
+    instance = (gpointer *)webkit_web_view_new();
+}
+
+void register_script_message_handler(...)
+{
+    WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
+    webkit_user_content_manager_register_script_message_handler(manager, name);
+}
+```
+
+**After:**
+```cpp
+// In header: private member
+WebKitUserContentManager *user_content_manager;
+
+void WebKitWebView_::__construct()
+{
+    user_content_manager = webkit_user_content_manager_new();
+    instance = (gpointer *)webkit_web_view_new_with_user_content_manager(user_content_manager);
+}
+
+void register_script_message_handler(...)
+{
+    webkit_user_content_manager_register_script_message_handler(user_content_manager, name);
+}
+```
+
+### 3. Added Message Extraction
 Implemented proper message extraction using JavaScriptCore functions:
 - Added `jsc_value_to_string()` to convert JavaScript values to C strings
 - Passes the extracted message data to the PHP callback
 - Handles null values gracefully
 
-### 3. Added Required Header
+### 4. Added Required Header
 Added `#include <jsc/jsc.h>` to `src/WebKit/WebKitWebView.h` for JavaScriptCore types.
 
-### 4. Enhanced PHP Callback
+### 5. Enhanced PHP Callback
 Updated the PHP callback in `examples/webkit_js_to_php.php` to:
 - Accept the message data parameter
 - Display the actual message content
 - Show comprehensive debug output
 
-### 5. Added Debug Output
+### 6. Proper Memory Management
+Added proper cleanup in destructor:
+- Unreferences the UserContentManager when the WebKitWebView is destroyed
+- Prevents memory leaks
+
+### 7. Added Debug Output
 Added extensive debug logging to help troubleshoot:
 - C++ logs: handler registration, signal connection, message reception
 - PHP logs: application lifecycle events, callback invocations
