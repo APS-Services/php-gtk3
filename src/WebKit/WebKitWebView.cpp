@@ -127,7 +127,7 @@ void WebKitWebView_::run_javascript(Php::Parameters &parameters)
 
 // Structure to hold callback data for script message handler
 struct ScriptMessageData {
-	Php::Value callback;
+	Php::Callable callback;
 	std::string handler_name;
 };
 
@@ -136,18 +136,16 @@ static void script_message_received_cb(WebKitUserContentManager *manager, WebKit
 {
 	ScriptMessageData *data = (ScriptMessageData *)user_data;
 	
-	// TODO: In a full implementation, we would:
-	// 1. Extract the value from js_result using jsc_value_* functions
-	// 2. Convert it to a Php::Value
-	// 3. Call the PHP callback with the value
-	
-	// For now, we'll just call the callback if it's callable
-	if (data->callback.isCallable()) {
-		try {
-			data->callback();
-		} catch (...) {
-			// Ignore exceptions in callback
-		}
+	// Call the PHP callback
+	try {
+		// TODO: In a full implementation, we would extract the value from js_result
+		// using jsc_value_to_string() or jsc_value_to_json() and pass it to the callback
+		// For now, just call with no parameters
+		data->callback();
+	} catch (const std::exception &e) {
+		g_warning("Exception in script message handler callback: %s", e.what());
+	} catch (...) {
+		g_warning("Unknown exception in script message handler callback");
 	}
 }
 
@@ -160,23 +158,23 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	std::string s_name = parameters[0];
 	const gchar *name = (const gchar *)s_name.c_str();
 
-	// Optional: second parameter can be a PHP callback
-	Php::Value callback = parameters.size() > 1 ? parameters[1] : Php::Value(nullptr);
-
+	// Get the user content manager
 	WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
+	
+	// Register the script message handler
 	webkit_user_content_manager_register_script_message_handler(manager, name);
 	
-	// If a callback was provided, connect it
-	if (callback.isCallable()) {
+	// If a callback was provided as second parameter, connect it
+	if (parameters.size() > 1 && parameters[1].isCallable()) {
 		// Build the signal name: "script-message-received::handlerName"
 		std::string signal_name = "script-message-received::" + s_name;
 		
 		// Create data structure to pass to callback
 		ScriptMessageData *data = new ScriptMessageData();
-		data->callback = callback;
+		data->callback = Php::Callable(parameters[1]);
 		data->handler_name = s_name;
 		
-		// Connect the signal
+		// Connect the signal to the user content manager (not the webview)
 		g_signal_connect_data(manager, signal_name.c_str(), 
 		                      G_CALLBACK(script_message_received_cb), 
 		                      data, 
