@@ -90,3 +90,33 @@ Php::Value WebKitWebView_::is_loading()
 
 	return (bool)ret;
 }
+
+void WebKitWebView_::load_html(Php::Parameters &parameters)
+{
+	if (parameters.size() == 0) {
+		throw Php::Exception("load_html() expects at least 1 parameter, 0 given");
+	}
+
+	std::string s_content = parameters[0];
+	const gchar *content = (const gchar *)s_content.c_str();
+
+	std::string s_base_uri = "";
+	if (parameters.size() > 1) {
+		s_base_uri = parameters[1];
+	}
+	const gchar *base_uri = s_base_uri.empty() ? nullptr : (const gchar *)s_base_uri.c_str();
+
+	webkit_web_view_load_html(WEBKIT_WEB_VIEW(instance), content, base_uri);
+}
+
+void WebKitWebView_::run_javascript(Php::Parameters &parameters)
+{
+	if (parameters.size() == 0) {
+		throw Php::Exception("run_javascript() expects at least 1 parameter, 0 given");
+	}
+
+	std::string s_script = parameters[0];
+	const gchar *script = (const gchar *)s_script.c_str();
+
+	webkit_web_view_run_javascript(WEBKIT_WEB_VIEW(instance), script, nullptr, nullptr, nullptr);
+}

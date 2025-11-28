@@ -49,6 +49,10 @@
             Php::Value get_title();
 
             Php::Value is_loading();
+
+            void load_html(Php::Parameters &parameters);
+
+            void run_javascript(Php::Parameters &parameters);
     };
 
 #endif

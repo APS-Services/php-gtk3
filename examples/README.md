@@ -28,6 +28,24 @@ A more complete example with navigation controls (back, forward, reload) and URL
 php -dextension=php-gtk3.so webkit_browser.php
 ```
 
+### webkit_communication.php
+Demonstrates bidirectional communication between JavaScript (in WebView) and PHP (GTK application).
+
+**Features:**
+- Loading static HTML content with `load_html()`
+- Executing JavaScript from PHP with `run_javascript()`
+- Handling WebView signals (load-changed)
+- Interactive buttons that control the browser from PHP
+
+**Requirements:**
+- PHP-GTK3 compiled with `WITH_WEBKIT=1`
+- webkit2gtk-4.1 library installed
+
+**Usage:**
+```bash
+php -dextension=php-gtk3.so webkit_communication.php
+```
+
 ## Compiling PHP-GTK3 with WebKit Support
 
 To use the WebKit examples, you need to compile PHP-GTK3 with WebKit support:
