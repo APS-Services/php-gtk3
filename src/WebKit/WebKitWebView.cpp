@@ -11,17 +11,31 @@ WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
  */
 WebKitWebView_::~WebKitWebView_()
 {
-	// UserContentManager is owned by the WebView, so we don't need to unref it
+	// The UserContentManager is ref-counted and owned by the WebView
+	// When the WebView is destroyed, it will unref the manager
+	// We only stored a pointer for convenience, so we don't need to unref it ourselves
 }
 
 void WebKitWebView_::__construct()
 {
 	// Create a new UserContentManager
-	// This will be used to register script message handlers before creating the WebView
+	// This will be used to register script message handlers
 	user_content_manager = webkit_user_content_manager_new();
 	
+	if (user_content_manager == nullptr) {
+		throw Php::Exception("Failed to create WebKitUserContentManager");
+	}
+	
 	// Create the WebView with our UserContentManager
+	// This ensures that any script message handlers registered on the manager
+	// will be available in the WebView's JavaScript context
 	instance = (gpointer *)webkit_web_view_new_with_user_content_manager(user_content_manager);
+	
+	if (instance == nullptr) {
+		g_object_unref(user_content_manager);
+		user_content_manager = nullptr;
+		throw Php::Exception("Failed to create WebKitWebView");
+	}
 }
 
 void WebKitWebView_::load_uri(Php::Parameters &parameters)
