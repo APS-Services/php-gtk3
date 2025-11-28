@@ -54,10 +54,15 @@ echo "[PHP] Creating WebKitWebView widget...\n";
 $webView = new WebKitWebView();
 echo "[PHP] WebKitWebView created successfully\n";
 
-// Enable developer extras for debugging
+// Enable developer extras for debugging (if method exists)
 echo "[PHP] Enabling Web Inspector (Developer Tools)...\n";
-$webView->enable_developer_extras();
-echo "[PHP] Web Inspector enabled. Right-click in the web page and select 'Inspect Element'.\n";
+if (method_exists($webView, 'enable_developer_extras')) {
+    $webView->enable_developer_extras();
+    echo "[PHP] Web Inspector enabled. Right-click in the web page and select 'Inspect Element'.\n";
+} else {
+    echo "[PHP] WARNING: enable_developer_extras() method not available.\n";
+    echo "[PHP] Please recompile the extension: make clean && make WITH_WEBKIT=1 -j 4 && sudo make install\n";
+}
 
 // Register a script message handler named "phpApp" with a callback
 // JavaScript can send messages using: window.webkit.messageHandlers.phpApp.postMessage(data)
