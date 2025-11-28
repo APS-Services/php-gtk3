@@ -62,6 +62,11 @@ Get GTK dependencies, on deb systems, like:
 :$ sudo apt-get install libgtk-3-dev libgladeui-dev libgtksourceview-3.0-dev libwnck-dev
 ```
 
+For WebKit support (optional), also install:
+```sh
+:$ sudo apt-get install libwebkit2gtk-4.0-dev
+```
+
 If you are compiling from repository version, install `pkg-config` too. If you are compiling from source, use `/usr/local/php-gtk3/bin/php-config` on Makefile
 
 Clone source
@@ -77,6 +82,11 @@ Edit `PHP-CPP/Makefile` to use `/opt/php/php-8.1.14/bin/php-config`.
 Compile
 ```sh
 :$ make -j 4 
+```
+
+To compile with WebKit support:
+```sh
+:$ make WITH_WEBKIT=1 -j 4
 ```
 
 You can test with

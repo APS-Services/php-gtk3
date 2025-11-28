@@ -6,6 +6,9 @@
 # WITH_LIBWNCK=1
 #	create a libwnck bind
 #
+# WITH_WEBKIT=1
+#	create a WebKit2GTK bind for web browsing in GTK widgets
+#
 
 #
 #   Makefile template
@@ -91,6 +94,18 @@ ifdef WITH_LIBWNCK
 endif
 
 #
+# With WebKit2GTK
+#
+
+ifdef WITH_WEBKIT
+	WEBKITFLAGS = webkit2gtk-4.0
+	WEBKITLIBS = webkit2gtk-4.0
+	WEBKITPATH = $(wildcard src/WebKit/*.cpp)
+
+	COMPILER_FLAGS += -DWITH_WEBKIT
+endif
+
+#
 # With gtk3 mac integration
 #
 
@@ -107,8 +122,8 @@ endif
 # All flags
 #
 
-GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONFLAGS} ${LIBWNCKFLAGS}`
-GTKLIBS             =   `pkg-config --libs gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS}`
+GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONFLAGS} ${LIBWNCKFLAGS} ${WEBKITFLAGS}`
+GTKLIBS             =   `pkg-config --libs gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS} ${WEBKITLIBS}`
 
 COMPILER_FLAGS      +=   -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
@@ -133,10 +148,21 @@ MKDIR               =   mkdir -p
 #   file, with the .cpp extension being replaced by .o.
 #
 
+# Base source directories
+BASE_SOURCES = *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/Pango/*.cpp
+
 ifdef WITH_MAC_INTEGRATION
-	SOURCES = $(wildcard *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/libwnck/*.cpp src/Pango/*.cpp)
+	BASE_SOURCES += src/libwnck/*.cpp
+endif
+
+ifdef WITH_WEBKIT
+	BASE_SOURCES += src/WebKit/*.cpp
+endif
+
+ifdef WITH_MAC_INTEGRATION
+	SOURCES = $(wildcard $(BASE_SOURCES))
 else
-	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp, $(wildcard *.cpp src/*.cpp src/libwnck/*.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/Pango/*.cpp))
+	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp, $(wildcard src/*.cpp $(BASE_SOURCES)))
 endif
 
 OBJECTS         = $(SOURCES:%.cpp=%.o)
