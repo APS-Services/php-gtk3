@@ -56,6 +56,12 @@
             void run_javascript(Php::Parameters &parameters);
 
             void register_script_message_handler(Php::Parameters &parameters);
+
+        /**
+         * Private members
+         */
+        private:
+            WebKitUserContentManager *user_content_manager;
     };
 
 #endif

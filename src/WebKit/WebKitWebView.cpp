@@ -4,16 +4,24 @@
 /**
  * Constructor
  */
-WebKitWebView_::WebKitWebView_() = default;
+WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
 
 /**
  * Destructor
  */
-WebKitWebView_::~WebKitWebView_() = default;
+WebKitWebView_::~WebKitWebView_()
+{
+	// UserContentManager is owned by the WebView, so we don't need to unref it
+}
 
 void WebKitWebView_::__construct()
 {
-	instance = (gpointer *)webkit_web_view_new();
+	// Create a new UserContentManager
+	// This will be used to register script message handlers before creating the WebView
+	user_content_manager = webkit_user_content_manager_new();
+	
+	// Create the WebView with our UserContentManager
+	instance = (gpointer *)webkit_web_view_new_with_user_content_manager(user_content_manager);
 }
 
 void WebKitWebView_::load_uri(Php::Parameters &parameters)
@@ -175,8 +183,8 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	// Debug output
 	g_print("[DEBUG] Registering script message handler: %s\n", name);
 
-	// Get the user content manager
-	WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
+	// Use the stored user content manager
+	WebKitUserContentManager *manager = user_content_manager;
 	
 	if (manager == nullptr) {
 		g_warning("User content manager is null!");
