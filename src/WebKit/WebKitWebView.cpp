@@ -259,6 +259,7 @@ void WebKitWebView_::enable_developer_extras()
 	
 	if (settings == nullptr) {
 		g_warning("Failed to get WebKit settings!");
+		fflush(stderr);
 		return;
 	}
 	
@@ -266,6 +267,7 @@ void WebKitWebView_::enable_developer_extras()
 	webkit_settings_set_enable_developer_extras(settings, TRUE);
 	
 	g_print("[DEBUG] Developer extras enabled. Right-click in the WebView and select 'Inspect Element' to open Web Inspector.\n");
+	fflush(stdout);
 }
 
 Php::Value WebKitWebView_::get_settings()
@@ -277,7 +279,7 @@ Php::Value WebKitWebView_::get_settings()
 		return nullptr;
 	}
 	
-	// For now, return a simple indicator that settings exist
-	// In the future, this could be expanded to return a WebKitSettings object
-	return (int64_t)settings;
+	// Return true to indicate settings are available
+	// This is safer than returning a raw pointer
+	return true;
 }
