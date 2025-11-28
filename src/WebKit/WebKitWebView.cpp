@@ -11,9 +11,12 @@ WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
  */
 WebKitWebView_::~WebKitWebView_()
 {
-	// The UserContentManager is ref-counted and owned by the WebView
-	// When the WebView is destroyed, it will unref the manager
-	// We only stored a pointer for convenience, so we don't need to unref it ourselves
+	// Unref the UserContentManager we created in __construct()
+	// The WebView takes its own reference, so we need to release ours
+	if (user_content_manager != nullptr) {
+		g_object_unref(user_content_manager);
+		user_content_manager = nullptr;
+	}
 }
 
 void WebKitWebView_::__construct()
@@ -197,18 +200,16 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	// Debug output
 	g_print("[DEBUG] Registering script message handler: %s\n", name);
 
-	// Use the stored user content manager
-	WebKitUserContentManager *manager = user_content_manager;
-	
-	if (manager == nullptr) {
+	// Check that we have a user content manager
+	if (user_content_manager == nullptr) {
 		g_warning("User content manager is null!");
 		throw Php::Exception("Failed to get user content manager");
 	}
 	
-	g_print("[DEBUG] User content manager obtained: %p\n", (void*)manager);
+	g_print("[DEBUG] User content manager: %p\n", (void*)user_content_manager);
 	
 	// Register the script message handler
-	webkit_user_content_manager_register_script_message_handler(manager, name);
+	webkit_user_content_manager_register_script_message_handler(user_content_manager, name);
 	
 	g_print("[DEBUG] Script message handler registered successfully\n");
 	
@@ -225,7 +226,7 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		data->handler_name = s_name;
 		
 		// Connect the signal to the user content manager (not the webview)
-		g_signal_connect_data(manager, signal_name.c_str(), 
+		g_signal_connect_data(user_content_manager, signal_name.c_str(), 
 		                      G_CALLBACK(script_message_received_cb), 
 		                      data, 
 		                      [](gpointer user_data, GClosure *closure) {
