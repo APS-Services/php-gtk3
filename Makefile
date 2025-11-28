@@ -98,8 +98,8 @@ endif
 #
 
 ifdef WITH_WEBKIT
-	WEBKITFLAGS = webkit2gtk-4.0
-	WEBKITLIBS = webkit2gtk-4.0
+	WEBKITFLAGS = webkit2gtk-4.1
+	WEBKITLIBS = webkit2gtk-4.1
 	WEBKITPATH = $(wildcard src/WebKit/*.cpp)
 
 	COMPILER_FLAGS += -DWITH_WEBKIT

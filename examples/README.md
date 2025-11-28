@@ -9,7 +9,7 @@ A minimal example showing how to display a web page in a GTK window using WebKit
 
 **Requirements:**
 - PHP-GTK3 compiled with `WITH_WEBKIT=1`
-- webkit2gtk-4.0 library installed
+- webkit2gtk-4.1 library installed
 
 **Usage:**
 ```bash
@@ -21,7 +21,7 @@ A more complete example with navigation controls (back, forward, reload) and URL
 
 **Requirements:**
 - PHP-GTK3 compiled with `WITH_WEBKIT=1`
-- webkit2gtk-4.0 library installed
+- webkit2gtk-4.1 library installed
 
 **Usage:**
 ```bash
@@ -34,7 +34,7 @@ To use the WebKit examples, you need to compile PHP-GTK3 with WebKit support:
 
 1. Install WebKit2GTK development libraries:
    ```bash
-   sudo apt-get install libwebkit2gtk-4.0-dev
+   sudo apt-get install libwebkit2gtk-4.1-dev
    ```
 
 2. Compile PHP-GTK3 with WebKit support:

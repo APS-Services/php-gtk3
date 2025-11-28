@@ -64,7 +64,7 @@ Get GTK dependencies, on deb systems, like:
 
 For WebKit support (optional), also install:
 ```sh
-:$ sudo apt-get install libwebkit2gtk-4.0-dev
+:$ sudo apt-get install libwebkit2gtk-4.1-dev
 ```
 
 If you are compiling from repository version, install `pkg-config` too. If you are compiling from source, use `/usr/local/php-gtk3/bin/php-config` on Makefile

@@ -34,7 +34,7 @@ This implementation adds WebKitWebView widget support to PHP-GTK3, enabling user
 - **Makefile** - Added optional WebKit support with `WITH_WEBKIT=1` flag
   - Simplified conditional compilation logic
   - Improved variable handling and readability
-  - Added webkit2gtk-4.0 to pkg-config flags when enabled
+  - Added webkit2gtk-4.1 to pkg-config flags when enabled
 
 ### Integration
 - **main.h** - Added WebKit include (conditional with `#ifdef WITH_WEBKIT`)
@@ -63,7 +63,7 @@ WebKit support is optional and controlled by the `WITH_WEBKIT=1` make flag. This
 ### Compilation
 ```bash
 # Install WebKit2GTK development package
-sudo apt-get install libwebkit2gtk-4.0-dev
+sudo apt-get install libwebkit2gtk-4.1-dev
 
 # Compile with WebKit support
 make WITH_WEBKIT=1 -j 4
@@ -99,7 +99,7 @@ The implementation has been validated through:
 4. Example creation - Demonstrated functionality works as intended
 
 ## Limitations
-- Actual runtime testing requires webkit2gtk-4.0 to be installed
+- Actual runtime testing requires webkit2gtk-4.1 to be installed
 - The implementation provides core functionality; advanced WebKit features may need additional methods
 - Signal handling for events like page load completion could be added in future enhancements
 
