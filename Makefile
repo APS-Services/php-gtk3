@@ -149,11 +149,12 @@ MKDIR               =   mkdir -p
 #
 
 # Core source directories (always included)
-CORE_SOURCES = *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp src/GtkSourceView/*.cpp src/Pango/*.cpp src/libwnck/*.cpp
+CORE_SOURCES = *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp \
+               src/GtkSourceView/*.cpp src/Pango/*.cpp src/libwnck/*.cpp
 
 # Conditionally add WebKit sources
 ifdef WITH_WEBKIT
-	CORE_SOURCES += src/WebKit/*.cpp
+	CORE_SOURCES := $(CORE_SOURCES) src/WebKit/*.cpp
 endif
 
 # Build final source list
