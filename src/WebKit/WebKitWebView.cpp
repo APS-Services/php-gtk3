@@ -161,8 +161,9 @@ static void script_message_received_cb(WebKitUserContentManager *manager, JSCVal
 {
 	ScriptMessageData *data = (ScriptMessageData *)user_data;
 	
-	// Debug output
+	// Debug output with flush to ensure it appears immediately
 	g_print("[DEBUG] Script message received callback triggered for handler: %s\n", data->handler_name.c_str());
+	fflush(stdout);
 	
 	// Call the PHP callback
 	try {
@@ -175,16 +176,20 @@ static void script_message_received_cb(WebKitUserContentManager *manager, JSCVal
 		
 		if (str_value != nullptr) {
 			g_print("[DEBUG] Message value: %s\n", str_value);
+			fflush(stdout);
 			data->callback(str_value);
 			g_free(str_value);
 		} else {
 			g_print("[DEBUG] Message value is null, calling callback with no parameters\n");
+			fflush(stdout);
 			data->callback();
 		}
 	} catch (const std::exception &e) {
 		g_warning("Exception in script message handler callback: %s", e.what());
+		fflush(stderr);
 	} catch (...) {
 		g_warning("Unknown exception in script message handler callback");
+		fflush(stderr);
 	}
 }
 
@@ -197,21 +202,25 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	std::string s_name = parameters[0];
 	const gchar *name = (const gchar *)s_name.c_str();
 
-	// Debug output
+	// Debug output with flush
 	g_print("[DEBUG] Registering script message handler: %s\n", name);
+	fflush(stdout);
 
 	// Check that we have a user content manager
 	if (user_content_manager == nullptr) {
 		g_warning("User content manager is null!");
+		fflush(stderr);
 		throw Php::Exception("Failed to get user content manager");
 	}
 	
 	g_print("[DEBUG] User content manager: %p\n", (void*)user_content_manager);
+	fflush(stdout);
 	
 	// Register the script message handler
 	webkit_user_content_manager_register_script_message_handler(user_content_manager, name);
 	
 	g_print("[DEBUG] Script message handler registered successfully\n");
+	fflush(stdout);
 	
 	// If a callback was provided as second parameter, connect it
 	if (parameters.size() > 1 && parameters[1].isCallable()) {
@@ -219,6 +228,7 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		std::string signal_name = "script-message-received::" + s_name;
 		
 		g_print("[DEBUG] Connecting signal: %s\n", signal_name.c_str());
+		fflush(stdout);
 		
 		// Create data structure to pass to callback
 		ScriptMessageData *data = new ScriptMessageData();
@@ -235,7 +245,39 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		                      (GConnectFlags)0);
 		
 		g_print("[DEBUG] Signal connected successfully\n");
+		fflush(stdout);
 	} else {
 		g_print("[DEBUG] No callback provided or callback is not callable\n");
+		fflush(stdout);
 	}
+}
+
+void WebKitWebView_::enable_developer_extras()
+{
+	// Get the WebView's settings
+	WebKitSettings *settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(instance));
+	
+	if (settings == nullptr) {
+		g_warning("Failed to get WebKit settings!");
+		return;
+	}
+	
+	// Enable developer extras (Web Inspector)
+	webkit_settings_set_enable_developer_extras(settings, TRUE);
+	
+	g_print("[DEBUG] Developer extras enabled. Right-click in the WebView and select 'Inspect Element' to open Web Inspector.\n");
+}
+
+Php::Value WebKitWebView_::get_settings()
+{
+	// Get the WebView's settings
+	WebKitSettings *settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(instance));
+	
+	if (settings == nullptr) {
+		return nullptr;
+	}
+	
+	// For now, return a simple indicator that settings exist
+	// In the future, this could be expanded to return a WebKitSettings object
+	return (int64_t)settings;
 }

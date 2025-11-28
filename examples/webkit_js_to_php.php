@@ -54,6 +54,11 @@ echo "[PHP] Creating WebKitWebView widget...\n";
 $webView = new WebKitWebView();
 echo "[PHP] WebKitWebView created successfully\n";
 
+// Enable developer extras for debugging
+echo "[PHP] Enabling Web Inspector (Developer Tools)...\n";
+$webView->enable_developer_extras();
+echo "[PHP] Web Inspector enabled. Right-click in the web page and select 'Inspect Element'.\n";
+
 // Register a script message handler named "phpApp" with a callback
 // JavaScript can send messages using: window.webkit.messageHandlers.phpApp.postMessage(data)
 echo "[PHP] Registering script message handler 'phpApp'...\n";
@@ -61,7 +66,11 @@ $webView->register_script_message_handler("phpApp", function ($messageData = nul
     // Callback is invoked when JavaScript sends a message
     // The message data sent from JavaScript is passed as the first parameter
     
-    echo "[PHP DEBUG] Callback invoked with data: " . var_export($messageData, true) . "\n";
+    echo "[PHP DEBUG] ========================================\n";
+    echo "[PHP DEBUG] Callback invoked!\n";
+    echo "[PHP DEBUG] Message data: " . var_export($messageData, true) . "\n";
+    echo "[PHP DEBUG] Message data type: " . gettype($messageData) . "\n";
+    echo "[PHP DEBUG] ========================================\n";
     
     $timestamp = date('H:i:s');
     

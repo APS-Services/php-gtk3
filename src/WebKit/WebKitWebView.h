@@ -57,6 +57,10 @@
 
             void register_script_message_handler(Php::Parameters &parameters);
 
+            void enable_developer_extras();
+
+            Php::Value get_settings();
+
         /**
          * Private members
          */
