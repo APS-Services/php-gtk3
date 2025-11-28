@@ -142,25 +142,18 @@ static void script_message_received_cb(WebKitUserContentManager *manager, JSCVal
 	// Call the PHP callback
 	try {
 		// Extract the message value from JavaScript
+		char *str_value = nullptr;
+		
 		if (value != nullptr) {
-			// Convert JSCValue to string
-			char *str_value = jsc_value_to_string(value);
-			
-			if (str_value != nullptr) {
-				g_print("[DEBUG] Message value: %s\n", str_value);
-				
-				// Call the PHP callback with the message value
-				data->callback(str_value);
-				
-				g_free(str_value);
-			} else {
-				g_print("[DEBUG] Message value is null\n");
-				// Call with no parameters if value is null
-				data->callback();
-			}
+			str_value = jsc_value_to_string(value);
+		}
+		
+		if (str_value != nullptr) {
+			g_print("[DEBUG] Message value: %s\n", str_value);
+			data->callback(str_value);
+			g_free(str_value);
 		} else {
-			g_print("[DEBUG] JSCValue is null\n");
-			// Call with no parameters if JSCValue is null
+			g_print("[DEBUG] Message value is null, calling callback with no parameters\n");
 			data->callback();
 		}
 	} catch (const std::exception &e) {
@@ -186,7 +179,7 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
 	
 	if (manager == nullptr) {
-		g_warning("[ERROR] User content manager is null!");
+		g_warning("User content manager is null!");
 		throw Php::Exception("Failed to get user content manager");
 	}
 	
