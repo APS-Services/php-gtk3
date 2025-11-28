@@ -152,7 +152,7 @@ void WebKitWebView_::run_javascript(Php::Parameters &parameters)
 
 // Structure to hold callback data for script message handler
 struct ScriptMessageData {
-	Php::Callable callback;
+	Php::Value callback;
 	std::string handler_name;
 };
 
@@ -232,7 +232,7 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		
 		// Create data structure to pass to callback
 		ScriptMessageData *data = new ScriptMessageData();
-		data->callback = Php::Callable(parameters[1]);
+		data->callback = parameters[1];
 		data->handler_name = s_name;
 		
 		// Connect the signal to the user content manager (not the webview)
