@@ -88,8 +88,9 @@ $webView->register_script_message_handler("phpApp", function ($messageData = nul
     $endIter = $buffer->get_end_iter();
     $buffer->insert($endIter, $message, -1);
 
-    // Auto-scroll to bottom
-    $mark = $buffer->create_mark(null, $endIter, false);
+    // Get a fresh end iterator after the insert to create the mark
+    $newEndIter = $buffer->get_end_iter();
+    $mark = $buffer->create_mark(null, $newEndIter, false);
     // Note: scroll_to_mark would be called here in a full implementation
 });
 echo "[PHP] Script message handler registered successfully\n";
