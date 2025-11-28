@@ -157,7 +157,7 @@ struct ScriptMessageData {
 };
 
 // Callback when JavaScript sends a message
-static void script_message_received_cb(WebKitUserContentManager *manager, JSCValue *value, gpointer user_data)
+static void script_message_received_cb(WebKitUserContentManager *manager, WebKitJavascriptResult *js_result, gpointer user_data)
 {
 	ScriptMessageData *data = (ScriptMessageData *)user_data;
 	
@@ -167,11 +167,19 @@ static void script_message_received_cb(WebKitUserContentManager *manager, JSCVal
 	
 	// Call the PHP callback
 	try {
-		// Extract the message value from JavaScript
+		// Extract the JSCValue from the WebKitJavascriptResult
 		char *str_value = nullptr;
 		
-		if (value != nullptr) {
-			str_value = jsc_value_to_string(value);
+		if (js_result != nullptr) {
+			// Get the JSCValue from the result
+			JSCValue *value = webkit_javascript_result_get_js_value(js_result);
+			
+			if (value != nullptr && jsc_value_is_string(value)) {
+				str_value = jsc_value_to_string(value);
+			} else if (value != nullptr) {
+				// Try to convert non-string values to string
+				str_value = jsc_value_to_string(value);
+			}
 		}
 		
 		if (str_value != nullptr) {
