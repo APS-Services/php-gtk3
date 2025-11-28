@@ -4029,6 +4029,9 @@ extern "C"
         webkitwebview.method<&WebKitWebView_::go_forward>("go_forward");
         webkitwebview.method<&WebKitWebView_::get_title>("get_title");
         webkitwebview.method<&WebKitWebView_::is_loading>("is_loading");
+        webkitwebview.method<&WebKitWebView_::load_html>("load_html");
+        webkitwebview.method<&WebKitWebView_::run_javascript>("run_javascript");
+        webkitwebview.method<&WebKitWebView_::register_script_message_handler>("register_script_message_handler");
 #endif
 
 #ifdef WITH_MAC_INTEGRATION

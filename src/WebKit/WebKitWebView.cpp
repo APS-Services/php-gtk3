@@ -90,3 +90,97 @@ Php::Value WebKitWebView_::is_loading()
 
 	return (bool)ret;
 }
+
+void WebKitWebView_::load_html(Php::Parameters &parameters)
+{
+    if (parameters.size() == 0) {
+        throw Php::Exception("load_html() expects at least 1 parameter, 0 given");
+    }
+
+    // First parameter: HTML content
+    std::string s_content = parameters[0].stringValue();
+    const gchar *content = s_content.c_str();
+
+    // Optional second parameter: base URI
+    std::string s_base_uri;
+    const gchar *base_uri = nullptr;
+
+    if (parameters.size() > 1 && !parameters[1].isNull()) {
+        s_base_uri = parameters[1].stringValue();
+        base_uri = s_base_uri.c_str();
+    }
+
+    webkit_web_view_load_html(WEBKIT_WEB_VIEW(instance), content, base_uri);
+}
+
+void WebKitWebView_::run_javascript(Php::Parameters &parameters)
+{
+	if (parameters.size() == 0) {
+		throw Php::Exception("run_javascript() expects at least 1 parameter, 0 given");
+	}
+
+	std::string s_script = parameters[0];
+	const gchar *script = (const gchar *)s_script.c_str();
+
+	webkit_web_view_evaluate_javascript(WEBKIT_WEB_VIEW(instance), script, -1, nullptr, nullptr, nullptr, nullptr, nullptr);
+}
+
+// Structure to hold callback data for script message handler
+struct ScriptMessageData {
+	Php::Callable callback;
+	std::string handler_name;
+};
+
+// Callback when JavaScript sends a message
+static void script_message_received_cb(WebKitUserContentManager *manager, WebKitJavascriptResult *js_result, gpointer user_data)
+{
+	ScriptMessageData *data = (ScriptMessageData *)user_data;
+	
+	// Call the PHP callback
+	try {
+		// TODO: In a full implementation, we would extract the value from js_result
+		// using jsc_value_to_string() or jsc_value_to_json() and pass it to the callback
+		// For now, just call with no parameters
+		data->callback();
+	} catch (const std::exception &e) {
+		g_warning("Exception in script message handler callback: %s", e.what());
+	} catch (...) {
+		g_warning("Unknown exception in script message handler callback");
+	}
+}
+
+void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters)
+{
+	if (parameters.size() == 0) {
+		throw Php::Exception("register_script_message_handler() expects at least 1 parameter, 0 given");
+	}
+
+	std::string s_name = parameters[0];
+	const gchar *name = (const gchar *)s_name.c_str();
+
+	// Get the user content manager
+	WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
+	
+	// Register the script message handler
+	webkit_user_content_manager_register_script_message_handler(manager, name);
+	
+	// If a callback was provided as second parameter, connect it
+	if (parameters.size() > 1 && parameters[1].isCallable()) {
+		// Build the signal name: "script-message-received::handlerName"
+		std::string signal_name = "script-message-received::" + s_name;
+		
+		// Create data structure to pass to callback
+		ScriptMessageData *data = new ScriptMessageData();
+		data->callback = Php::Callable(parameters[1]);
+		data->handler_name = s_name;
+		
+		// Connect the signal to the user content manager (not the webview)
+		g_signal_connect_data(manager, signal_name.c_str(), 
+		                      G_CALLBACK(script_message_received_cb), 
+		                      data, 
+		                      [](gpointer user_data, GClosure *closure) {
+		                          delete (ScriptMessageData *)user_data;
+		                      },
+		                      (GConnectFlags)0);
+	}
+}
