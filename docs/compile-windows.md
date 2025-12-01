@@ -147,7 +147,7 @@
 
 	Copy the file `C:\msys2\mingw64\lib\glib-2.0\include\glibconfig.h` to the folder `C:\msys2\mingw64\include\glib-2.0`
 
-4. (Optional) Installing WebKit for web browsing support
+4. (Optional) Installing WebKit for web content support
 
 	If you want to compile PHP-GTK3 with WebKitWebView support for displaying web content in GTK windows, you need to install webkit2gtk:
 
@@ -155,7 +155,7 @@
 	$ pacman -S mingw-w64-x86_64-webkit2gtk
 	```
 
-	Note: This is optional. Only install if you need web browsing capabilities in your GTK applications.
+	Note: This is optional. Only install if you need web content display capabilities in your GTK applications.
 
 ## Creating Visual Studio project;
 
@@ -188,7 +188,7 @@
 
 3. Configure VS project 
 
-	Rigth click on project name, and go to properties
+	Right click on project name, and go to properties
 
 	Configure to `Release` and `x64` platform
 
