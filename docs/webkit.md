@@ -136,6 +136,17 @@ Then right-click in the web page and select "Inspect Element" to access:
 
 ## Troubleshooting
 
+### Segfault on Close
+
+**Important**: If you experience a segfault when closing WebKit applications, ensure the PHP `gd` extension is loaded **after** the `php-gtk3` extension in your `php.ini` file:
+
+```ini
+extension=php-gtk3
+extension=gd
+```
+
+Loading extensions in the wrong order can cause segmentation faults during cleanup.
+
 ### Messages Not Received
 
 **Important**: WebKit2GTK requires proper initialization for script message handlers:

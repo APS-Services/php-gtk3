@@ -11,33 +11,29 @@ WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
  */
 WebKitWebView_::~WebKitWebView_()
 {
-	// Unref the UserContentManager we created in __construct()
-	// The WebView takes its own reference, so we need to release ours
-	if (user_content_manager != nullptr) {
-		g_object_unref(user_content_manager);
-		user_content_manager = nullptr;
-	}
+	// Clear the user_content_manager pointer to prevent any potential
+	// dangling pointer issues after the WebView is destroyed
+	user_content_manager = nullptr;
+	
+	// Do nothing else - let GTK/PHP-CPP handle cleanup
+	// The instance will be managed by the framework
 }
 
 void WebKitWebView_::__construct()
 {
-	// Create a new UserContentManager
-	// This will be used to register script message handlers
-	user_content_manager = webkit_user_content_manager_new();
-	
-	if (user_content_manager == nullptr) {
-		throw Php::Exception("Failed to create WebKitUserContentManager");
-	}
-	
-	// Create the WebView with our UserContentManager
-	// This ensures that any script message handlers registered on the manager
-	// will be available in the WebView's JavaScript context
-	instance = (gpointer *)webkit_web_view_new_with_user_content_manager(user_content_manager);
+	// Create the WebView with the default UserContentManager
+	// We'll get the manager from the WebView when we need it
+	instance = (gpointer *)webkit_web_view_new();
 	
 	if (instance == nullptr) {
-		g_object_unref(user_content_manager);
-		user_content_manager = nullptr;
 		throw Php::Exception("Failed to create WebKitWebView");
+	}
+	
+	// Get the UserContentManager from the WebView (we don't own it)
+	user_content_manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
+	
+	if (user_content_manager == nullptr) {
+		throw Php::Exception("Failed to get UserContentManager from WebKitWebView");
 	}
 }
 
@@ -161,10 +157,6 @@ static void script_message_received_cb(WebKitUserContentManager *manager, WebKit
 {
 	ScriptMessageData *data = (ScriptMessageData *)user_data;
 	
-	// Debug output with flush to ensure it appears immediately
-	g_print("[DEBUG] Script message received callback triggered for handler: %s\n", data->handler_name.c_str());
-	fflush(stdout);
-	
 	// Call the PHP callback
 	try {
 		// Extract the JSCValue from the WebKitJavascriptResult
@@ -183,13 +175,9 @@ static void script_message_received_cb(WebKitUserContentManager *manager, WebKit
 		}
 		
 		if (str_value != nullptr) {
-			g_print("[DEBUG] Message value: %s\n", str_value);
-			fflush(stdout);
 			data->callback(str_value);
 			g_free(str_value);
 		} else {
-			g_print("[DEBUG] Message value is null, calling callback with no parameters\n");
-			fflush(stdout);
 			data->callback();
 		}
 	} catch (const std::exception &e) {
@@ -210,10 +198,6 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 	std::string s_name = parameters[0];
 	const gchar *name = (const gchar *)s_name.c_str();
 
-	// Debug output with flush
-	g_print("[DEBUG] Registering script message handler: %s\n", name);
-	fflush(stdout);
-
 	// Check that we have a user content manager
 	if (user_content_manager == nullptr) {
 		g_warning("User content manager is null!");
@@ -221,22 +205,13 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		throw Php::Exception("Failed to get user content manager");
 	}
 	
-	g_print("[DEBUG] User content manager: %p\n", (void*)user_content_manager);
-	fflush(stdout);
-	
 	// Register the script message handler
 	webkit_user_content_manager_register_script_message_handler(user_content_manager, name);
-	
-	g_print("[DEBUG] Script message handler registered successfully\n");
-	fflush(stdout);
 	
 	// If a callback was provided as second parameter, connect it
 	if (parameters.size() > 1 && parameters[1].isCallable()) {
 		// Build the signal name: "script-message-received::handlerName"
 		std::string signal_name = "script-message-received::" + s_name;
-		
-		g_print("[DEBUG] Connecting signal: %s\n", signal_name.c_str());
-		fflush(stdout);
 		
 		// Create data structure to pass to callback
 		ScriptMessageData *data = new ScriptMessageData();
@@ -244,7 +219,8 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		data->handler_name = s_name;
 		
 		// Connect the signal to the user content manager (not the webview)
-		g_signal_connect_data(user_content_manager, signal_name.c_str(), 
+		// and store the handler ID so we can disconnect it later
+		gulong handler_id = g_signal_connect_data(user_content_manager, signal_name.c_str(), 
 		                      G_CALLBACK(script_message_received_cb), 
 		                      data, 
 		                      [](gpointer user_data, GClosure *closure) {
@@ -252,11 +228,8 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		                      },
 		                      (GConnectFlags)0);
 		
-		g_print("[DEBUG] Signal connected successfully\n");
-		fflush(stdout);
-	} else {
-		g_print("[DEBUG] No callback provided or callback is not callable\n");
-		fflush(stdout);
+		// Store the handler ID for cleanup in destructor
+		signal_handler_ids.push_back(handler_id);
 	}
 }
 
@@ -273,9 +246,6 @@ void WebKitWebView_::enable_developer_extras()
 	
 	// Enable developer extras (Web Inspector)
 	webkit_settings_set_enable_developer_extras(settings, TRUE);
-	
-	g_print("[DEBUG] Developer extras enabled. Right-click in the WebView and select 'Inspect Element' to open Web Inspector.\n");
-	fflush(stdout);
 }
 
 Php::Value WebKitWebView_::get_settings()
