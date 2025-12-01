@@ -111,12 +111,25 @@ endif
 #
 # With CEF (Chromium Embedded Framework)
 #
+# CEF must be downloaded and built separately from:
+# https://cef-builds.spotifycdn.com/
+# Set CEF_ROOT environment variable to point to the CEF directory
+# Example: export CEF_ROOT=/path/to/cef_binary_VERSION_platform
+#
 
 ifdef WITH_CEF
-	# Note: CEF libraries would need to be installed separately
-	# This is a placeholder for when full CEF integration is implemented
-	CEFFLAGS = 
-	CEFLIBS = 
+	# CEF root directory (can be overridden by environment variable)
+	CEF_ROOT ?= /usr/local/cef
+	
+	# CEF compiler flags
+	CEFFLAGS = -I$(CEF_ROOT) -I$(CEF_ROOT)/include
+	
+	# CEF linker flags and libraries
+	# Note: Adjust based on your platform (linux64, macosx64, windows64)
+	CEFLIBS = -L$(CEF_ROOT)/Release -L$(CEF_ROOT)/Debug \
+	          -lcef -lcef_dll_wrapper \
+	          -Wl,-rpath,$(CEF_ROOT)/Release
+	
 	CEFPATH = $(wildcard src/Cef/*.cpp)
 
 	COMPILER_FLAGS += -DWITH_CEF

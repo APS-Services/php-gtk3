@@ -61,9 +61,17 @@ sudo make install
 ### Build with CEF Support
 
 ```bash
+# Set CEF_ROOT to point to your CEF installation directory
+export CEF_ROOT=/path/to/cef_binary_VERSION_linux64
+
+# Or use the default location (/usr/local/cef)
+# by installing CEF there with: sudo make install
+
 make WITH_CEF=1 -j 4
 sudo make install
 ```
+
+**Note**: If you installed CEF to a custom location, make sure to set the `CEF_ROOT` environment variable before building.
 
 ## Basic Usage
 
