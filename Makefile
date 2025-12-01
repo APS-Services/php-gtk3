@@ -7,7 +7,10 @@
 #	create a libwnck bind
 #
 # WITH_WEBKIT=1
-#	create a WebKit2GTK bind for web browsing in GTK widgets
+#	create a WebKit2GTK bind for web browsing in GTK widgets (Linux only)
+#
+# WITH_CEF=1
+#	create a CEF (Chromium Embedded Framework) bind for web browsing (cross-platform)
 #
 
 #
@@ -106,6 +109,20 @@ ifdef WITH_WEBKIT
 endif
 
 #
+# With CEF (Chromium Embedded Framework)
+#
+
+ifdef WITH_CEF
+	# Note: CEF libraries would need to be installed separately
+	# This is a placeholder for when full CEF integration is implemented
+	CEFFLAGS = 
+	CEFLIBS = 
+	CEFPATH = $(wildcard src/Cef/*.cpp)
+
+	COMPILER_FLAGS += -DWITH_CEF
+endif
+
+#
 # With gtk3 mac integration
 #
 
@@ -122,8 +139,8 @@ endif
 # All flags
 #
 
-GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONFLAGS} ${LIBWNCKFLAGS} ${WEBKITFLAGS}`
-GTKLIBS             =   `pkg-config --libs gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS} ${WEBKITLIBS}`
+GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONFLAGS} ${LIBWNCKFLAGS} ${WEBKITFLAGS}` ${CEFFLAGS}
+GTKLIBS             =   `pkg-config --libs gtk+-3.0 gladeui-2.0 gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS} ${WEBKITLIBS}` ${CEFLIBS}
 
 COMPILER_FLAGS      +=   -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
@@ -155,6 +172,11 @@ CORE_SOURCES = *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp \
 # Conditionally add WebKit sources
 ifdef WITH_WEBKIT
 	CORE_SOURCES := $(CORE_SOURCES) src/WebKit/*.cpp
+endif
+
+# Conditionally add CEF sources
+ifdef WITH_CEF
+	CORE_SOURCES := $(CORE_SOURCES) src/Cef/*.cpp
 endif
 
 # Build final source list

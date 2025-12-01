@@ -4036,6 +4036,29 @@ extern "C"
         webkitwebview.method<&WebKitWebView_::get_settings>("get_settings");
 #endif
 
+#ifdef WITH_CEF
+        // CefWebView
+        Php::Class<CefWebView_> cefwebview("CefWebView");
+        cefwebview.extends(gtkwidget);
+        cefwebview.method<&CefWebView_::__construct>("__construct");
+        cefwebview.method<&CefWebView_::load_uri>("load_uri");
+        cefwebview.method<&CefWebView_::get_uri>("get_uri");
+        cefwebview.method<&CefWebView_::reload>("reload");
+        cefwebview.method<&CefWebView_::stop_loading>("stop_loading");
+        cefwebview.method<&CefWebView_::can_go_back>("can_go_back");
+        cefwebview.method<&CefWebView_::go_back>("go_back");
+        cefwebview.method<&CefWebView_::can_go_forward>("can_go_forward");
+        cefwebview.method<&CefWebView_::go_forward>("go_forward");
+        cefwebview.method<&CefWebView_::get_title>("get_title");
+        cefwebview.method<&CefWebView_::is_loading>("is_loading");
+        cefwebview.method<&CefWebView_::load_html>("load_html");
+        cefwebview.method<&CefWebView_::run_javascript>("run_javascript");
+        cefwebview.method<&CefWebView_::register_script_message_handler>("register_script_message_handler");
+        cefwebview.method<&CefWebView_::enable_developer_extras>("enable_developer_extras");
+        cefwebview.method<&CefWebView_::get_zoom_level>("get_zoom_level");
+        cefwebview.method<&CefWebView_::set_zoom_level>("set_zoom_level");
+#endif
+
 #ifdef WITH_MAC_INTEGRATION
         // gtkosxapplication
         Php::Class<GtkosxApplication_> gtkosxapplication("GtkosxApplication");
@@ -4358,6 +4381,10 @@ extern "C"
 
 #ifdef WITH_WEBKIT
         extension.add(std::move(webkitwebview));
+#endif
+
+#ifdef WITH_CEF
+        extension.add(std::move(cefwebview));
 #endif
 
 #ifdef WITH_MAC_INTEGRATION

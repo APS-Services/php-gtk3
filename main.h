@@ -168,6 +168,11 @@
 	#include "src/WebKit/WebKitWebView.h"
 #endif
 
+#ifdef WITH_CEF
+	// CEF (Chromium Embedded Framework)
+	#include "src/Cef/CefWebView.h"
+#endif
+
 #ifdef WITH_MAC_INTEGRATION
 	// GtkosxApplication
 	#include "src/Gtk/GtkosxApplication.h"
