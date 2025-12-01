@@ -6,6 +6,7 @@
     #include <gtk/gtk.h>
     #include <webkit2/webkit2.h>
     #include <jsc/jsc.h>
+    #include <vector>
 
     #include "../Gtk/GtkWidget.h"
 
@@ -66,6 +67,7 @@
          */
         private:
             WebKitUserContentManager *user_content_manager;
+            std::vector<gulong> signal_handler_ids;
     };
 
 #endif
