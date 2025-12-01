@@ -6,6 +6,7 @@
     #include <gtk/gtk.h>
     #include <string>
     #include <vector>
+    #include <map>
 
     #include "../Gtk/GtkWidget.h"
 

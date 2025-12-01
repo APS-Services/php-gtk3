@@ -73,7 +73,7 @@ void CefWebView_::load_uri(Php::Parameters &parameters)
 Php::Value CefWebView_::get_uri()
 {
     if (current_uri.empty()) {
-        return nullptr;
+        return "";
     }
 
     return current_uri;
@@ -135,7 +135,7 @@ Php::Value CefWebView_::get_title()
         if (!current_uri.empty()) {
             return current_uri;
         }
-        return nullptr;
+        return "";
     }
 
     return current_title;

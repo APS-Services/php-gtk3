@@ -171,7 +171,7 @@ $html = <<<HTML
 window.cef.messageHandlers.phpApp.postMessage('Hello PHP!');<br>
 <br>
 // PHP to JavaScript:<br>
-\$webView->run_javascript("alert('Hello JS!');");
+$webView->run_javascript("alert('Hello JS!');");
             </div>
         </div>
         
