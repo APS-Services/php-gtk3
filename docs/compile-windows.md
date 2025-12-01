@@ -149,13 +149,13 @@
 
 4. (Optional) Installing WebKit for web content support
 
-	If you want to compile PHP-GTK3 with WebKitWebView support for displaying web content in GTK windows, you need to install webkit2gtk:
-
-	```bash
-	$ pacman -S mingw-w64-x86_64-webkit2gtk
-	```
-
-	Note: This is optional. Only install if you need web content display capabilities in your GTK applications.
+	**Note:** WebKit support is currently not available for Windows builds via MSYS2. The required `mingw-w64-x86_64-webkit2gtk` package and its dependencies (webkitgtk-4.1, libsoup-3.0, javascriptcoregtk-4.1) are not provided in the MSYS2 repositories.
+	
+	If you need web content display capabilities in your GTK applications on Windows, you will need to:
+	- Build webkit2gtk from source, or
+	- Use an alternative web rendering solution
+	
+	The only webkit-related package available in MSYS2 is `mingw-w64-x86_64-qtwebkit`, which uses a different API and is not compatible with the current PHP-GTK3 WebKit implementation.
 
 ## Creating Visual Studio project;
 
@@ -185,6 +185,8 @@
 	```
 	C:\php-dev\php-gtk3\src\WebKit\*.cpp
 	```
+	
+	However, note that WebKit support is not currently available on Windows via MSYS2.
 
 3. Configure VS project 
 
@@ -216,12 +218,7 @@
 	C:\msys2\mingw64\include\pango-1.0
 	```
 
-	**For WebKit support, also add:**
-	```
-	C:\msys2\mingw64\include\webkitgtk-4.1
-	C:\msys2\mingw64\include\libsoup-3.0
-	C:\msys2\mingw64\include\javascriptcoregtk-4.1
-	```
+	**Note:** WebKit support is not available on Windows via MSYS2. Do not include the webkit-related directories (webkitgtk-4.1, libsoup-3.0, javascriptcoregtk-4.1) as they are not provided by MSYS2 packages.
 	- Warning Level: Turn Off All Warnings (/W0)
 	- SDL checks: No (/sdl-)
 	- Multi-processor Compilation: Yes (/MP)
@@ -257,10 +254,7 @@
 	GLIB_COMPILATION
 	```
 
-	**For WebKit support, also add:**
-	```
-	WITH_WEBKIT
-	```
+	**Note:** Do not define `WITH_WEBKIT` as WebKit support is not available on Windows via MSYS2.
 
 	v. Under "Linker" -> "General"
 
@@ -286,11 +280,7 @@
 	libpango-1.0.dll.a
 	```
 
-	**For WebKit support, also add:**
-	```
-	libwebkit2gtk-4.1.dll.a
-	libjavascriptcoregtk-4.1.dll.a
-	```
+	**Note:** Do not include webkit-related libraries (libwebkit2gtk-4.1.dll.a, libjavascriptcoregtk-4.1.dll.a) as they are not available in MSYS2.
 
 4. Build everything
 
@@ -352,15 +342,7 @@
 	zlib1.dll
 	```
 
-	**For WebKit support, also copy:**
-	```
-	libwebkit2gtk-4.1-0.dll
-	libjavascriptcoregtk-4.1-0.dll
-	libsoup-3.0-0.dll
-	libnghttp2-14.dll
-	libpsl-5.dll
-	libsqlite3-0.dll
-	```
+	**Note:** Do not copy webkit-related DLLs (libwebkit2gtk-4.1-0.dll, libjavascriptcoregtk-4.1-0.dll, libsoup-3.0-0.dll, libnghttp2-14.dll, libpsl-5.dll, libsqlite3-0.dll) as they are not available in MSYS2 packages for Windows.
 
 3. Fixing GTK icons and themes
 
