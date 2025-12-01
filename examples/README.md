@@ -34,16 +34,20 @@ A more complete example with navigation controls (back, forward, reload) and URL
 php -dextension=php-gtk3.so webkit_browser.php
 ```
 
-### webkit_js_to_php.php
+### webkit_communication.php
 
-Demonstrates bidirectional JavaScript ↔ PHP communication using script message handlers and `run_javascript()`.
+Demonstrates bidirectional communication between PHP/GTK and JavaScript in a WebKitWebView.
 
 **Features:**
 
-- Loading static HTML content with `load_html()`
-- Executing JavaScript from PHP with `run_javascript()`
-- Register custom message handler with `register_script_message_handler()`
-- JavaScript sends messages to PHP using `window.webkit.messageHandlers`
+- **PHP → JavaScript**: Using `run_javascript()` to execute JavaScript code
+  - Update DOM elements, change styles, call JS functions from PHP
+  - Pass data from PHP to JavaScript
+- **JavaScript → PHP**: Using script message handlers via `window.webkit.messageHandlers`
+  - JavaScript sends messages to PHP using `window.webkit.messageHandlers.phpApp.postMessage()`
+  - PHP receives messages via callback registered with `register_script_message_handler()`
+- Interactive demo with GTK buttons (PHP→JS) and webpage buttons (JS→PHP)
+- Message logging to show communication in both directions
 
 **Requirements:**
 
@@ -53,7 +57,7 @@ Demonstrates bidirectional JavaScript ↔ PHP communication using script message
 **Usage:**
 
 ```bash
-php -dextension=php-gtk3.so webkit_js_to_php.php
+php -dextension=php-gtk3.so webkit_communication.php
 ```
 
 ## Compiling PHP-GTK3 with WebKit Support
