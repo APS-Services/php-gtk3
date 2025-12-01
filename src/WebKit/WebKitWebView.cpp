@@ -11,33 +11,35 @@ WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
  */
 WebKitWebView_::~WebKitWebView_()
 {
-	// Unref the UserContentManager we created in __construct()
-	// The WebView takes its own reference, so we need to release ours
-	if (user_content_manager != nullptr) {
-		g_object_unref(user_content_manager);
-		user_content_manager = nullptr;
-	}
+	g_print("[DEBUG] WebKitWebView destructor starting\n");
+	fflush(stdout);
+	
+	// Clear the user_content_manager pointer to prevent any potential
+	// dangling pointer issues after the WebView is destroyed
+	user_content_manager = nullptr;
+	
+	// Do nothing else - let GTK/PHP-CPP handle cleanup
+	// The instance will be managed by the framework
+	
+	g_print("[DEBUG] WebKitWebView destructor completed\n");
+	fflush(stdout);
 }
 
 void WebKitWebView_::__construct()
 {
-	// Create a new UserContentManager
-	// This will be used to register script message handlers
-	user_content_manager = webkit_user_content_manager_new();
-	
-	if (user_content_manager == nullptr) {
-		throw Php::Exception("Failed to create WebKitUserContentManager");
-	}
-	
-	// Create the WebView with our UserContentManager
-	// This ensures that any script message handlers registered on the manager
-	// will be available in the WebView's JavaScript context
-	instance = (gpointer *)webkit_web_view_new_with_user_content_manager(user_content_manager);
+	// Create the WebView with the default UserContentManager
+	// We'll get the manager from the WebView when we need it
+	instance = (gpointer *)webkit_web_view_new();
 	
 	if (instance == nullptr) {
-		g_object_unref(user_content_manager);
-		user_content_manager = nullptr;
 		throw Php::Exception("Failed to create WebKitWebView");
+	}
+	
+	// Get the UserContentManager from the WebView (we don't own it)
+	user_content_manager = webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(instance));
+	
+	if (user_content_manager == nullptr) {
+		throw Php::Exception("Failed to get UserContentManager from WebKitWebView");
 	}
 }
 
@@ -244,7 +246,8 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		data->handler_name = s_name;
 		
 		// Connect the signal to the user content manager (not the webview)
-		g_signal_connect_data(user_content_manager, signal_name.c_str(), 
+		// and store the handler ID so we can disconnect it later
+		gulong handler_id = g_signal_connect_data(user_content_manager, signal_name.c_str(), 
 		                      G_CALLBACK(script_message_received_cb), 
 		                      data, 
 		                      [](gpointer user_data, GClosure *closure) {
@@ -252,7 +255,10 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
 		                      },
 		                      (GConnectFlags)0);
 		
-		g_print("[DEBUG] Signal connected successfully\n");
+		// Store the handler ID for cleanup in destructor
+		signal_handler_ids.push_back(handler_id);
+		
+		g_print("[DEBUG] Signal connected successfully with handler_id: %lu\n", handler_id);
 		fflush(stdout);
 	} else {
 		g_print("[DEBUG] No callback provided or callback is not callable\n");

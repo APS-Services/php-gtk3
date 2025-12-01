@@ -11,7 +11,13 @@ GtkWidget_::GtkWidget_() = default;
 /**
  * Destructor
  */
-GtkWidget_::~GtkWidget_() = default;
+GtkWidget_::~GtkWidget_()
+{
+	g_print("[DEBUG] GtkWidget destructor starting\n");
+	fflush(stdout);
+	g_print("[DEBUG] GtkWidget destructor completed\n");
+	fflush(stdout);
+}
 
 Php::Value GtkWidget_::__construct(Php::Parameters &parameters)
 {
