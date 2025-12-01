@@ -36,7 +36,7 @@ php -dextension=php-gtk3.so webkit_browser.php
 
 ### webkit_js_to_php.php
 
-Demonstrates bidirectional communication between JavaScript and PHP.
+Demonstrates bidirectional JavaScript ↔ PHP communication using script message handlers and `run_javascript()`.
 
 **Features:**
 
@@ -44,7 +44,6 @@ Demonstrates bidirectional communication between JavaScript and PHP.
 - Executing JavaScript from PHP with `run_javascript()`
 - Register custom message handler with `register_script_message_handler()`
 - JavaScript sends messages to PHP using `window.webkit.messageHandlers`
-- Full bidirectional PHP ↔ JavaScript communication with payload data
 
 **Requirements:**
 
