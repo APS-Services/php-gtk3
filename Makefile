@@ -184,4 +184,5 @@ install:
 						${CP} ${INI} ${INI_DIR}
 
 clean:
-						${RM} ${EXTENSION} ${OBJECTS}
+						${RM} ${EXTENSION}
+						find . -name "*.o" -type f -exec ${RM} {} +
