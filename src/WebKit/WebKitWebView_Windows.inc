@@ -123,7 +123,7 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                             if (required_size > 0) {
                                                 std::vector<char> buffer(required_size);
                                                 WideCharToMultiByte(CP_UTF8, 0, uri, -1, buffer.data(), required_size, nullptr, nullptr);
-                                                state->current_uri = buffer.data();
+                                                state->current_uri = std::string(buffer.data());
                                             }
                                             CoTaskMemFree(uri);
                                         }
@@ -142,7 +142,7 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                             if (required_size > 0) {
                                                 std::vector<char> buffer(required_size);
                                                 WideCharToMultiByte(CP_UTF8, 0, title, -1, buffer.data(), required_size, nullptr, nullptr);
-                                                state->current_title = buffer.data();
+                                                state->current_title = std::string(buffer.data());
                                             }
                                             CoTaskMemFree(title);
                                         }
