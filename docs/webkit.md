@@ -103,6 +103,7 @@ See the `examples/` directory for working examples:
 
 - **webkit_simple.php** - Minimal WebKitWebView example
 - **webkit_browser.php** - Full browser with navigation controls
+- **webkit_communication.php** - Bidirectional JavaScript ↔ PHP communication
 - **webkit_custom_data_folder.php** - Custom user data folder (Windows) with bidirectional communication
 
 ### Custom User Data Folder (Windows)
