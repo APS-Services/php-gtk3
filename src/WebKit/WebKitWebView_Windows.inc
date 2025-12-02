@@ -561,7 +561,6 @@ void WebKitWebView_::set_user_data_folder(Php::Parameters &params)
 {
     if (params.size() < 1) {
         throw Php::Exception("set_user_data_folder() requires 1 parameter: folder path");
-        return;
     }
     
     std::string folder = params[0];
