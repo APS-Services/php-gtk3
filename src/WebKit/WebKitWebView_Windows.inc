@@ -162,14 +162,14 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                                 });
                                             if (!valid) continue; // skip unsafe handler names
 
-                                            // Use bracket notation and JSON.stringify for safe injection
+                                            // Use bracket notation for safe injection
                                             std::string inject_script =
                                                 "(function() {"
                                                 "  if (!window.webkit) window.webkit = {};"
                                                 "  if (!window.webkit.messageHandlers) window.webkit.messageHandlers = {};"
                                                 "  window.webkit.messageHandlers[" + std::string("\"" + handlerName + "\"") + "] = {"
                                                 "    postMessage: function(msg) {"
-                                                "      window.chrome.webview.postMessage(JSON.stringify(" + std::string("\"" + handlerName + "\"") + ") + ':' + JSON.stringify(msg));"
+                                                "      window.chrome.webview.postMessage('" + handlerName + ":' + JSON.stringify(msg));"
                                                 "    }"
                                                 "  };"
                                                 "})();";
@@ -490,6 +490,18 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
         return;
     }
     
+    // Validate handler name: only allow [A-Za-z0-9_]
+    bool valid = !s_name.empty() &&
+        std::all_of(s_name.begin(), s_name.end(), [](char c) {
+            return (c >= 'A' && c <= 'Z') ||
+                   (c >= 'a' && c <= 'z') ||
+                   (c >= '0' && c <= '9') ||
+                   (c == '_');
+        });
+    if (!valid) {
+        throw Php::Exception("register_script_message_handler(): Invalid handler name. Only alphanumeric characters and underscores are allowed.");
+    }
+    
     // Store callback if provided
     if (parameters.size() > 1 && parameters[1].isCallable()) {
         state->message_handlers[s_name] = parameters[1];
@@ -498,11 +510,12 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
     // Inject JavaScript to create WebKit-compatible API
     // This makes window.webkit.messageHandlers.handlerName.postMessage() work on WebView2
     if (state->webview) {
+        // Use bracket notation for safe injection
         std::string inject_script = 
             "(function() {"
             "  if (!window.webkit) window.webkit = {};"
             "  if (!window.webkit.messageHandlers) window.webkit.messageHandlers = {};"
-            "  window.webkit.messageHandlers." + s_name + " = {"
+            "  window.webkit.messageHandlers[\"" + s_name + "\"] = {"
             "    postMessage: function(msg) {"
             "      window.chrome.webview.postMessage('" + s_name + ":' + JSON.stringify(msg));"
             "    }"
