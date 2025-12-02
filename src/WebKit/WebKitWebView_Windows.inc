@@ -6,6 +6,7 @@
 #include <wrl.h>
 #include "WebView2.h"
 #include <gdk/gdkwin32.h>
+#include <algorithm>
 #include <string>
 #include <map>
 #include <vector>
