@@ -1,6 +1,51 @@
 
 #include "CefWebView.h"
 #include <map>
+#include <cairo.h>
+
+/**
+ * Draw callback to show placeholder text
+ */
+static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data)
+{
+    // Get widget dimensions
+    int width = gtk_widget_get_allocated_width(widget);
+    int height = gtk_widget_get_allocated_height(widget);
+    
+    // Set background to white
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    cairo_paint(cr);
+    
+    // Draw border
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+    cairo_set_line_width(cr, 1.0);
+    cairo_rectangle(cr, 0, 0, width, height);
+    cairo_stroke(cr);
+    
+    // Draw placeholder text
+    cairo_set_source_rgb(cr, 0.4, 0.4, 0.4);
+    cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(cr, 14.0);
+    
+    const char *line1 = "CEF Widget Placeholder";
+    const char *line2 = "Full CEF browser integration pending";
+    const char *line3 = "See docs/cef.md for implementation status";
+    
+    cairo_text_extents_t extents;
+    cairo_text_extents(cr, line1, &extents);
+    cairo_move_to(cr, (width - extents.width) / 2, height / 2 - 30);
+    cairo_show_text(cr, line1);
+    
+    cairo_text_extents(cr, line2, &extents);
+    cairo_move_to(cr, (width - extents.width) / 2, height / 2);
+    cairo_show_text(cr, line2);
+    
+    cairo_text_extents(cr, line3, &extents);
+    cairo_move_to(cr, (width - extents.width) / 2, height / 2 + 30);
+    cairo_show_text(cr, line3);
+    
+    return FALSE;
+}
 
 /**
  * Constructor
@@ -36,6 +81,9 @@ void CefWebView_::__construct()
     
     // Set default size request for the widget
     gtk_widget_set_size_request(GTK_WIDGET(instance), 800, 600);
+    
+    // Connect the draw signal to show placeholder content
+    g_signal_connect(G_OBJECT(instance), "draw", G_CALLBACK(on_draw_event), NULL);
     
     // Initialize the widget with a placeholder
     // In a real CEF implementation, this would initialize the CEF browser instance

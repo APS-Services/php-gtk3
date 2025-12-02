@@ -1,5 +1,24 @@
 # CEF (Chromium Embedded Framework) Support
 
+## ⚠️ Current Implementation Status
+
+**IMPORTANT**: This is currently a **placeholder/foundation implementation**. The CefWebView widget provides the API structure and build system integration, but does not yet render actual web content. When you run the examples, you will see a placeholder message instead of a browser.
+
+**What works:**
+- ✅ Widget creation and GTK integration
+- ✅ API methods (load_uri, reload, etc.) - store state but don't render
+- ✅ Build system with proper CEF linking
+- ✅ Example applications
+
+**What's pending for full implementation:**
+- ⏳ Actual CEF browser initialization
+- ⏳ CEF render handler integration
+- ⏳ Web content rendering
+- ⏳ JavaScript execution
+- ⏳ Multi-process architecture
+
+See [Implementation Notes](#implementation-notes) section below for technical details.
+
 ## Overview
 
 PHP-GTK3 includes optional CefWebView widget support for displaying web content within GTK windows using the Chromium Embedded Framework. Unlike WebKit2GTK which is Linux-only, CEF is cross-platform and works on Windows, macOS, and Linux.

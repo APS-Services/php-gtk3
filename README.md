@@ -6,8 +6,8 @@ PHP-GTK is a bind of GTK 3 to create desktop applications with PHP
 ## Features
 
 - **Web Browser Widgets**: Support for both WebKit2GTK (Linux) and CEF (cross-platform) for embedding web content
-  - [WebKit Documentation](https://github.com/scorninpc/php-gtk3/blob/master/docs/webkit.md) - Linux-only webkit2gtk widget
-  - [CEF Documentation](https://github.com/scorninpc/php-gtk3/blob/master/docs/cef.md) - Cross-platform Chromium Embedded Framework widget
+  - [WebKit Documentation](https://github.com/scorninpc/php-gtk3/blob/master/docs/webkit.md) - Linux-only webkit2gtk widget (fully functional)
+  - [CEF Documentation](https://github.com/scorninpc/php-gtk3/blob/master/docs/cef.md) - Cross-platform Chromium Embedded Framework widget ⚠️ **(placeholder implementation - see docs for status)**
 
 ## Acknowledgements
 
