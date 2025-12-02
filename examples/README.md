@@ -4,6 +4,8 @@ This directory contains examples demonstrating the use of PHP-GTK3 widgets and f
 
 ## WebKit Examples
 
+> **Note:** These examples use PHP-GTK3's WebKitWebView widget which embeds WebKit as a GTK widget. For information about the cross-platform [webview library](https://github.com/webview/webview), see [docs/webview-library.md](../docs/webview-library.md).
+
 ### webkit_simple.php
 
 A minimal example showing how to display a web page in a GTK window using WebKitWebView.

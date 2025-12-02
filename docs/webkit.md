@@ -4,6 +4,8 @@
 
 PHP-GTK3 includes optional WebKitWebView widget support for displaying web content within GTK windows. The widget automatically adapts to its parent container size.
 
+> **Note:** Looking for information about the cross-platform [webview library](https://github.com/webview/webview)? See [webview-library.md](webview-library.md) for a detailed comparison and discussion.
+
 ## Compilation
 
 WebKit support is optional and controlled by the `WITH_WEBKIT=1` make flag.
