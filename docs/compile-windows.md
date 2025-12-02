@@ -119,7 +119,7 @@
 
 3. Preparing PHP
 
-   Download the [PHP binary](https://windows.php.net/downloads/releases) of the same version of source code, if you want to use another versions, go to [archives](https://windows.php.net/downloads/releases/archives/) to get the binaries. Pay attention to versions with NTS (non-threaed safe) or with out NTS according with your configure options
+   Download the [PHP binary](https://windows.php.net/downloads/releases) of the same version of source code, if you want to use another versions, go to [archives](https://windows.php.net/downloads/releases/archives/) to get the binaries. Pay attention to versions with NTS (non-threaded safe) or with out NTS according with your configure options
 
    Extract it inside our working folder to be like `C:\php-dev\php-8.1.14-nts-Win32-vs16-x64`
 
