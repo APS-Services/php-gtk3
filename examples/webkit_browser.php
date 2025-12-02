@@ -96,14 +96,14 @@ $urlEntry->connect("activate", function() use ($webView, $urlEntry) {
 });
 
 // Connect Back button
-$backButton->connect("clicked", function() use ($webView, $backButton) {
+$backButton->connect("clicked", function() use ($webView) {
     if ($webView->can_go_back()) {
         $webView->go_back();
     }
 });
 
 // Connect Forward button
-$forwardButton->connect("clicked", function() use ($webView, $forwardButton) {
+$forwardButton->connect("clicked", function() use ($webView) {
     if ($webView->can_go_forward()) {
         $webView->go_forward();
     }

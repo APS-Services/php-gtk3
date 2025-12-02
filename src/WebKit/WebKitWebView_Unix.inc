@@ -13,6 +13,14 @@ WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
  */
 WebKitWebView_::~WebKitWebView_()
 {
+	// Disconnect all signal handlers to prevent dangling handlers
+	if (user_content_manager != nullptr) {
+		for (gulong handler_id : signal_handler_ids) {
+			g_signal_handler_disconnect(user_content_manager, handler_id);
+		}
+		signal_handler_ids.clear();
+	}
+	
 	// Clear the user_content_manager pointer to prevent any potential
 	// dangling pointer issues after the WebView is destroyed
 	user_content_manager = nullptr;
