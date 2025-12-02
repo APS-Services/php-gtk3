@@ -85,7 +85,7 @@
             #else
                 // Windows: WebView2 specific members
                 // Note: WebView2 state (controller, environment, etc.) is managed 
-                // in WebKitWebView_Windows.inc via WebView2State structure
+                // in WebKitWebView_Windows.cpp via WebView2State structure
                 void *user_content_manager;  // Placeholder for compatibility
                 std::vector<unsigned long> signal_handler_ids;  // Placeholder
             #endif
