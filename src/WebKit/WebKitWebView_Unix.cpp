@@ -13,7 +13,7 @@ WebKitWebView_::WebKitWebView_() : user_content_manager(nullptr) {}
  */
 WebKitWebView_::~WebKitWebView_() {
     // Disconnect all signal handlers to prevent dangling handlers
-    if (user_content_manager != nullptr) {
+    if (user_content_manager != nullptr && G_IS_OBJECT(user_content_manager)) {
         for (gulong handler_id : signal_handler_ids) {
             g_signal_handler_disconnect(user_content_manager, handler_id);
         }
