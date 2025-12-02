@@ -50,6 +50,17 @@ static WebView2State* get_webview_state(gpointer *instance) {
     return nullptr;
 }
 
+// Helper to validate handler names: only allow [A-Za-z0-9_]
+static bool is_valid_handler_name(const std::string& name) {
+    return !name.empty() &&
+        std::all_of(name.begin(), name.end(), [](char c) {
+            return (c >= 'A' && c <= 'Z') ||
+                   (c >= 'a' && c <= 'z') ||
+                   (c >= '0' && c <= '9') ||
+                   (c == '_');
+        });
+}
+
 // Callback when widget is realized and we have a window handle
 static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
     WebView2State *state = (WebView2State*)user_data;
@@ -151,16 +162,8 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                         // Re-inject message handler compatibility layer after navigation
                                         // This is necessary because page navigation clears all injected scripts
                                         for (const auto& handler : state->message_handlers) {
-                                            // Validate handler name: only allow [A-Za-z0-9_]
                                             const std::string& handlerName = handler.first;
-                                            bool valid = !handlerName.empty() &&
-                                                std::all_of(handlerName.begin(), handlerName.end(), [](char c) {
-                                                    return (c >= 'A' && c <= 'Z') ||
-                                                           (c >= 'a' && c <= 'z') ||
-                                                           (c >= '0' && c <= '9') ||
-                                                           (c == '_');
-                                                });
-                                            if (!valid) continue; // skip unsafe handler names
+                                            if (!is_valid_handler_name(handlerName)) continue; // skip unsafe handler names
 
                                             // Use bracket notation for safe injection
                                             std::string inject_script =
@@ -490,15 +493,8 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
         return;
     }
     
-    // Validate handler name: only allow [A-Za-z0-9_]
-    bool valid = !s_name.empty() &&
-        std::all_of(s_name.begin(), s_name.end(), [](char c) {
-            return (c >= 'A' && c <= 'Z') ||
-                   (c >= 'a' && c <= 'z') ||
-                   (c >= '0' && c <= '9') ||
-                   (c == '_');
-        });
-    if (!valid) {
+    // Validate handler name
+    if (!is_valid_handler_name(s_name)) {
         throw Php::Exception("register_script_message_handler(): Invalid handler name. Only alphanumeric characters and underscores are allowed.");
     }
     
