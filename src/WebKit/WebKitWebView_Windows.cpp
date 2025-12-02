@@ -179,7 +179,7 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                         "  if (!window.webkit) window.webkit = {};"
                                         "  if (!window.webkit.messageHandlers) window.webkit.messageHandlers = {};"
                                         "  window.webkit.messageHandlers[" +
-                                        "\"" + handlerName + "\"" +
+                                        std::string("\"") + handlerName + std::string("\"") +
                                         "] = {"
                                         "    postMessage: function(msg) {"
                                         "      window.chrome.webview.postMessage('" +
