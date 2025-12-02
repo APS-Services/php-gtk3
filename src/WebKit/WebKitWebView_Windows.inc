@@ -140,10 +140,9 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                         if (title) {
                                             int required_size = WideCharToMultiByte(CP_UTF8, 0, title, -1, nullptr, 0, nullptr, nullptr);
                                             if (required_size > 0) {
-                                                char *buffer = new char[required_size];
-                                                WideCharToMultiByte(CP_UTF8, 0, title, -1, buffer, required_size, nullptr, nullptr);
-                                                state->current_title = buffer;
-                                                delete[] buffer;
+                                                std::vector<char> buffer(required_size);
+                                                WideCharToMultiByte(CP_UTF8, 0, title, -1, buffer.data(), required_size, nullptr, nullptr);
+                                                state->current_title = buffer.data();
                                             }
                                             CoTaskMemFree(title);
                                         }
@@ -176,15 +175,14 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
 
                                             int required_size = MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, nullptr, 0);
                                             if (required_size > 0) {
-                                                wchar_t *w_script = new wchar_t[required_size];
-                                                MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, w_script, required_size);
+                                                std::vector<wchar_t> w_script(required_size);
+                                                MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, w_script.data(), required_size);
 
-                                                state->webview->ExecuteScript(w_script,
+                                                state->webview->ExecuteScript(w_script.data(),
                                                     Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
                                                         [](HRESULT errorCode, LPCWSTR resultObjectAsJson) -> HRESULT {
                                                             return S_OK;
                                                         }).Get());
-                                                delete[] w_script;
                                             }
                                         }
                                         
@@ -200,11 +198,11 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                         if (message) {
                                             int required_size = WideCharToMultiByte(CP_UTF8, 0, message, -1, nullptr, 0, nullptr, nullptr);
                                             if (required_size > 0) {
-                                                char *buffer = new char[required_size];
-                                                WideCharToMultiByte(CP_UTF8, 0, message, -1, buffer, required_size, nullptr, nullptr);
+                                                std::vector<char> buffer(required_size);
+                                                WideCharToMultiByte(CP_UTF8, 0, message, -1, buffer.data(), required_size, nullptr, nullptr);
                                                 
                                                 // Parse message format: "handlerName:jsonData"
-                                                std::string msg_str(buffer);
+                                                std::string msg_str(buffer.data());
                                                 size_t colon_pos = msg_str.find(':');
                                                 if (colon_pos != std::string::npos) {
                                                     std::string handler_name = msg_str.substr(0, colon_pos);
@@ -225,8 +223,6 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                                         }
                                                     }
                                                 }
-                                                
-                                                delete[] buffer;
                                             }
                                             CoTaskMemFree(message);
                                         }
@@ -237,19 +233,17 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                             if (!state->pending_uri.empty()) {
                                 int required_size = MultiByteToWideChar(CP_UTF8, 0, state->pending_uri.c_str(), -1, nullptr, 0);
                                 if (required_size > 0) {
-                                    wchar_t *w_uri = new wchar_t[required_size];
-                                    MultiByteToWideChar(CP_UTF8, 0, state->pending_uri.c_str(), -1, w_uri, required_size);
-                                    state->webview->Navigate(w_uri);
-                                    delete[] w_uri;
+                                    std::vector<wchar_t> w_uri(required_size);
+                                    MultiByteToWideChar(CP_UTF8, 0, state->pending_uri.c_str(), -1, w_uri.data(), required_size);
+                                    state->webview->Navigate(w_uri.data());
                                     state->pending_uri.clear();
                                 }
                             } else if (!state->pending_html.empty()) {
                                 int required_size = MultiByteToWideChar(CP_UTF8, 0, state->pending_html.c_str(), -1, nullptr, 0);
                                 if (required_size > 0) {
-                                    wchar_t *w_html = new wchar_t[required_size];
-                                    MultiByteToWideChar(CP_UTF8, 0, state->pending_html.c_str(), -1, w_html, required_size);
-                                    state->webview->NavigateToString(w_html);
-                                    delete[] w_html;
+                                    std::vector<wchar_t> w_html(required_size);
+                                    MultiByteToWideChar(CP_UTF8, 0, state->pending_html.c_str(), -1, w_html.data(), required_size);
+                                    state->webview->NavigateToString(w_html.data());
                                     state->pending_html.clear();
                                 }
                             }
@@ -259,14 +253,13 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                 for (const auto& script : state->pending_scripts) {
                                     int required_size = MultiByteToWideChar(CP_UTF8, 0, script.c_str(), -1, nullptr, 0);
                                     if (required_size > 0) {
-                                        wchar_t *w_script = new wchar_t[required_size];
-                                        MultiByteToWideChar(CP_UTF8, 0, script.c_str(), -1, w_script, required_size);
-                                        state->webview->ExecuteScript(w_script,
+                                        std::vector<wchar_t> w_script(required_size);
+                                        MultiByteToWideChar(CP_UTF8, 0, script.c_str(), -1, w_script.data(), required_size);
+                                        state->webview->ExecuteScript(w_script.data(),
                                             Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
                                                 [](HRESULT errorCode, LPCWSTR resultObjectAsJson) -> HRESULT {
                                                     return S_OK;
                                                 }).Get());
-                                        delete[] w_script;
                                     }
                                 }
                                 state->pending_scripts.clear();
@@ -337,10 +330,9 @@ void WebKitWebView_::load_uri(Php::Parameters &parameters)
     // Convert UTF-8 to wide string
     int required_size = MultiByteToWideChar(CP_UTF8, 0, s_uri.c_str(), -1, nullptr, 0);
     if (required_size > 0) {
-        wchar_t *w_uri = new wchar_t[required_size];
-        MultiByteToWideChar(CP_UTF8, 0, s_uri.c_str(), -1, w_uri, required_size);
-        state->webview->Navigate(w_uri);
-        delete[] w_uri;
+        std::vector<wchar_t> w_uri(required_size);
+        MultiByteToWideChar(CP_UTF8, 0, s_uri.c_str(), -1, w_uri.data(), required_size);
+        state->webview->Navigate(w_uri.data());
     }
 }
 
@@ -446,10 +438,9 @@ void WebKitWebView_::load_html(Php::Parameters &parameters)
     // Convert UTF-8 to wide string
     int required_size = MultiByteToWideChar(CP_UTF8, 0, s_content.c_str(), -1, nullptr, 0);
     if (required_size > 0) {
-        wchar_t *w_content = new wchar_t[required_size];
-        MultiByteToWideChar(CP_UTF8, 0, s_content.c_str(), -1, w_content, required_size);
-        state->webview->NavigateToString(w_content);
-        delete[] w_content;
+        std::vector<wchar_t> w_content(required_size);
+        MultiByteToWideChar(CP_UTF8, 0, s_content.c_str(), -1, w_content.data(), required_size);
+        state->webview->NavigateToString(w_content.data());
     }
 }
 
@@ -473,16 +464,14 @@ void WebKitWebView_::run_javascript(Php::Parameters &parameters)
     // Convert UTF-8 to wide string
     int required_size = MultiByteToWideChar(CP_UTF8, 0, s_script.c_str(), -1, nullptr, 0);
     if (required_size > 0) {
-        wchar_t *w_script = new wchar_t[required_size];
-        MultiByteToWideChar(CP_UTF8, 0, s_script.c_str(), -1, w_script, required_size);
+        std::vector<wchar_t> w_script(required_size);
+        MultiByteToWideChar(CP_UTF8, 0, s_script.c_str(), -1, w_script.data(), required_size);
         
-        state->webview->ExecuteScript(w_script,
+        state->webview->ExecuteScript(w_script.data(),
             Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
                 [](HRESULT errorCode, LPCWSTR resultObjectAsJson) -> HRESULT {
                     return S_OK;
                 }).Get());
-        
-        delete[] w_script;
     }
 }
 
@@ -521,16 +510,14 @@ void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters
         
         int required_size = MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, nullptr, 0);
         if (required_size > 0) {
-            wchar_t *w_script = new wchar_t[required_size];
-            MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, w_script, required_size);
+            std::vector<wchar_t> w_script(required_size);
+            MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, w_script.data(), required_size);
             
-            state->webview->ExecuteScript(w_script,
+            state->webview->ExecuteScript(w_script.data(),
                 Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
                     [](HRESULT errorCode, LPCWSTR resultObjectAsJson) -> HRESULT {
                         return S_OK;
                     }).Get());
-            
-            delete[] w_script;
         }
     }
 }
