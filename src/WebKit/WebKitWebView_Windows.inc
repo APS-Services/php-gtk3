@@ -152,28 +152,39 @@ static void on_widget_realized(GtkWidget *widget, gpointer user_data) {
                                         // Re-inject message handler compatibility layer after navigation
                                         // This is necessary because page navigation clears all injected scripts
                                         for (const auto& handler : state->message_handlers) {
-                                            std::string inject_script = 
+                                            // Validate handler name: only allow [A-Za-z0-9_]
+                                            const std::string& handlerName = handler.first;
+                                            bool valid = !handlerName.empty() &&
+                                                std::all_of(handlerName.begin(), handlerName.end(), [](char c) {
+                                                    return (c >= 'A' && c <= 'Z') ||
+                                                           (c >= 'a' && c <= 'z') ||
+                                                           (c >= '0' && c <= '9') ||
+                                                           (c == '_');
+                                                });
+                                            if (!valid) continue; // skip unsafe handler names
+
+                                            // Use bracket notation and JSON.stringify for safe injection
+                                            std::string inject_script =
                                                 "(function() {"
                                                 "  if (!window.webkit) window.webkit = {};"
                                                 "  if (!window.webkit.messageHandlers) window.webkit.messageHandlers = {};"
-                                                "  window.webkit.messageHandlers." + handler.first + " = {"
+                                                "  window.webkit.messageHandlers[" + std::string("\"" + handlerName + "\"") + "] = {"
                                                 "    postMessage: function(msg) {"
-                                                "      window.chrome.webview.postMessage('" + handler.first + ":' + JSON.stringify(msg));"
+                                                "      window.chrome.webview.postMessage(JSON.stringify(" + std::string("\"" + handlerName + "\"") + ") + ':' + JSON.stringify(msg));"
                                                 "    }"
                                                 "  };"
                                                 "})();";
-                                            
+
                                             int required_size = MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, nullptr, 0);
                                             if (required_size > 0) {
                                                 wchar_t *w_script = new wchar_t[required_size];
                                                 MultiByteToWideChar(CP_UTF8, 0, inject_script.c_str(), -1, w_script, required_size);
-                                                
+
                                                 state->webview->ExecuteScript(w_script,
                                                     Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
                                                         [](HRESULT errorCode, LPCWSTR resultObjectAsJson) -> HRESULT {
                                                             return S_OK;
                                                         }).Get());
-                                                
                                                 delete[] w_script;
                                             }
                                         }
