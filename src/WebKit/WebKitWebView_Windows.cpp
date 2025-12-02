@@ -1,18 +1,16 @@
 
 #ifdef _WIN32
 
-#include <gdk/gdkwin32.h>
+#include "WebKitWebView.h"
 #include <windows.h>
 #include <wrl.h>
-
+#include "WebView2.h"
+#include <gdk/gdkwin32.h>
 #include <algorithm>
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "WebKitWebView.h"
-#include "WebView2.h"
 
 using namespace Microsoft::WRL;
 
