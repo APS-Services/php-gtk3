@@ -569,7 +569,6 @@ void WebKitWebView_::set_user_data_folder(Php::Parameters &params)
     
     if (!state) {
         throw Php::Exception("set_user_data_folder(): WebView state not found");
-        return;
     }
     
     // Check if WebView2 is already initialized
