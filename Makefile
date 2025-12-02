@@ -183,10 +183,13 @@ ifdef WITH_WEBKIT
 endif
 
 # Build final source list
+# Exclude platform-specific implementation files that are included directly in WebKitWebView.cpp
+PLATFORM_SPECIFIC_IMPLS = src/WebKit/WebKitWebView_Unix.cpp src/WebKit/WebKitWebView_Windows.cpp
+
 ifdef WITH_MAC_INTEGRATION
-	SOURCES = $(wildcard $(CORE_SOURCES))
+	SOURCES = $(filter-out $(PLATFORM_SPECIFIC_IMPLS), $(wildcard $(CORE_SOURCES)))
 else
-	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp, $(wildcard src/*.cpp $(CORE_SOURCES)))
+	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp $(PLATFORM_SPECIFIC_IMPLS), $(wildcard src/*.cpp $(CORE_SOURCES)))
 endif
 
 OBJECTS         = $(SOURCES:%.cpp=%.o)
