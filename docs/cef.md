@@ -24,15 +24,21 @@ CEF requires the Chromium Embedded Framework binaries to be installed separately
 #### Linux
 
 ```bash
-# Download CEF binaries
-wget https://cef-builds.spotifycdn.com/cef_binary_VERSION_linux64.tar.bz2
-tar -xjf cef_binary_VERSION_linux64.tar.bz2
-cd cef_binary_VERSION_linux64
+# Download CEF binaries (choose the appropriate version from https://cef-builds.spotifycdn.com/)
+# Example for Linux 64-bit:
+wget https://cef-builds.spotifycdn.com/cef_binary_142.0.17+g60aac24+chromium-142.0.7444.176_linux64.tar.bz2
+tar -xjf cef_binary_142.0.17+g60aac24+chromium-142.0.7444.176_linux64.tar.bz2
+cd cef_binary_142.0.17+g60aac24+chromium-142.0.7444.176_linux64
 
-# Build CEF
-cmake .
-make -j4
-sudo make install
+# Build the CEF DLL wrapper (required for C++ integration)
+cmake . -DCMAKE_BUILD_TYPE=Release
+make -j4 libcef_dll_wrapper
+
+# The built library will be in: libcef_dll_wrapper/libcef_dll_wrapper.a
+# The main libcef.so is already provided in the Release directory
+
+# Optionally install to system location:
+# sudo cp -r . /usr/local/cef
 ```
 
 #### Windows
@@ -40,8 +46,15 @@ sudo make install
 ```powershell
 # Download CEF binaries from https://cef-builds.spotifycdn.com/
 # Extract to a directory (e.g., C:\CEF)
+
+cd C:\CEF\cef_binary_VERSION_windows64
+
+# Build the CEF DLL wrapper using CMake
+cmake . -G "Visual Studio 16 2019" -A x64
+cmake --build . --config Release --target libcef_dll_wrapper
+
 # Set environment variable:
-# setx CEF_ROOT C:\CEF\cef_binary_VERSION_windows64
+setx CEF_ROOT C:\CEF\cef_binary_VERSION_windows64
 ```
 
 #### macOS
@@ -52,11 +65,15 @@ curl -O https://cef-builds.spotifycdn.com/cef_binary_VERSION_macosx64.tar.bz2
 tar -xjf cef_binary_VERSION_macosx64.tar.bz2
 cd cef_binary_VERSION_macosx64
 
-# Build CEF
-cmake .
-make -j4
-sudo make install
+# Build the CEF DLL wrapper
+cmake . -DCMAKE_BUILD_TYPE=Release
+make -j4 libcef_dll_wrapper
+
+# Optionally install to system location:
+# sudo cp -r . /usr/local/cef
 ```
+
+**Important**: You must build the `libcef_dll_wrapper` library using CMake before compiling PHP-GTK3 with CEF support. This library is not included in the pre-built CEF distribution.
 
 ### Build with CEF Support
 

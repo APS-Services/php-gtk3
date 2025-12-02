@@ -113,8 +113,14 @@ endif
 #
 # CEF must be downloaded and built separately from:
 # https://cef-builds.spotifycdn.com/
-# Set CEF_ROOT environment variable to point to the CEF directory
-# Example: export CEF_ROOT=/path/to/cef_binary_VERSION_platform
+#
+# Build steps:
+# 1. Download and extract CEF binary distribution
+# 2. cd cef_binary_VERSION_platform
+# 3. cmake . -DCMAKE_BUILD_TYPE=Release
+# 4. make -j4 libcef_dll_wrapper
+# 5. Set CEF_ROOT environment variable to point to the CEF directory
+#    Example: export CEF_ROOT=/path/to/cef_binary_VERSION_platform
 #
 
 ifdef WITH_CEF
@@ -125,8 +131,9 @@ ifdef WITH_CEF
 	CEFFLAGS = -I$(CEF_ROOT) -I$(CEF_ROOT)/include
 	
 	# CEF linker flags and libraries
-	# Note: Adjust based on your platform (linux64, macosx64, windows64)
+	# The libcef_dll_wrapper.a is built by CMake in the libcef_dll_wrapper directory
 	CEFLIBS = -L$(CEF_ROOT)/Release -L$(CEF_ROOT)/Debug \
+	          -L$(CEF_ROOT)/libcef_dll_wrapper \
 	          -lcef -lcef_dll_wrapper \
 	          -Wl,-rpath,$(CEF_ROOT)/Release
 	
