@@ -7,7 +7,7 @@ PHP-GTK is a bind of GTK 3 to create desktop applications with PHP
 
 - 🖥️ **Cross-Platform**: Runs on Linux, Windows, and macOS
 - 🎨 **GTK 3 Widgets**: Full access to GTK 3 widget library
-- 🌐 **WebKit Support**: Optional WebKitWebView widget for embedding web content (compile with `WITH_WEBKIT=1`)
+- 🌐 **WebKit Support**: Optional WebKitWebView widget for embedding web content in GTK applications (Linux-focused, compile with `WITH_WEBKIT=1`)
 - 🎯 **GTK Source View**: Code editor widget with syntax highlighting
 - 🎪 **Glade Support**: Visual UI designer integration
 - 🔄 **PHP-CPP Based**: Modern C++ binding framework

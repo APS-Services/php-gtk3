@@ -76,6 +76,7 @@ Gtk::main();
 - Full GTK integration
 - Can combine with other GTK widgets
 - Native WebKit2GTK API
+- Bidirectional JavaScript ↔ PHP communication
 - Proven implementation
 
 ### For Cross-Platform Standalone WebView Windows
