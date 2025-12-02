@@ -95,10 +95,10 @@ $webView->register_script_message_handler("myHandler", function($data) {
 
 **JavaScript Side:**
 ```javascript
-// Use the auto-generated function
-myHandlerPostMessage("Hello from JavaScript!");
+// Send a message to the host using WebView2 API
+window.chrome.webview.postMessage("myHandler:Hello from JavaScript!");
 
-// Or directly:
+// Or, for custom message formats:
 window.chrome.webview.postMessage("myHandler:Hello!");
 ```
 
