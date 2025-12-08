@@ -67,16 +67,8 @@ gint Gtk_::timeout_add_callback(gpointer data)
 
     // Call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
-    // TODO: Extract callback invocation pattern into a shared utility function
     try {
-        Php::Value ret;
-        if (callback_object->callback_name.isCallable()) {
-            // Call with proper parameters
-            ret = callback_object->callback_name.call(internal_parameters);
-        } else {
-            // Fallback to call_user_func_array if not directly callable
-            ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
-        }
+        Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
 
         // Convert return value to gint for GLib timeout
         // Return TRUE (non-zero) to continue the timeout, FALSE (0) to stop it
