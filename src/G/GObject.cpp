@@ -260,6 +260,7 @@ bool GObject_::connect_callback(gpointer user_data, ...)
 
     // Call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
+    // TODO: Extract callback invocation pattern into a shared utility function
     try {
         // Call the callback directly instead of using call_user_func_array
         // This should preserve exception handling better
