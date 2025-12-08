@@ -247,6 +247,7 @@ void generic_callback(gpointer *self, ...)
 	// call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
     try {
+        // Note: generic_callback returns void, so callback return value is intentionally discarded
         if (callback_object->callback_name.isCallable()) {
             // Call with proper parameters
             callback_object->callback_name.call(internal_parameters);
