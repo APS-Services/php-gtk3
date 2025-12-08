@@ -259,10 +259,17 @@ bool GObject_::connect_callback(gpointer user_data, ...)
 
 
     // Call php function with parameters
-    Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
-
-
-    return ret;
+    // Wrap in try-catch to handle PHP exceptions properly
+    try {
+        Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        return ret;
+    }
+    catch (Php::Exception &exception) {
+        // Log the exception message to PHP error log
+        Php::error << "Uncaught exception in signal handler: " << exception.what() << std::flush;
+        // Return false to indicate an error occurred
+        return false;
+    }
 
     // Return to st_callback
     // struct st_callback *callback_object = (struct st_callback *) user_data;

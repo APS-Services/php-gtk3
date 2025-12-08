@@ -66,14 +66,23 @@ gint Gtk_::timeout_add_callback(gpointer data)
     Php::Array internal_parameters = callback_object->callback_params;
 
     // Call php function with parameters
-    Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+    // Wrap in try-catch to handle PHP exceptions properly
+    try {
+        Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
 
-    // verify return type
-    if(ret.type() != Php::Type::False) {
-        ret = Php::Type::True;
+        // verify return type
+        if(ret.type() != Php::Type::False) {
+            ret = Php::Type::True;
+        }
+
+        return ret;
     }
-
-    return ret;
+    catch (Php::Exception &exception) {
+        // Log the exception message to PHP error log
+        Php::error << "Uncaught exception in timeout callback: " << exception.what() << std::flush;
+        // Return false to stop the timeout
+        return false;
+    }
 }
 
 Php::Value Gtk_::source_remove(Php::Parameters &parameters)

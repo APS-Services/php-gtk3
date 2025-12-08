@@ -245,5 +245,12 @@ void generic_callback(gpointer *self, ...)
 	}
 
 	// call php function with parameters
-    Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+    // Wrap in try-catch to handle PHP exceptions properly
+    try {
+        Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+    }
+    catch (Php::Exception &exception) {
+        // Log the exception message to PHP error log
+        Php::error << "Uncaught exception in callback: " << exception.what() << std::flush;
+    }
 }
