@@ -80,8 +80,18 @@ gint Gtk_::timeout_add_callback(gpointer data)
     }
     catch (Php::Exception &exception) {
         // Log the exception message to PHP error log
-        Php::error << "Uncaught exception in timeout callback: " << exception.what() << std::flush;
+        Php::error << "Uncaught PHP exception in timeout callback: " << exception.what() << std::flush;
         // Return 0 to stop the timeout
+        return 0; // G_SOURCE_REMOVE
+    }
+    catch (std::exception &e) {
+        // Catch standard C++ exceptions
+        Php::error << "Uncaught C++ exception in timeout callback: " << e.what() << std::flush;
+        return 0; // G_SOURCE_REMOVE
+    }
+    catch (...) {
+        // Catch all other exceptions
+        Php::error << "Uncaught unknown exception in timeout callback" << std::flush;
         return 0; // G_SOURCE_REMOVE
     }
 }

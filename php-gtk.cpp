@@ -251,6 +251,14 @@ void generic_callback(gpointer *self, ...)
     }
     catch (Php::Exception &exception) {
         // Log the exception message to PHP error log
-        Php::error << "Uncaught exception in callback: " << exception.what() << std::flush;
+        Php::error << "Uncaught PHP exception in callback: " << exception.what() << std::flush;
+    }
+    catch (std::exception &e) {
+        // Catch standard C++ exceptions
+        Php::error << "Uncaught C++ exception in callback: " << e.what() << std::flush;
+    }
+    catch (...) {
+        // Catch all other exceptions
+        Php::error << "Uncaught unknown exception in callback" << std::flush;
     }
 }

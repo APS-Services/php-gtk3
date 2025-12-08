@@ -266,8 +266,18 @@ bool GObject_::connect_callback(gpointer user_data, ...)
     }
     catch (Php::Exception &exception) {
         // Log the exception message to PHP error log
-        Php::error << "Uncaught exception in signal handler: " << exception.what() << std::flush;
+        Php::error << "Uncaught PHP exception in signal handler: " << exception.what() << std::flush;
         // Return false to indicate an error occurred
+        return false;
+    }
+    catch (std::exception &e) {
+        // Catch standard C++ exceptions
+        Php::error << "Uncaught C++ exception in signal handler: " << e.what() << std::flush;
+        return false;
+    }
+    catch (...) {
+        // Catch all other exceptions
+        Php::error << "Uncaught unknown exception in signal handler" << std::flush;
         return false;
     }
 }
