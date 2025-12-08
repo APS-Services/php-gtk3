@@ -261,6 +261,8 @@ bool GObject_::connect_callback(gpointer user_data, ...)
     // Call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
     try {
+        // Use call_user_func_array to properly handle parameter arrays
+        // Note: Direct invocation with operator() doesn't work with parameter arrays
         Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
         return ret;
     }

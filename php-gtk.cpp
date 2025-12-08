@@ -247,6 +247,7 @@ void generic_callback(gpointer *self, ...)
 	// call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
     try {
+        // Use call_user_func_array to properly handle parameter arrays
         Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
     }
     catch (Php::Exception &exception) {
