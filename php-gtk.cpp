@@ -247,8 +247,45 @@ void generic_callback(gpointer *self, ...)
 	// call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
     try {
-        // Use call_user_func_array to properly handle parameter arrays
-        Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        // Call the callback directly by expanding parameters instead of using call_user_func_array
+        // This avoids the nested call_user_func_array issue that breaks exception handling
+        
+        // Convert internal_parameters to individual arguments and call the function
+        size_t param_count = internal_parameters.size();
+        
+        switch(param_count) {
+            case 0:
+                callback_object->callback_name();
+                break;
+            case 1:
+                callback_object->callback_name(internal_parameters[0]);
+                break;
+            case 2:
+                callback_object->callback_name(internal_parameters[0], internal_parameters[1]);
+                break;
+            case 3:
+                callback_object->callback_name(internal_parameters[0], internal_parameters[1], internal_parameters[2]);
+                break;
+            case 4:
+                callback_object->callback_name(internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3]);
+                break;
+            case 5:
+                callback_object->callback_name(internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4]);
+                break;
+            case 6:
+                callback_object->callback_name(internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4], internal_parameters[5]);
+                break;
+            case 7:
+                callback_object->callback_name(internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4], internal_parameters[5], internal_parameters[6]);
+                break;
+            case 8:
+                callback_object->callback_name(internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4], internal_parameters[5], internal_parameters[6], internal_parameters[7]);
+                break;
+            default:
+                // Fall back to call_user_func_array for more than 8 parameters
+                Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+                break;
+        }
     }
     catch (Php::Exception &exception) {
         // Log the exception message to PHP error log
