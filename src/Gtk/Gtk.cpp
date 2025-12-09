@@ -74,25 +74,46 @@ gint Gtk_::timeout_add_callback(gpointer data)
         if (callback_object->callback_name.isArray()) {
             size_t param_count = internal_parameters.size();
             
+            // Create temporary Php::Value variables to avoid ambiguous conversion
             switch(param_count) {
                 case 0:
                     ret = Php::call("call_user_func", callback_object->callback_name);
                     break;
-                case 1:
-                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0]);
+                case 1: {
+                    Php::Value p0 = internal_parameters[0];
+                    ret = Php::call("call_user_func", callback_object->callback_name, p0);
                     break;
-                case 2:
-                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1]);
+                }
+                case 2: {
+                    Php::Value p0 = internal_parameters[0];
+                    Php::Value p1 = internal_parameters[1];
+                    ret = Php::call("call_user_func", callback_object->callback_name, p0, p1);
                     break;
-                case 3:
-                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2]);
+                }
+                case 3: {
+                    Php::Value p0 = internal_parameters[0];
+                    Php::Value p1 = internal_parameters[1];
+                    Php::Value p2 = internal_parameters[2];
+                    ret = Php::call("call_user_func", callback_object->callback_name, p0, p1, p2);
                     break;
-                case 4:
-                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3]);
+                }
+                case 4: {
+                    Php::Value p0 = internal_parameters[0];
+                    Php::Value p1 = internal_parameters[1];
+                    Php::Value p2 = internal_parameters[2];
+                    Php::Value p3 = internal_parameters[3];
+                    ret = Php::call("call_user_func", callback_object->callback_name, p0, p1, p2, p3);
                     break;
-                case 5:
-                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4]);
+                }
+                case 5: {
+                    Php::Value p0 = internal_parameters[0];
+                    Php::Value p1 = internal_parameters[1];
+                    Php::Value p2 = internal_parameters[2];
+                    Php::Value p3 = internal_parameters[3];
+                    Php::Value p4 = internal_parameters[4];
+                    ret = Php::call("call_user_func", callback_object->callback_name, p0, p1, p2, p3, p4);
                     break;
+                }
                 default:
                     ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
                     break;
