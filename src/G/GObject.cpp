@@ -261,7 +261,45 @@ bool GObject_::connect_callback(gpointer user_data, ...)
     // Call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
     try {
-        Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        Php::Value ret;
+        
+        // Check if callback is an array (class method) - use call_user_func to avoid double nesting
+        // For array callbacks like [$this, 'method'], call_user_func preserves exception handling better
+        if (callback_object->callback_name.isArray()) {
+            // Use call_user_func which handles array callbacks without the nesting issue
+            // Build parameters for call_user_func: callback, param1, param2, ...
+            size_t param_count = internal_parameters.size();
+            
+            // call_user_func expects: callback, followed by individual params
+            switch(param_count) {
+                case 0:
+                    ret = Php::call("call_user_func", callback_object->callback_name);
+                    break;
+                case 1:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0]);
+                    break;
+                case 2:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1]);
+                    break;
+                case 3:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2]);
+                    break;
+                case 4:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3]);
+                    break;
+                case 5:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4]);
+                    break;
+                default:
+                    // Fall back to call_user_func_array for more than 5 parameters
+                    ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+                    break;
+            }
+        } else {
+            // For string callbacks, call_user_func_array works fine
+            ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        }
+        
         return ret;
     }
     catch (Php::Exception &exception) {

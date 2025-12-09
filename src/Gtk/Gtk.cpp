@@ -68,7 +68,38 @@ gint Gtk_::timeout_add_callback(gpointer data)
     // Call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
     try {
-        Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        Php::Value ret;
+        
+        // Check if callback is an array (class method) - use call_user_func to avoid double nesting
+        if (callback_object->callback_name.isArray()) {
+            size_t param_count = internal_parameters.size();
+            
+            switch(param_count) {
+                case 0:
+                    ret = Php::call("call_user_func", callback_object->callback_name);
+                    break;
+                case 1:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0]);
+                    break;
+                case 2:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1]);
+                    break;
+                case 3:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2]);
+                    break;
+                case 4:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3]);
+                    break;
+                case 5:
+                    ret = Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4]);
+                    break;
+                default:
+                    ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+                    break;
+            }
+        } else {
+            ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        }
 
         // Convert return value to gint for GLib timeout
         // Return TRUE (non-zero) to continue the timeout, FALSE (0) to stop it

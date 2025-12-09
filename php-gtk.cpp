@@ -247,7 +247,36 @@ void generic_callback(gpointer *self, ...)
 	// call php function with parameters
     // Wrap in try-catch to handle PHP exceptions properly
     try {
-        Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        // Check if callback is an array (class method) - use call_user_func to avoid double nesting
+        if (callback_object->callback_name.isArray()) {
+            size_t param_count = internal_parameters.size();
+            
+            switch(param_count) {
+                case 0:
+                    Php::call("call_user_func", callback_object->callback_name);
+                    break;
+                case 1:
+                    Php::call("call_user_func", callback_object->callback_name, internal_parameters[0]);
+                    break;
+                case 2:
+                    Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1]);
+                    break;
+                case 3:
+                    Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2]);
+                    break;
+                case 4:
+                    Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3]);
+                    break;
+                case 5:
+                    Php::call("call_user_func", callback_object->callback_name, internal_parameters[0], internal_parameters[1], internal_parameters[2], internal_parameters[3], internal_parameters[4]);
+                    break;
+                default:
+                    Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+                    break;
+            }
+        } else {
+            Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        }
     }
     catch (Php::Exception &exception) {
         // Log the exception message to PHP error log
