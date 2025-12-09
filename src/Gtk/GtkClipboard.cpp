@@ -4,9 +4,10 @@
 /**
  * Struct for callback gpointer
  */
-struct GtkClipboard_::st_request_callback {
-    Php::Parameters user_parameters;
-    Php::Object self_widget;
+struct GtkClipboard_::st_request_callback
+{
+	Php::Parameters user_parameters;
+	Php::Object self_widget;
 };
 
 /**
@@ -22,8 +23,7 @@ GtkClipboard_::~GtkClipboard_() = default;
 void GtkClipboard_::__construct(Php::Parameters &parameters)
 {
 	int a = parameters[0];
-	instance = (gpointer *)gtk_clipboard_get (_GDK_MAKE_ATOM(a));
-
+	instance = (gpointer *)gtk_clipboard_get(_GDK_MAKE_ATOM(a));
 }
 
 Php::Value GtkClipboard_::get_for_display(Php::Parameters &parameters)
@@ -108,8 +108,7 @@ Php::Value GtkClipboard_::get_owner()
 
 void GtkClipboard_::clear()
 {
-	gtk_clipboard_clear (GTK_CLIPBOARD(instance));
-
+	gtk_clipboard_clear(GTK_CLIPBOARD(instance));
 }
 
 void GtkClipboard_::set_text(Php::Parameters &parameters)
@@ -118,25 +117,25 @@ void GtkClipboard_::set_text(Php::Parameters &parameters)
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
-	if(parameters.size() >= 2) {
+	if (parameters.size() >= 2)
+	{
 		len = (gint)parameters[1];
 	}
 
-	gtk_clipboard_set_text (GTK_CLIPBOARD(instance), text, len);
-
+	gtk_clipboard_set_text(GTK_CLIPBOARD(instance), text, len);
 }
 
 void GtkClipboard_::set_image(Php::Parameters &parameters)
 {
 	GdkPixbuf *pixbuf;
-	if(parameters.size() > 0) {
+	if (parameters.size() > 0)
+	{
 		Php::Value object_pixbuf = parameters[0];
 		GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 		pixbuf = phpgtk_pixbuf->get_instance();
 	}
 
-	gtk_clipboard_set_image (GTK_CLIPBOARD(instance), pixbuf);
-
+	gtk_clipboard_set_image(GTK_CLIPBOARD(instance), pixbuf);
 }
 
 void GtkClipboard_::request_contents(Php::Parameters &parameters)
@@ -158,35 +157,35 @@ void GtkClipboard_::request_text(Php::Parameters &parameters)
 
 	// gpointer user_data = (gpointer)parameters[1];
 
-
 	// Create user data param of callaback
-    struct st_request_callback *callback_object = (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
-    memset(callback_object, 0, sizeof(struct st_request_callback));
-    callback_object->user_parameters = parameters;
-    callback_object->self_widget = Php::Object("GtkClipboard", this);
+	struct st_request_callback *callback_object = (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
+	memset(callback_object, 0, sizeof(struct st_request_callback));
+	callback_object->user_parameters = parameters;
+	callback_object->self_widget = Php::Object("GtkClipboard", this);
 
-    // handle the callback
-	gtk_clipboard_request_text (GTK_CLIPBOARD(instance), request_text_callback, (gpointer)callback_object);
+	// handle the callback
+	gtk_clipboard_request_text(GTK_CLIPBOARD(instance), request_text_callback, (gpointer)callback_object);
 }
 
 void GtkClipboard_::request_text_callback(GtkClipboard *clipboard, const gchar *clipboard_text, gpointer user_data)
 {
 	// Return to st_callback
-    struct st_request_callback *callback_object = (struct st_request_callback *)user_data;
+	struct st_request_callback *callback_object = (struct st_request_callback *)user_data;
 
-    // Callback_name
-    std::string callback_name = callback_object->user_parameters[0];
+	// Callback_name
+	std::string callback_name = callback_object->user_parameters[0];
 
-    // Create internal params, GtkClipboard + text + user_data...
-    Php::Value internal_parameters;
-    internal_parameters[0] = callback_object->self_widget;
-    internal_parameters[1] = clipboard_text;
-    for(int i=1; i<(int)callback_object->user_parameters.size(); i++) {
-    	internal_parameters[i+1] = callback_object->user_parameters[i];
-    }
+	// Create internal params, GtkClipboard + text + user_data...
+	Php::Value internal_parameters;
+	internal_parameters[0] = callback_object->self_widget;
+	internal_parameters[1] = clipboard_text;
+	for (int i = 1; i < (int)callback_object->user_parameters.size(); i++)
+	{
+		internal_parameters[i + 1] = callback_object->user_parameters[i];
+	}
 
 	// Call php function with parameters
-    Php::call("call_user_func_array", callback_name, internal_parameters);
+	Php::call("call_user_func_array", callback_name, internal_parameters);
 }
 
 void GtkClipboard_::request_image(Php::Parameters &parameters)
@@ -199,7 +198,6 @@ void GtkClipboard_::request_image(Php::Parameters &parameters)
 	// gtk_clipboard_request_image (GTK_CLIPBOARD(instance), user_function, user_data);
 
 	throw Php::Exception("GtkClipboard_::request_image not implemented");
-
 }
 
 void GtkClipboard_::request_targets(Php::Parameters &parameters)
@@ -224,7 +222,6 @@ void GtkClipboard_::request_rich_text(Php::Parameters &parameters)
 	// gtk_clipboard_request_rich_text (GTK_CLIPBOARD(instance), user_function, user_data);
 
 	throw Php::Exception("tkClipboard_::request_rich_text not implemented");
-
 }
 
 void GtkClipboard_::request_uris(Php::Parameters &parameters)
@@ -237,7 +234,6 @@ void GtkClipboard_::request_uris(Php::Parameters &parameters)
 	// gtk_clipboard_request_uris (GTK_CLIPBOARD(instance), user_function, user_data);
 
 	throw Php::Exception("tkClipboard_::request_uris not implemented");
-
 }
 
 Php::Value GtkClipboard_::wait_for_contents(Php::Parameters &parameters)
@@ -257,14 +253,14 @@ Php::Value GtkClipboard_::wait_for_contents(Php::Parameters &parameters)
 
 Php::Value GtkClipboard_::wait_for_text()
 {
-	std::string ret = gtk_clipboard_wait_for_text (GTK_CLIPBOARD(instance));
+	std::string ret = gtk_clipboard_wait_for_text(GTK_CLIPBOARD(instance));
 
 	return ret;
 }
 
 Php::Value GtkClipboard_::wait_for_image()
 {
-	GdkPixbuf *ret = gtk_clipboard_wait_for_image (GTK_CLIPBOARD(instance));
+	GdkPixbuf *ret = gtk_clipboard_wait_for_image(GTK_CLIPBOARD(instance));
 
 	GdkPixbuf_ *return_parsed = new GdkPixbuf_();
 	return_parsed->set_instance(ret);
@@ -303,7 +299,7 @@ Php::Value GtkClipboard_::wait_for_uris()
 
 Php::Value GtkClipboard_::wait_is_text_available()
 {
-	bool ret = gtk_clipboard_wait_is_text_available (GTK_CLIPBOARD(instance));
+	bool ret = gtk_clipboard_wait_is_text_available(GTK_CLIPBOARD(instance));
 
 	return ret;
 }
@@ -311,20 +307,21 @@ Php::Value GtkClipboard_::wait_is_text_available()
 Php::Value GtkClipboard_::wait_is_image_available(Php::Parameters &parameters)
 {
 	GtkTextBuffer *buffer;
-	if(parameters.size() > 0) {
+	if (parameters.size() > 0)
+	{
 		Php::Value object_buffer = parameters[0];
 		GtkTextBuffer_ *phpgtk_buffer = (GtkTextBuffer_ *)object_buffer.implementation();
 		buffer = GTK_TEXT_BUFFER(phpgtk_buffer->get_instance());
 	}
 
-	bool ret = gtk_clipboard_wait_is_rich_text_available (GTK_CLIPBOARD(instance), buffer);
+	bool ret = gtk_clipboard_wait_is_rich_text_available(GTK_CLIPBOARD(instance), buffer);
 
 	return ret;
 }
 
 Php::Value GtkClipboard_::wait_is_uris_available()
 {
-	bool ret = gtk_clipboard_wait_is_uris_available (GTK_CLIPBOARD(instance));
+	bool ret = gtk_clipboard_wait_is_uris_available(GTK_CLIPBOARD(instance));
 
 	return ret;
 }
@@ -344,16 +341,14 @@ Php::Value GtkClipboard_::wait_is_target_available(Php::Parameters &parameters)
 
 void GtkClipboard_::set_can_store()
 {
-	gtk_clipboard_store (GTK_CLIPBOARD(instance));
-
+	gtk_clipboard_store(GTK_CLIPBOARD(instance));
 }
 
 Php::Value GtkClipboard_::get_selection()
 {
-	GdkAtom atom = gtk_clipboard_get_selection (GTK_CLIPBOARD(instance));
+	GdkAtom atom = gtk_clipboard_get_selection(GTK_CLIPBOARD(instance));
 
 	std::string ret = gdk_atom_name(atom);
 
 	return ret;
 }
-

@@ -1,8 +1,8 @@
 
 #include "GtkTreeViewColumn.h"
 
-
-struct GtkTreeViewColumn_::st_request_callback {
+struct GtkTreeViewColumn_::st_request_callback
+{
     Php::Parameters user_parameters;
     Php::Object self_widget;
 };
@@ -51,7 +51,7 @@ void GtkTreeViewColumn_::set_title(Php::Parameters &parameters)
  */
 Php::Value GtkTreeViewColumn_::get_title()
 {
-    // 
+    //
     return gtk_tree_view_column_get_title(GTK_TREE_VIEW_COLUMN(instance));
 }
 
@@ -65,7 +65,6 @@ void GtkTreeViewColumn_::pack_start(Php::Parameters &parameters)
     // if (!object.instanceOf("GtkCellRenderer")) throw Php::Exception("parameter expect GtkCellRenderer instance");
     GtkCellRenderer_ *passedRenderer = (GtkCellRenderer_ *)object.implementation();
 
-
     gtk_tree_view_column_pack_start(GTK_TREE_VIEW_COLUMN(instance), GTK_CELL_RENDERER(passedRenderer->get_instance()), parameters[1]);
 }
 
@@ -78,7 +77,6 @@ void GtkTreeViewColumn_::pack_end(Php::Parameters &parameters)
     Php::Value object = parameters[0];
     // if (!object.instanceOf("GtkCellRenderer")) throw Php::Exception("parameter expect GtkCellRenderer instance");
     GtkCellRenderer_ *passedRenderer = (GtkCellRenderer_ *)object.implementation();
-
 
     gtk_tree_view_column_pack_end(GTK_TREE_VIEW_COLUMN(instance), GTK_CELL_RENDERER(passedRenderer->get_instance()), parameters[1]);
 }
@@ -96,7 +94,7 @@ void GtkTreeViewColumn_::set_resizable(Php::Parameters &parameters)
  */
 Php::Value GtkTreeViewColumn_::get_resizable()
 {
-    // 
+    //
     return gtk_tree_view_column_get_resizable(GTK_TREE_VIEW_COLUMN(instance));
 }
 
@@ -105,7 +103,7 @@ Php::Value GtkTreeViewColumn_::get_resizable()
  */
 Php::Value GtkTreeViewColumn_::get_width()
 {
-    // 
+    //
     return gtk_tree_view_column_get_width(GTK_TREE_VIEW_COLUMN(instance));
 }
 
@@ -114,7 +112,7 @@ Php::Value GtkTreeViewColumn_::get_width()
  */
 Php::Value GtkTreeViewColumn_::get_fixed_width()
 {
-    // 
+    //
     return gtk_tree_view_column_get_fixed_width(GTK_TREE_VIEW_COLUMN(instance));
 }
 
@@ -135,7 +133,7 @@ Php::Value GtkTreeViewColumn_::get_button()
 {
     // Create the gtk button
     GtkWidget *widget = gtk_tree_view_column_get_button(GTK_TREE_VIEW_COLUMN(instance));
-    
+
     // Create the PHP-GTK object and set GTK object
     GtkButton_ *widget_ = new GtkButton_();
     widget_->set_instance((gpointer *)widget);
@@ -203,7 +201,7 @@ Php::Value GtkTreeViewColumn_::get_widget()
 {
     // Create the gtk button
     gpointer *ret = (gpointer *)gtk_tree_view_column_get_widget(GTK_TREE_VIEW_COLUMN(instance));
-    
+
     // Create the PHP-GTK object and set GTK object
     // GtkWidget_ *widget_ = new GtkWidget_();
     // widget_->set_instance((gpointer *)widget);
@@ -214,7 +212,7 @@ Php::Value GtkTreeViewColumn_::get_widget()
 }
 
 /**
- * Sets the widget in the header to be widget 
+ * Sets the widget in the header to be widget
  *
  * @todo need to test
  */
@@ -222,7 +220,8 @@ void GtkTreeViewColumn_::set_widget(Php::Parameters &parameters)
 {
     // Get the widget to packed
     Php::Value object = parameters[0];
-    if (!object.instanceOf("GtkWidget")) throw Php::Exception("parameter expect GtkWidget instance");
+    if (!object.instanceOf("GtkWidget"))
+        throw Php::Exception("parameter expect GtkWidget instance");
     GtkWidget_ *passedWidget = (GtkWidget_ *)object.implementation();
 
     // Pack the widget
@@ -242,12 +241,12 @@ void GtkTreeViewColumn_::set_sort_column_id(Php::Parameters &parameters)
  */
 Php::Value GtkTreeViewColumn_::get_sort_column_id()
 {
-    // 
+    //
     return gtk_tree_view_column_get_sort_column_id(GTK_TREE_VIEW_COLUMN(instance));
 }
 
 /**
- * Call this function with a setting of TRUE to display an arrow in the header button indicating the column is sorted. 
+ * Call this function with a setting of TRUE to display an arrow in the header button indicating the column is sorted.
  */
 void GtkTreeViewColumn_::set_sort_indicator(Php::Parameters &parameters)
 {
@@ -259,7 +258,7 @@ void GtkTreeViewColumn_::set_sort_indicator(Php::Parameters &parameters)
  */
 Php::Value GtkTreeViewColumn_::get_sort_indicator()
 {
-    // 
+    //
     return gtk_tree_view_column_get_sort_indicator(GTK_TREE_VIEW_COLUMN(instance));
 }
 
@@ -280,18 +279,18 @@ void GtkTreeViewColumn_::set_sort_order(Php::Parameters &parameters)
  */
 Php::Value GtkTreeViewColumn_::get_sort_order()
 {
-    // 
+    //
     return gtk_tree_view_column_get_sort_order(GTK_TREE_VIEW_COLUMN(instance));
 }
 
 /**
- * Returns the GtkTreeView wherein tree_column has been inserted. 
+ * Returns the GtkTreeView wherein tree_column has been inserted.
  */
 Php::Value GtkTreeViewColumn_::get_tree_view()
 {
     // Create the gtk button
     GtkWidget *widget = gtk_tree_view_column_get_tree_view(GTK_TREE_VIEW_COLUMN(instance));
-    
+
     // Create the PHP-GTK object and set GTK object
     GtkTreeView_ *widget_ = new GtkTreeView_();
     widget_->set_instance((gpointer *)widget);
@@ -307,7 +306,7 @@ void GtkTreeViewColumn_::set_max_width(Php::Parameters &parameters)
 }
 
 /**
- * 
+ *
  */
 void GtkTreeViewColumn_::set_cell_data_func(Php::Parameters &parameters)
 {
@@ -328,9 +327,9 @@ void GtkTreeViewColumn_::set_cell_data_func(Php::Parameters &parameters)
     gtk_tree_view_column_set_cell_data_func(GTK_TREE_VIEW_COLUMN(instance), cell_renderer, set_cell_data_func_callback, (gpointer)callback_object, NULL);
 }
 
-void GtkTreeViewColumn_::set_cell_data_func_callback(GtkTreeViewColumn* tree_column, GtkCellRenderer* cell, GtkTreeModel* tree_model, GtkTreeIter* iter, gpointer user_data)
+void GtkTreeViewColumn_::set_cell_data_func_callback(GtkTreeViewColumn *tree_column, GtkCellRenderer *cell, GtkTreeModel *tree_model, GtkTreeIter *iter, gpointer user_data)
 {
-	// Return to st_callback
+    // Return to st_callback
     struct st_request_callback *callback_object = (struct st_request_callback *)user_data;
 
     // Callback_name
@@ -356,10 +355,11 @@ void GtkTreeViewColumn_::set_cell_data_func_callback(GtkTreeViewColumn* tree_col
     internal_parameters[3] = Php::Object("GtkTreeIter", iter_);
 
     // user data
-    for(int i=2; i<(int)callback_object->user_parameters.size(); i++) {
-    	internal_parameters[i+2] = callback_object->user_parameters[i];
+    for (int i = 2; i < (int)callback_object->user_parameters.size(); i++)
+    {
+        internal_parameters[i + 2] = callback_object->user_parameters[i];
     }
 
-	// Call php function with parameters
+    // Call php function with parameters
     Php::call("call_user_func_array", callback_name, internal_parameters);
 }

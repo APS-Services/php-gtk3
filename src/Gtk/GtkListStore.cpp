@@ -425,16 +425,14 @@ gint GtkListStore_::set_sort_func_callback(GtkTreeModel* model, GtkTreeIter* a, 
 		internal_parameters[i+1] = callback_object->user_parameters[i];
 	}
 
-    // Try to call the PHP function
-    try {
-        gint ret = Php::call("call_user_func_array", callback_name, internal_parameters);
-        return ret;
-    } catch (const std::exception& e) {
-        std::cerr << "Exception caught in sort function callback: " << e.what() << std::endl;
-        return 0;
-    }
+    // Call php function with parameters
+    gint ret = Php::call("call_user_func_array", callback_name, internal_parameters);
+    
+    // Note: If an exception occurred, it's stored in EG(exception)
+    // We return the value anyway - exception will be handled when we return to PHP
+    
+    return ret;
 }
-
 
 void GtkListStore_::set_sort_column_id(Php::Parameters& parameters)
 {
