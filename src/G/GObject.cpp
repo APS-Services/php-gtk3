@@ -272,10 +272,16 @@ bool GObject_::connect_callback(gpointer user_data, ...)
 
 
     // Call php function with parameters
-    Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
-
-
-    return ret;
+    // Wrap in try-catch to properly handle exceptions from PHP callbacks
+    // This ensures exceptions work correctly even with Xdebug exception breakpoints enabled
+    try {
+        Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+        return ret;
+    } catch (Php::Exception &exception) {
+        // Re-throw to let PHP-CPP handle the exception properly
+        // This allows PHP try-catch blocks to catch it and Xdebug to track it correctly
+        throw;
+    }
 
     // Return to st_callback
     // struct st_callback *callback_object = (struct st_callback *) user_data;
