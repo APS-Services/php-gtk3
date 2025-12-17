@@ -9,12 +9,12 @@
 /**
  * Struct for callback gpointer
  */
-struct GObject_::st_callback
-{
+struct GObject_::st_callback {
     Php::Value callback_name;
     Php::Array callback_params;
     Php::Object self_widget;
     Php::Parameters parameters;
+
 
     guint signal_id;
     const gchar *signal_name;
@@ -26,11 +26,12 @@ struct GObject_::st_callback
 };
 
 /**
- *
+ *  
  */
 GObject_::GObject_() = default;
 
 GObject_::~GObject_() = default;
+
 
 void GObject_::__clone()
 {
@@ -42,9 +43,9 @@ void GObject_::__clone()
     // Get len of string
     len = snprintf(NULL, 0, "Trying to clone an uncloneable object of class %s", gtype_name.c_str());
     buffer = (char *)malloc((len + 1) * sizeof(char));
-
+    
     // Save into buffer
-    snprintf(buffer, len + 1, "Trying to clone an uncloneable object of class %s", gtype_name.c_str());
+    snprintf(buffer, len+1, "Trying to clone an uncloneable object of class %s", gtype_name.c_str());
 
     throw Php::Exception("asdasdasd");
 }
@@ -105,18 +106,17 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after)
     callback_object->callback_params = callback_params;
     callback_object->self_widget = Php::Object("GtkWidget", this);
     callback_object->parameters = parameters;
+    
 
     // Retriave and store signal query parameters , to be used on callback
     GSignalQuery signal_info;
 
-    if (G_IS_OBJECT(instance))
-    {
-        g_signal_query(g_signal_lookup(callback_event, G_OBJECT_TYPE(instance)), &signal_info);
+    if(G_IS_OBJECT(instance)) {
+        g_signal_query(g_signal_lookup (callback_event, G_OBJECT_TYPE (instance)), &signal_info);
     }
 
-    if (G_IS_OBJECT_CLASS(instance))
-    {
-        g_signal_query(g_signal_lookup(callback_event, G_OBJECT_CLASS_TYPE(instance)), &signal_info);
+    if(G_IS_OBJECT_CLASS(instance)) {
+        g_signal_query(g_signal_lookup (callback_event, G_OBJECT_CLASS_TYPE (instance)), &signal_info);
     }
 
     callback_object->signal_id = signal_info.signal_id;
@@ -128,14 +128,14 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after)
     callback_object->param_types = signal_info.param_types;
 
     // Create the CPP callback
-    GClosure *closure;
-
+    GClosure  *closure;
+    
     // this method are removed, since leak memory does not happen anymore
     // https://github.com/scorninpc/php-gtk3/issues/81
     // closure = g_cclosure_new_swap (G_CALLBACK (connect_callback), callback_object, (GClosureNotify)destroy_notify);
-
-    closure = g_cclosure_new_swap(G_CALLBACK(connect_callback), callback_object, NULL);
-    int ret = g_signal_connect_closure(instance, callback_event, closure, after);
+    
+    closure = g_cclosure_new_swap (G_CALLBACK (connect_callback), callback_object, NULL);
+    int ret = g_signal_connect_closure (instance, callback_event, closure, after);
 
     // Return handler id
     return ret;
@@ -148,7 +148,7 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after)
 void GObject_::destroy_notify(gpointer user_data, GClosure *closure)
 {
     // return to st_callback
-    struct st_callback *callback_object = (struct st_callback *)user_data;
+    struct st_callback *callback_object = (struct st_callback *) user_data;
 
     // delete references;
     delete callback_object;
@@ -160,7 +160,7 @@ void GObject_::destroy_notify(gpointer user_data, GClosure *closure)
 bool GObject_::connect_callback(gpointer user_data, ...)
 {
     // Return to st_callback
-    struct st_callback *callback_object = (struct st_callback *)user_data;
+    struct st_callback *callback_object = (struct st_callback *) user_data;
 
     // Create internal params, GtkWidget + GdkEvent
     Php::Value internal_parameters;
@@ -172,122 +172,146 @@ bool GObject_::connect_callback(gpointer user_data, ...)
     va_start(ap, user_data);
 
     // Loop into param_types of GSignalQuery from g_signal_query
-    for (int i = 0; i < param_count; i++)
-    {
+    for (int i=0; i<param_count; i++) {
 
         // Php::call("var_dump", g_type_name(callback_object->param_types[i]));
 
-        switch (G_TYPE_FUNDAMENTAL(callback_object->param_types[i]))
-        {
-        case G_TYPE_CHAR:
-            // Php::call("var_dump", "char");
-            break;
+        switch (G_TYPE_FUNDAMENTAL(callback_object->param_types[i])) {
+            case G_TYPE_CHAR:
+                // Php::call("var_dump", "char");
+                break;
+                
+            case G_TYPE_UCHAR:
+                // Php::call("var_dump", "uchar");
+                break;
 
-        case G_TYPE_UCHAR:
-            // Php::call("var_dump", "uchar");
-            break;
-
-        case G_TYPE_STRING:
+            case G_TYPE_STRING:
             // Php::call("var_dump", "string");
-            internal_parameters[i + 1] = va_arg(ap, char *);
-            break;
+                internal_parameters[i+1] = va_arg(ap, char *);
+                break;
 
-        case G_TYPE_BOOLEAN:
+            case G_TYPE_BOOLEAN:
             // Php::call("var_dump", "boolean");
-            internal_parameters[i + 1] = va_arg(ap, gboolean);
-            break;
+                internal_parameters[i+1] = va_arg(ap, gboolean);
+                break;
 
-        case G_TYPE_INT:
-            // Php::call("var_dump", "int");
-            internal_parameters[i + 1] = va_arg(ap, gint);
-            break;
+            case G_TYPE_INT:
+                // Php::call("var_dump", "int");
+                internal_parameters[i+1] = va_arg(ap, gint);
+                break;
 
-        case G_TYPE_UINT:
-            // Php::call("var_dump", "int");
-            internal_parameters[i + 1] = (int)va_arg(ap, guint);
-            break;
+            case G_TYPE_UINT:
+                // Php::call("var_dump", "int");
+                internal_parameters[i+1] = (int)va_arg(ap, guint);
+                break;
 
-        case G_TYPE_ENUM:
-            // Php::call("var_dump", "enum");
-            // Enums are passed as integers (promoted to int in varargs)
-            internal_parameters[i + 1] = (int)va_arg(ap, gint);
-            break;
+            case G_TYPE_ENUM:
+                // Php::call("var_dump", "enum");
+                // Enums are passed as integers (promoted to int in varargs)
+                internal_parameters[i+1] = (int)va_arg(ap, gint);
+                break;
 
-        case G_TYPE_FLAGS:
-            // Php::call("var_dump", "flags");
-            // Flags are passed as unsigned integers (promoted to unsigned int in varargs)
-            internal_parameters[i + 1] = (int)va_arg(ap, guint);
-            break;
+            case G_TYPE_FLAGS:
+                // Php::call("var_dump", "flags");
+                // Flags are passed as unsigned integers (promoted to unsigned int in varargs)
+                internal_parameters[i+1] = (int)va_arg(ap, guint);
+                break;
+                
+            case G_TYPE_OBJECT:
+            {
+                // Php::call("var_dump", "object");
+                gpointer *e = va_arg(ap, gpointer *);
 
-        case G_TYPE_OBJECT:
-        {
-            // Php::call("var_dump", "object");
-            gpointer *e = va_arg(ap, gpointer *);
+                // Create event from callback
+                GObject_ *event_ = new GObject_();
+                event_->set_instance(e);
+                Php::Value gobject_ = Php::Object(g_type_name(callback_object->param_types[i]), event_);
+                internal_parameters[i+1] = gobject_;
+                
+                break;
+            }
+            case G_TYPE_POINTER:
+                // Php::call("var_dump", "pointer");
+                break;
+            case G_TYPE_INTERFACE: 
+                // Php::call("var_dump", "interface");
+                break;
+            case G_TYPE_PARAM:
+                // Php::call("var_dump", "param");
+                break;
+            case G_TYPE_BOXED:
+            {
+                // Php::call("var_dump", "boxed");
 
-            // Create event from callback
-            GObject_ *event_ = new GObject_();
-            event_->set_instance(e);
-            Php::Value gobject_ = Php::Object(g_type_name(callback_object->param_types[i]), event_);
-            internal_parameters[i + 1] = gobject_;
+                GdkEvent *e = va_arg(ap, GdkEvent *);
 
-            break;
+                // Create event from callback
+                GdkEvent_ *event_ = new GdkEvent_();
+                Php::Value gdkevent = Php::Object("GdkEvent", event_);
+                event_->populate(e);
+
+                internal_parameters[i+1] = gdkevent;
+
+                break;
+            }
+
+            default:
+                std::string error ("[GObject_::connect_callback] Internal error: unsupported type ");
+                throw Php::Exception(error + g_type_name(callback_object->param_types[i]));
         }
-        case G_TYPE_POINTER:
-            // Php::call("var_dump", "pointer");
-            break;
-        case G_TYPE_INTERFACE:
-            // Php::call("var_dump", "interface");
-            break;
-        case G_TYPE_PARAM:
-            // Php::call("var_dump", "param");
-            break;
-        case G_TYPE_BOXED:
-        {
-            // Php::call("var_dump", "boxed");
-
-            GdkEvent *e = va_arg(ap, GdkEvent *);
-
-            // Create event from callback
-            GdkEvent_ *event_ = new GdkEvent_();
-            Php::Value gdkevent = Php::Object("GdkEvent", event_);
-            event_->populate(e);
-
-            internal_parameters[i + 1] = gdkevent;
-
-            break;
-        }
-
-        default:
-            std::string error("[GObject_::connect_callback] Internal error: unsupported type ");
-            throw Php::Exception(error + g_type_name(callback_object->param_types[i]));
-        }
+        
     }
 
     va_end(ap);
 
     // Add user extra param
     int parameters_count = callback_object->parameters.size();
-    for (int i = 2; i < parameters_count; i++)
-    {
-        internal_parameters[internal_parameters.size() + i - 1] = callback_object->parameters[i];
+    for(int i=2; i<parameters_count; i++) {
+        internal_parameters[internal_parameters.size()+i-1] = callback_object->parameters[i];
     }
+
 
     // Call php function with parameters
+    Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
 
-    Php::Value ret;
-    try
-    {
-        ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
-    }
-    catch (Php::Exception &e)
-    {
-        // PHP-CPP caught an exception - re-throw it so it propagates to PHP
-        // std::cerr << "[DEBUG] Caught Php::Exception: " << e.what() << std::endl;
-        throw;
-    }
 
     return ret;
+
+    // Return to st_callback
+    // struct st_callback *callback_object = (struct st_callback *) user_data;
+
+
+    // // Create internal params, GtkWidget + GdkEvent
+    // Php::Value internal_parameters;
+    // internal_parameters[0] = callback_object->self_widget;
+   
+
+    // Php::call("var_dump", G_TYPE_IS_FUNDAMENTAL(G_TYPE_FROM_CLASS(user_param)));
+
+    //  // Verify if user_param is a GFundamentalType
+    // if(G_TYPE_IS_FUNDAMENTAL(G_TYPE_FROM_CLASS(user_param))) {
+
+    //     // Create event from callback
+    //     GdkEvent_ *event_ = new GdkEvent_();
+    //     Php::Value gdkevent = Php::Object("GdkEvent", event_);
+    //     event_->populate((GdkEvent *) user_param);
+        
+    //     // Add as second parameter
+    //     internal_parameters[1] = gdkevent;
+    // }
+
+    // // Merge internal parameters with custom parameters
+    // // Php::Value callback_params = callback_object->callback_params;
+    // // Php::Value custom_parameters = Php::call("array_slice", callback_params, 2, callback_params.size());
+    // // Php::Value php_callback_param = Php::call("array_merge", internal_parameters, custom_parameters);
+
+    // // Call php function with parameters
+    // Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+
+    // return ret;
 }
+
+
 
 /**
  * https://developer.gnome.org/gobject/unstable/gobject-Signals.html#g-signal-handler-disconnect
@@ -300,8 +324,7 @@ void GObject_::handler_disconnect(Php::Parameters &parameters)
 
     // Check if instance is valid before attempting to disconnect
     // This prevents critical errors when the GObject has already been destroyed
-    if (instance != nullptr && G_IS_OBJECT(instance))
-    {
+    if (instance != nullptr && G_IS_OBJECT(instance)) {
         g_signal_handler_disconnect(instance, (int)callback_handle);
     }
 
@@ -310,7 +333,8 @@ void GObject_::handler_disconnect(Php::Parameters &parameters)
     // g_object_remove_weak_pointer(G_OBJECT(instance), instance);
 }
 
-Php::Value GObject_::is_connected(Php::Parameters &parameters)
+
+Php::Value GObject_::is_connected(Php::Parameters& parameters)
 {
     Php::Value callback_handle = parameters[0];
 
@@ -321,8 +345,7 @@ Php::Value GObject_::is_connected(Php::Parameters &parameters)
 
     // Check if instance is valid before checking connection
     // This prevents critical errors when the GObject has already been destroyed
-    if (instance == nullptr || !G_IS_OBJECT(instance))
-    {
+    if (instance == nullptr || !G_IS_OBJECT(instance)) {
         return false;
     }
 
@@ -330,6 +353,7 @@ Php::Value GObject_::is_connected(Php::Parameters &parameters)
 
     return ret;
 }
+
 
 Php::Value GObject_::get_property(Php::Parameters &parameters)
 {
@@ -339,9 +363,10 @@ Php::Value GObject_::get_property(Php::Parameters &parameters)
     GValue gvalue = {0};
     g_value_init(&gvalue, G_TYPE_OBJECT);
 
-    g_object_get_property(G_OBJECT(instance), property_name, &gvalue);
+    g_object_get_property (G_OBJECT(instance), property_name, &gvalue);
 
     return phpgtk_get_phpvalue(&gvalue);
+
 }
 
 void GObject_::set_property(Php::Parameters &parameters)
@@ -350,27 +375,23 @@ void GObject_::set_property(Php::Parameters &parameters)
     const gchar *property_name = (const gchar *)s_property_name.c_str();
 
     // get interface of instance
-    gpointer iface = g_type_default_interface_peek(G_OBJECT_TYPE(instance));
+    gpointer iface = g_type_default_interface_peek (G_OBJECT_TYPE(instance));
 
     // verify if property is "model", to set the instance, and not GValue
-    if (strcmp(property_name, "model") == 0)
-    {
+    if(strcmp(property_name, "model") == 0) {
         Php::Value a_object = parameters[1];
         GtkTreeModel_ *o_object = (GtkTreeModel_ *)a_object.implementation();
-
-        g_object_set(G_OBJECT(instance), "model", o_object->get_model(), (char *)NULL);
+        
+        g_object_set(G_OBJECT(instance), "model", o_object->get_model(), (char *)NULL); 
     }
-    else
-    {
+    else {
         // get the property spec
-        GParamSpec *prop = g_object_class_find_property(G_OBJECT_GET_CLASS(instance), property_name);
-        if (!prop)
-        {
+        GParamSpec* prop = g_object_class_find_property(G_OBJECT_GET_CLASS(instance), property_name);
+        if(!prop) {
             std::string error("");
             throw Php::Exception(error + "there is no property " + property_name + " on object " + g_type_name(G_OBJECT_TYPE(instance)));
         }
-        else
-        {
+        else {
             // parse the param by the gtype
             GValue value = phpgtk_get_gvalue(parameters[1], G_TYPE_FUNDAMENTAL(prop->value_type));
 
@@ -378,17 +399,17 @@ void GObject_::set_property(Php::Parameters &parameters)
             g_object_set_property(G_OBJECT(instance), property_name, &value);
         }
     }
+    
 }
 
 void GObject_::signal_handler_block(Php::Parameters &parameters)
 {
     double p_handler_id = parameters[0];
-    gulong handler_id = (gulong)p_handler_id;
+    gulong handler_id = (gulong) p_handler_id;
 
     // Check if instance is valid before blocking handler
     // This prevents critical errors when the GObject has already been destroyed
-    if (instance != nullptr && G_IS_OBJECT(instance))
-    {
+    if (instance != nullptr && G_IS_OBJECT(instance)) {
         g_signal_handler_block(G_OBJECT(instance), handler_id);
     }
 }
@@ -396,20 +417,19 @@ void GObject_::signal_handler_block(Php::Parameters &parameters)
 void GObject_::signal_handler_unblock(Php::Parameters &parameters)
 {
     double p_handler_id = parameters[0];
-    gulong handler_id = (gulong)p_handler_id;
+    gulong handler_id = (gulong) p_handler_id;
 
     // Check if instance is valid before unblocking handler
     // This prevents critical errors when the GObject has already been destroyed
-    if (instance != nullptr && G_IS_OBJECT(instance))
-    {
+    if (instance != nullptr && G_IS_OBJECT(instance)) {
         g_signal_handler_unblock(G_OBJECT(instance), handler_id);
     }
 }
 
-Php::Value GObject_::get_data(Php::Parameters &parameters)
+Php::Value GObject_::get_data(Php::Parameters& parameters)
 {
     std::string s_key = parameters[0];
-    gchar *key = (gchar *)s_key.c_str();
+    gchar* key = (gchar*)s_key.c_str();
 
     gpointer value = g_object_get_data(G_OBJECT(instance), key);
 
@@ -417,13 +437,14 @@ Php::Value GObject_::get_data(Php::Parameters &parameters)
     return cobject_to_phpobject(&value);
 }
 
-void GObject_::set_data(Php::Parameters &parameters)
+
+void GObject_::set_data(Php::Parameters& parameters)
 {
     std::string s_key = parameters[0];
-    gchar *key = (gchar *)s_key.c_str();
+    gchar* key = (gchar*)s_key.c_str();
 
     std::string s_value = parameters[1];
-    gpointer *value = (gpointer *)s_value.c_str();
+    gpointer* value = (gpointer*)s_value.c_str();
 
     printf("%p", value);
 

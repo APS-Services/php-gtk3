@@ -5,8 +5,6 @@
 	#include <phpcpp.h>
 	#include <iostream>
 	#include <gtk/gtk.h>
-	#include <Zend/zend.h>
-	#include <Zend/zend_exceptions.h>
 
 	/**
 	 * Dependency:

@@ -4,8 +4,6 @@
 
     #include <phpcpp.h>
     #include <gtk/gtk.h>
-    #include <Zend/zend.h>
-    #include <Zend/zend_exceptions.h>
 
 	#include "GtkTreeModel.h"
 	#include "GtkTreeIter.h"

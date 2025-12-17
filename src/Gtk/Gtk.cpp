@@ -68,12 +68,6 @@ gint Gtk_::timeout_add_callback(gpointer data)
     // Call php function with parameters
     Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
 
-    // If an exception occurred, just return false
-    // The exception is stored in EG(exception) and will be handled when we return to PHP
-    if (EG(exception)) {
-        return Php::Value(false);
-    }
-
     // verify return type
     if(ret.type() != Php::Type::False) {
         ret = Php::Type::True;
