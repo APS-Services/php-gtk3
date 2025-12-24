@@ -2710,16 +2710,16 @@ extern "C"
 
         // GtkInputPurpose
         Php::Class<Php::Base> gtkinputpurpose("GtkInputPurpose");
-        gtkinputhints.constant("FREE_FORM", (int)GTK_INPUT_PURPOSE_FREE_FORM);
-        gtkinputhints.constant("ALPHA", (int)GTK_INPUT_PURPOSE_ALPHA);
-        gtkinputhints.constant("DIGITS", (int)GTK_INPUT_PURPOSE_DIGITS);
-        gtkinputhints.constant("NUMBER", (int)GTK_INPUT_PURPOSE_NUMBER);
-        gtkinputhints.constant("PHONE", (int)GTK_INPUT_PURPOSE_PHONE);
-        gtkinputhints.constant("URL", (int)GTK_INPUT_PURPOSE_URL);
-        gtkinputhints.constant("EMAIL", (int)GTK_INPUT_PURPOSE_EMAIL);
-        gtkinputhints.constant("NAME", (int)GTK_INPUT_PURPOSE_NAME);
-        gtkinputhints.constant("PASSWORD", (int)GTK_INPUT_PURPOSE_PASSWORD);
-        gtkinputhints.constant("PIN", (int)GTK_INPUT_PURPOSE_PIN);
+        gtkinputpurpose.constant("FREE_FORM", (int)GTK_INPUT_PURPOSE_FREE_FORM);
+        gtkinputpurpose.constant("ALPHA", (int)GTK_INPUT_PURPOSE_ALPHA);
+        gtkinputpurpose.constant("DIGITS", (int)GTK_INPUT_PURPOSE_DIGITS);
+        gtkinputpurpose.constant("NUMBER", (int)GTK_INPUT_PURPOSE_NUMBER);
+        gtkinputpurpose.constant("PHONE", (int)GTK_INPUT_PURPOSE_PHONE);
+        gtkinputpurpose.constant("URL", (int)GTK_INPUT_PURPOSE_URL);
+        gtkinputpurpose.constant("EMAIL", (int)GTK_INPUT_PURPOSE_EMAIL);
+        gtkinputpurpose.constant("NAME", (int)GTK_INPUT_PURPOSE_NAME);
+        gtkinputpurpose.constant("PASSWORD", (int)GTK_INPUT_PURPOSE_PASSWORD);
+        gtkinputpurpose.constant("PIN", (int)GTK_INPUT_PURPOSE_PIN);
 
         // GtkTextMark
         Php::Class<GtkTextMark_> gtktextmark("GtkTextMark");
