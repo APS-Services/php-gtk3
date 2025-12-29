@@ -104,7 +104,12 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after)
     // Add my internal parameters
     callback_object->callback_name = callback_name;
     callback_object->callback_params = callback_params;
-    callback_object->self_widget = Php::Object("GtkWidget", this);
+    // Use the actual GObject type name instead of hardcoding "GtkWidget"
+    // This prevents critical errors when calling widget-specific methods on non-widget GObjects
+    const gchar *type_name = (instance && G_IS_OBJECT(instance)) ? 
+                              g_type_name(G_TYPE_FROM_INSTANCE(instance)) : nullptr;
+    std::string object_type = (type_name != nullptr) ? type_name : "GObject";
+    callback_object->self_widget = Php::Object(object_type.c_str(), this);
     callback_object->parameters = parameters;
     
 
@@ -225,7 +230,9 @@ bool GObject_::connect_callback(gpointer user_data, ...)
                 // Create event from callback
                 GObject_ *event_ = new GObject_();
                 event_->set_instance(e);
-                Php::Value gobject_ = Php::Object(g_type_name(callback_object->param_types[i]), event_);
+                const gchar *param_type_name = g_type_name(callback_object->param_types[i]);
+                std::string type_name = (param_type_name != nullptr) ? param_type_name : "GObject";
+                Php::Value gobject_ = Php::Object(type_name.c_str(), event_);
                 internal_parameters[i+1] = gobject_;
                 
                 break;
