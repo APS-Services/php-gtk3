@@ -8,6 +8,7 @@
  */
 
 #include "main.h"
+#include <cstdlib>
 
 // https://www.sitepoint.com/developing-php-extensions-c-php-cpp-advanced/
 
@@ -26,6 +27,15 @@ extern "C"
      */
     PHPCPP_EXPORT void *get_module()
     {
+        // Fix signal conflict between PHP 8.2+ and WebKit's JavaScriptCore
+        // Both try to use signal 10 (SIGUSR1) by default
+        // Tell JavaScriptCore to use a different signal for garbage collection
+        #ifdef WITH_WEBKIT
+        if (getenv("JSC_SIGNAL_FOR_GC") == nullptr) {
+            setenv("JSC_SIGNAL_FOR_GC", "12", 0);  // Use SIGUSR2 (signal 12) instead
+        }
+        #endif
+
         // static(!) Php::Extension object that should stay in memory
         // for the entire duration of the process (that's why it's static)
         static Php::Extension extension("php-gtk3", "1.0");
