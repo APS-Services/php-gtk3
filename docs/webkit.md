@@ -184,6 +184,24 @@ Then right-click in the web page and select "Inspect Element" to access:
 
 ## Troubleshooting
 
+### PHP 8.2+ Signal Conflict (Linux)
+
+**Issue**: On PHP 8.2+ with Linux, you may encounter the error:
+```
+Overriding existing handler for signal 10. Set JSC_SIGNAL_FOR_GC if you want WebKit to use a different signal
+Segmentation fault
+```
+
+**Cause**: Both PHP 8.2+ and WebKit's JavaScriptCore try to use signal 10 (SIGUSR1) for internal operations.
+
+**Solution**: This is automatically handled by php-gtk3 version 1.0+. The extension sets the `JSC_SIGNAL_FOR_GC` environment variable to use SIGUSR2 instead of SIGUSR1.
+
+If you need to manually override this (e.g., for debugging), you can set the environment variable before running your PHP script:
+```bash
+export JSC_SIGNAL_FOR_GC=12  # Use SIGUSR2
+php your_webkit_app.php
+```
+
 ### Segfault on Close
 
 **Important**: If you experience a segfault when closing WebKit applications, ensure the PHP `gd` extension is loaded **after** the `php-gtk3` extension in your `php.ini` file:
