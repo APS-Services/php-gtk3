@@ -9,6 +9,8 @@
 
 #include "main.h"
 #include <cstdlib>
+#include <signal.h>
+#include <string>
 
 // https://www.sitepoint.com/developing-php-extensions-c-php-cpp-advanced/
 
@@ -32,7 +34,9 @@ extern "C"
         // Tell JavaScriptCore to use a different signal for garbage collection
         #ifdef WITH_WEBKIT
         if (getenv("JSC_SIGNAL_FOR_GC") == nullptr) {
-            setenv("JSC_SIGNAL_FOR_GC", "12", 0);  // Use SIGUSR2 (signal 12) instead
+            // Use SIGUSR2 instead of SIGUSR1 to avoid conflict with PHP
+            std::string signal_num = std::to_string(SIGUSR2);
+            setenv("JSC_SIGNAL_FOR_GC", signal_num.c_str(), 0);
         }
         #endif
 
