@@ -9,8 +9,8 @@
 
 #include "main.h"
 #include <cstdlib>
-#include <signal.h>
 #include <string>
+#include <csignal>
 
 // https://www.sitepoint.com/developing-php-extensions-c-php-cpp-advanced/
 
