@@ -2,6 +2,17 @@
 
 #include "GtkStatusIcon.h"
 
+// Helper function to ensure GTK is initialized
+// GtkStatusIcon requires a display connection, which is established by gtk_init
+static void ensure_gtk_initialized()
+{
+	// Check if GTK has been initialized by checking if there's a default display
+	if (gdk_display_get_default() == NULL) {
+		// GTK not initialized, initialize it now
+		gtk_init(0, NULL);
+	}
+}
+
 // Custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 // When loading icons from files, GTK internally calls gtk_widget_get_scale_factor
 // on the GtkStatusIcon, which is not a GtkWidget, causing a critical warning
@@ -40,6 +51,9 @@ void GtkStatusIcon_::set_from_pixbuf(Php::Parameters &parameters)
 	GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 	pixbuf = GDK_PIXBUF(phpgtk_pixbuf->get_instance());
 
+	// Ensure GTK is initialized before creating/updating status icon
+	ensure_gtk_initialized();
+
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	guint handler_id = g_log_set_handler("Gtk", 
 	                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
@@ -57,6 +71,9 @@ void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
 	std::string c_filename = parameters[0];
 
 	gchar *filename = (gchar *)c_filename.c_str();
+
+	// Ensure GTK is initialized before creating/updating status icon
+	ensure_gtk_initialized();
 
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	guint handler_id = g_log_set_handler("Gtk", 
@@ -76,6 +93,9 @@ void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
 
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
+	// Ensure GTK is initialized before creating/updating status icon
+	ensure_gtk_initialized();
+
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	guint handler_id = g_log_set_handler("Gtk", 
 	                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
@@ -93,6 +113,9 @@ void GtkStatusIcon_::set_from_icon_name(Php::Parameters &parameters)
 	std::string c_icon_name = parameters[0];
 
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
+
+	// Ensure GTK is initialized before creating/updating status icon
+	ensure_gtk_initialized();
 
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	guint handler_id = g_log_set_handler("Gtk", 
@@ -272,6 +295,9 @@ Php::Value GtkStatusIcon_::get_x11_window_id()
 
 void GtkStatusIcon_::__construct()
 {
+	// Ensure GTK is initialized before creating status icon
+	ensure_gtk_initialized();
+
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	// Although the default constructor creates an empty status icon, we add this protection
 	// for consistency and to guard against future GTK behavior changes
@@ -292,6 +318,9 @@ Php::Value GtkStatusIcon_::new_from_pixbuf(Php::Parameters &parameters)
 	Php::Value object_pixbuf = parameters[0];
 	GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 	pixbuf = GDK_PIXBUF(phpgtk_pixbuf->get_instance());
+
+	// Ensure GTK is initialized before creating status icon
+	ensure_gtk_initialized();
 
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	guint handler_id = g_log_set_handler("Gtk", 
@@ -314,6 +343,9 @@ Php::Value GtkStatusIcon_::new_from_file(Php::Parameters &parameters)
 	std::string c_filename = parameters[0];
 
 	gchar *filename = (gchar *)c_filename.c_str();
+
+	// Ensure GTK is initialized before creating status icon
+	ensure_gtk_initialized();
 
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	// GtkStatusIcon internally calls gtk_widget_get_scale_factor during icon loading,
@@ -339,6 +371,9 @@ Php::Value GtkStatusIcon_::new_from_stock(Php::Parameters &parameters)
 
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
+	// Ensure GTK is initialized before creating status icon
+	ensure_gtk_initialized();
+
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	guint handler_id = g_log_set_handler("Gtk", 
 	                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
@@ -360,6 +395,9 @@ Php::Value GtkStatusIcon_::new_from_icon_name(Php::Parameters &parameters)
 	std::string c_icon_name = parameters[0];
 
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
+
+	// Ensure GTK is initialized before creating status icon
+	ensure_gtk_initialized();
 
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
 	guint handler_id = g_log_set_handler("Gtk", 

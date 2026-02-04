@@ -5,7 +5,10 @@
  * This example demonstrates how to create a status icon in the system tray.
  * Note: GtkStatusIcon is deprecated since GTK 3.14, but still functional.
  * 
- * The fix for the gtk_widget_get_scale_factor warning has been applied to:
+ * GTK is now automatically initialized when creating a GtkStatusIcon, so you
+ * don't need to call Gtk::init() manually (though you still can).
+ * 
+ * The fix for the gtk_widget_get_scale_factor crash has been applied to:
  * - GtkStatusIcon::new_from_file()
  * - GtkStatusIcon::new_from_pixbuf()
  * - GtkStatusIcon::new_from_stock()
