@@ -273,7 +273,8 @@ Php::Value GtkStatusIcon_::get_x11_window_id()
 void GtkStatusIcon_::__construct()
 {
 	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
-	// This is probably not needed for the default constructor, but adding for consistency
+	// Although the default constructor creates an empty status icon, we add this protection
+	// for consistency and to guard against future GTK behavior changes
 	guint handler_id = g_log_set_handler("Gtk", 
 	                                     G_LOG_LEVEL_CRITICAL,
 	                                     suppress_scale_factor_warning,

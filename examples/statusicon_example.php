@@ -19,8 +19,8 @@
 // Create a simple test icon file
 $icon_file = '/tmp/test_icon.png';
 if (!file_exists($icon_file)) {
-    // Create a simple 48x48 PNG icon
-    $image = imagecreate(48, 48);
+    // Create a simple 48x48 PNG icon with true color support
+    $image = imagecreatetruecolor(48, 48);
     $bg = imagecolorallocate($image, 255, 0, 0); // Red background
     $fg = imagecolorallocate($image, 255, 255, 255); // White foreground
     imagefilledrectangle($image, 0, 0, 48, 48, $bg);
