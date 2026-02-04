@@ -26,6 +26,7 @@ void GtkStatusIcon_::set_from_pixbuf(Php::Parameters &parameters)
 	GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 	pixbuf = GDK_PIXBUF(phpgtk_pixbuf->get_instance());
 
+	ensure_gtk_initialized();
 	gtk_status_icon_set_from_pixbuf(GTK_STATUS_ICON(instance), pixbuf);
 }
 
@@ -35,6 +36,7 @@ void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
 
 	gchar *filename = (gchar *)c_filename.c_str();
 
+	ensure_gtk_initialized();
 	gtk_status_icon_set_from_file(GTK_STATUS_ICON(instance), filename);
 }
 
@@ -44,6 +46,7 @@ void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
 
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
+	ensure_gtk_initialized();
 	gtk_status_icon_set_from_stock(GTK_STATUS_ICON(instance), stock_id);
 }
 
@@ -53,6 +56,7 @@ void GtkStatusIcon_::set_from_icon_name(Php::Parameters &parameters)
 
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
 
+	ensure_gtk_initialized();
 	gtk_status_icon_set_from_icon_name(GTK_STATUS_ICON(instance), icon_name);
 }
 
