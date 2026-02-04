@@ -1,121 +1,19 @@
 
 
 #include "GtkStatusIcon.h"
-#include <unistd.h>
-#include <fcntl.h>
 
 // Helper function to ensure GTK is initialized
-// GtkStatusIcon requires a display connection, which is established by gtk_init
+// GtkStatusIcon requires a display connection for proper operation
 static void ensure_gtk_initialized()
 {
 	// Check if GTK has been initialized by checking if there's a default display
 	if (gdk_display_get_default() == NULL) {
 		// GTK not initialized, initialize it now
 		// We use gtk_init_check to avoid aborting if initialization fails
-		// Note: This doesn't process command-line arguments. Users who need
-		// GTK command-line argument processing should call Gtk::init() manually
-		// before creating status icons.
 		int argc = 0;
 		char **argv = NULL;
 		gtk_init_check(&argc, &argv);
 	}
-}
-
-// Helper class to temporarily disable fatal-criticals for GTK assertions
-// This prevents GTK assertion failures from aborting the process
-class GDebugFatalSuppressor {
-private:
-	GLogLevelFlags saved_fatal_mask;
-	
-public:
-	GDebugFatalSuppressor() {
-		// Save the current fatal mask for the "Gtk" log domain
-		// and set it to only fatal on G_LOG_LEVEL_ERROR (not CRITICAL or WARNING)
-		// This prevents g_return_val_if_fail from aborting the process
-		saved_fatal_mask = g_log_set_always_fatal(G_LOG_FATAL_MASK);
-		// Only make G_LOG_LEVEL_ERROR fatal, not CRITICAL or WARNING
-		g_log_set_always_fatal((GLogLevelFlags)(G_LOG_LEVEL_ERROR));
-	}
-	
-	~GDebugFatalSuppressor() {
-		// Restore the original fatal mask
-		g_log_set_always_fatal(saved_fatal_mask);
-	}
-};
-
-// Helper class to temporarily suppress stderr output
-// This is needed because GTK's g_return_val_if_fail macro writes directly to stderr
-// and g_log_set_handler cannot intercept it in all configurations
-class StderrSuppressor {
-private:
-	int saved_stderr;
-	int dev_null;
-	bool suppressed;
-	
-public:
-	StderrSuppressor() : saved_stderr(-1), dev_null(-1), suppressed(false) {
-		// Save the current stderr
-		saved_stderr = dup(STDERR_FILENO);
-		if (saved_stderr == -1) {
-			return; // Failed to dup, don't suppress
-		}
-		
-		// Open /dev/null with O_CLOEXEC to prevent fd leaks to child processes
-		dev_null = open("/dev/null", O_WRONLY | O_CLOEXEC);
-		if (dev_null == -1) {
-			close(saved_stderr);
-			saved_stderr = -1;
-			return; // Failed to open /dev/null, don't suppress
-		}
-		
-		// Redirect stderr to /dev/null
-		if (dup2(dev_null, STDERR_FILENO) != -1) {
-			suppressed = true;
-		}
-	}
-	
-	~StderrSuppressor() {
-		if (suppressed && saved_stderr != -1) {
-			// Restore stderr
-			dup2(saved_stderr, STDERR_FILENO);
-		}
-		
-		if (saved_stderr != -1) {
-			close(saved_stderr);
-		}
-		
-		if (dev_null != -1) {
-			close(dev_null);
-		}
-	}
-};
-
-// Custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
-// When loading icons from files, GTK internally calls gtk_widget_get_scale_factor
-// on the GtkStatusIcon, which is not a GtkWidget, causing a critical warning
-// This is a known GTK 3 issue and the warning is harmless
-static void suppress_scale_factor_warning(const gchar *log_domain,
-                                         GLogLevelFlags log_level,
-                                         const gchar *message,
-                                         gpointer user_data)
-{
-	(void)log_domain;
-	(void)log_level;
-	(void)user_data;
-	
-	// Suppress the specific gtk_widget_get_scale_factor warning for GtkStatusIcon
-	// Expected message format: "gtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)' failed"
-	// String matching is necessary as GTK doesn't provide error codes for log messages
-	// We check for both key phrases to avoid suppressing unrelated warnings
-	if (message != NULL &&
-	    g_strstr_len(message, -1, "gtk_widget_get_scale_factor") != NULL &&
-	    g_strstr_len(message, -1, "GTK_IS_WIDGET") != NULL) {
-		// Silently ignore this specific warning
-		return;
-	}
-	
-	// For all other messages, use default handler
-	g_log_default_handler(log_domain, log_level, message, user_data);
 }
 
 GtkStatusIcon_::GtkStatusIcon_() = default;
@@ -128,22 +26,7 @@ void GtkStatusIcon_::set_from_pixbuf(Php::Parameters &parameters)
 	GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 	pixbuf = GDK_PIXBUF(phpgtk_pixbuf->get_instance());
 
-	// Ensure GTK is initialized before creating/updating status icon
-	ensure_gtk_initialized();
-
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		gtk_status_icon_set_from_pixbuf(GTK_STATUS_ICON(instance), pixbuf);
-
-		g_log_remove_handler("Gtk", handler_id);
-	}
+	gtk_status_icon_set_from_pixbuf(GTK_STATUS_ICON(instance), pixbuf);
 }
 
 void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
@@ -152,22 +35,7 @@ void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
 
 	gchar *filename = (gchar *)c_filename.c_str();
 
-	// Ensure GTK is initialized before creating/updating status icon
-	ensure_gtk_initialized();
-
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		gtk_status_icon_set_from_file(GTK_STATUS_ICON(instance), filename);
-
-		g_log_remove_handler("Gtk", handler_id);
-	}
+	gtk_status_icon_set_from_file(GTK_STATUS_ICON(instance), filename);
 }
 
 void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
@@ -176,22 +44,7 @@ void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
 
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
-	// Ensure GTK is initialized before creating/updating status icon
-	ensure_gtk_initialized();
-
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		gtk_status_icon_set_from_stock(GTK_STATUS_ICON(instance), stock_id);
-
-		g_log_remove_handler("Gtk", handler_id);
-	}
+	gtk_status_icon_set_from_stock(GTK_STATUS_ICON(instance), stock_id);
 }
 
 void GtkStatusIcon_::set_from_icon_name(Php::Parameters &parameters)
@@ -200,22 +53,7 @@ void GtkStatusIcon_::set_from_icon_name(Php::Parameters &parameters)
 
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
 
-	// Ensure GTK is initialized before creating/updating status icon
-	ensure_gtk_initialized();
-
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		gtk_status_icon_set_from_icon_name(GTK_STATUS_ICON(instance), icon_name);
-
-		g_log_remove_handler("Gtk", handler_id);
-	}
+	gtk_status_icon_set_from_icon_name(GTK_STATUS_ICON(instance), icon_name);
 }
 
 /*
@@ -384,22 +222,8 @@ Php::Value GtkStatusIcon_::get_x11_window_id()
 
 void GtkStatusIcon_::__construct()
 {
-	// Ensure GTK is initialized before creating status icon
 	ensure_gtk_initialized();
-
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		instance = (gpointer *)gtk_status_icon_new();
-
-		g_log_remove_handler("Gtk", handler_id);
-	}
+	instance = (gpointer *)gtk_status_icon_new();
 }
 
 Php::Value GtkStatusIcon_::new_from_pixbuf(Php::Parameters &parameters)
@@ -409,117 +233,51 @@ Php::Value GtkStatusIcon_::new_from_pixbuf(Php::Parameters &parameters)
 	GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 	pixbuf = GDK_PIXBUF(phpgtk_pixbuf->get_instance());
 
-	// Ensure GTK is initialized before creating status icon
 	ensure_gtk_initialized();
+	GtkStatusIcon* ret = gtk_status_icon_new_from_pixbuf(pixbuf);
 
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		GtkStatusIcon* ret = gtk_status_icon_new_from_pixbuf(pixbuf);
-
-		g_log_remove_handler("Gtk", handler_id);
-
-		GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
-		phpgtk_ret->set_instance((gpointer *)ret);
-		return Php::Object("GtkStatusIcon", phpgtk_ret);
-	}
+	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
+	phpgtk_ret->set_instance((gpointer *)ret);
+	return Php::Object("GtkStatusIcon", phpgtk_ret);
 }
 
 Php::Value GtkStatusIcon_::new_from_file(Php::Parameters &parameters)
 {
 	std::string c_filename = parameters[0];
-
 	gchar *filename = (gchar *)c_filename.c_str();
 
-	// Ensure GTK is initialized before creating status icon
 	ensure_gtk_initialized();
+	GtkStatusIcon* ret = gtk_status_icon_new_from_file(filename);
 
-	// Suppress stderr to hide the GTK 3 gtk_widget_get_scale_factor warning
-	// This warning occurs because GTK calls gtk_widget_get_scale_factor before
-	// checking if the widget is NULL - a known GTK 3 bug that is harmless
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		
-		// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
-		// GtkStatusIcon internally calls gtk_widget_get_scale_factor during icon loading,
-		// but GtkStatusIcon is not a GtkWidget, causing a harmless critical warning
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		GtkStatusIcon* ret = gtk_status_icon_new_from_file(filename);
-		
-		// Remove the custom log handler
-		g_log_remove_handler("Gtk", handler_id);
-
-		GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
-		phpgtk_ret->set_instance((gpointer *)ret);
-		return Php::Object("GtkStatusIcon", phpgtk_ret);
-	}
+	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
+	phpgtk_ret->set_instance((gpointer *)ret);
+	return Php::Object("GtkStatusIcon", phpgtk_ret);
 }
 
 Php::Value GtkStatusIcon_::new_from_stock(Php::Parameters &parameters)
 {
 	std::string c_stock_id = parameters[0];
-
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
-	// Ensure GTK is initialized before creating status icon
 	ensure_gtk_initialized();
+	GtkStatusIcon* ret = gtk_status_icon_new_from_stock(stock_id);
 
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		GtkStatusIcon* ret = gtk_status_icon_new_from_stock(stock_id);
-
-		g_log_remove_handler("Gtk", handler_id);
-
-		GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
-		phpgtk_ret->set_instance((gpointer *)ret);
-		return Php::Object("GtkStatusIcon", phpgtk_ret);
-	}
+	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
+	phpgtk_ret->set_instance((gpointer *)ret);
+	return Php::Object("GtkStatusIcon", phpgtk_ret);
 }
 
 Php::Value GtkStatusIcon_::new_from_icon_name(Php::Parameters &parameters)
 {
 	std::string c_icon_name = parameters[0];
-
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
 
-	// Ensure GTK is initialized before creating status icon
 	ensure_gtk_initialized();
+	GtkStatusIcon* ret = gtk_status_icon_new_from_icon_name(icon_name);
 
-	// Suppress fatal-criticals, stderr, and install log handler
-	{
-		GDebugFatalSuppressor fatal_suppressor;
-		StderrSuppressor suppressor;
-		guint handler_id = g_log_set_handler("Gtk", 
-		                                     (GLogLevelFlags)(G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING),
-		                                     suppress_scale_factor_warning,
-		                                     NULL);
-
-		GtkStatusIcon* ret = gtk_status_icon_new_from_icon_name(icon_name);
-
-		g_log_remove_handler("Gtk", handler_id);
-
-		GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
-		phpgtk_ret->set_instance((gpointer *)ret);
-		return Php::Object("GtkStatusIcon", phpgtk_ret);
-	}
+	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
+	phpgtk_ret->set_instance((gpointer *)ret);
+	return Php::Object("GtkStatusIcon", phpgtk_ret);
 }
 
 
