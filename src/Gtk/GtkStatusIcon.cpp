@@ -9,7 +9,13 @@ static void ensure_gtk_initialized()
 	// Check if GTK has been initialized by checking if there's a default display
 	if (gdk_display_get_default() == NULL) {
 		// GTK not initialized, initialize it now
-		gtk_init(0, NULL);
+		// We use gtk_init_check to avoid aborting if initialization fails
+		// Note: This doesn't process command-line arguments. Users who need
+		// GTK command-line argument processing should call Gtk::init() manually
+		// before creating status icons.
+		int argc = 0;
+		char **argv = NULL;
+		gtk_init_check(&argc, &argv);
 	}
 }
 

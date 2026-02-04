@@ -6,17 +6,14 @@
  * Note: GtkStatusIcon is deprecated since GTK 3.14, but still functional.
  * 
  * GTK is now automatically initialized when creating a GtkStatusIcon, so you
- * don't need to call Gtk::init() manually (though you still can).
+ * don't need to call Gtk::init() manually (though you still can if you need
+ * command-line argument processing).
  * 
- * The fix for the gtk_widget_get_scale_factor crash has been applied to:
- * - GtkStatusIcon::new_from_file()
- * - GtkStatusIcon::new_from_pixbuf()
- * - GtkStatusIcon::new_from_stock()
- * - GtkStatusIcon::new_from_icon_name()
- * - $status_icon->set_from_file()
- * - $status_icon->set_from_pixbuf()
- * - $status_icon->set_from_stock()
- * - $status_icon->set_from_icon_name()
+ * Two fixes have been applied:
+ * 1. Automatic GTK initialization prevents crashes when GTK isn't initialized
+ * 2. Log handler suppression prevents the gtk_widget_get_scale_factor warning
+ * 
+ * These fixes apply to all GtkStatusIcon creation and update methods.
  */
 
 // Create a simple test icon file
