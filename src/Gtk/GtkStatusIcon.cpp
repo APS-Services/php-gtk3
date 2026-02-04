@@ -11,6 +11,8 @@ static void suppress_scale_factor_warning(const gchar *log_domain,
                                          const gchar *message,
                                          gpointer user_data)
 {
+	(void)log_domain;
+	(void)log_level;
 	(void)user_data;
 	
 	// Suppress the specific gtk_widget_get_scale_factor warning for GtkStatusIcon
