@@ -243,14 +243,47 @@ Php::Value GtkStatusIcon_::new_from_pixbuf(Php::Parameters &parameters)
 
 Php::Value GtkStatusIcon_::new_from_file(Php::Parameters &parameters)
 {
+	static int debug_counter = 0;
+	
+	fprintf(stderr, "[DEBUG %d] new_from_file: Start\n", ++debug_counter);
+	fflush(stderr);
+	
 	std::string c_filename = parameters[0];
+	fprintf(stderr, "[DEBUG %d] new_from_file: Got filename parameter\n", ++debug_counter);
+	fflush(stderr);
+	
 	gchar *filename = (gchar *)c_filename.c_str();
+	fprintf(stderr, "[DEBUG %d] new_from_file: Converted to gchar*, filename=%s\n", ++debug_counter, filename);
+	fflush(stderr);
 
+	fprintf(stderr, "[DEBUG %d] new_from_file: About to call ensure_gtk_initialized()\n", ++debug_counter);
+	fflush(stderr);
+	
 	ensure_gtk_initialized();
+	fprintf(stderr, "[DEBUG %d] new_from_file: GTK initialized\n", ++debug_counter);
+	fflush(stderr);
+	
+	fprintf(stderr, "[DEBUG %d] new_from_file: About to call gtk_status_icon_new_from_file()\n", ++debug_counter);
+	fflush(stderr);
+	
 	GtkStatusIcon* ret = gtk_status_icon_new_from_file(filename);
+	fprintf(stderr, "[DEBUG %d] new_from_file: gtk_status_icon_new_from_file() returned, ret=%p\n", ++debug_counter, (void*)ret);
+	fflush(stderr);
 
+	fprintf(stderr, "[DEBUG %d] new_from_file: About to create GtkStatusIcon_ wrapper\n", ++debug_counter);
+	fflush(stderr);
+	
 	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
+	fprintf(stderr, "[DEBUG %d] new_from_file: Created wrapper, phpgtk_ret=%p\n", ++debug_counter, (void*)phpgtk_ret);
+	fflush(stderr);
+	
 	phpgtk_ret->set_instance((gpointer *)ret);
+	fprintf(stderr, "[DEBUG %d] new_from_file: Set instance\n", ++debug_counter);
+	fflush(stderr);
+	
+	fprintf(stderr, "[DEBUG %d] new_from_file: About to return Php::Object\n", ++debug_counter);
+	fflush(stderr);
+	
 	return Php::Object("GtkStatusIcon", phpgtk_ret);
 }
 
