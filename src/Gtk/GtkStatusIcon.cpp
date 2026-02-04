@@ -38,7 +38,16 @@ void GtkStatusIcon_::set_from_pixbuf(Php::Parameters &parameters)
 	GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 	pixbuf = GDK_PIXBUF(phpgtk_pixbuf->get_instance());
 
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	gtk_status_icon_set_from_pixbuf(GTK_STATUS_ICON(instance), pixbuf);
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 }
 
 void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
@@ -47,7 +56,16 @@ void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
 
 	gchar *filename = (gchar *)c_filename.c_str();
 
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	gtk_status_icon_set_from_file(GTK_STATUS_ICON(instance), filename);
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 }
 
 void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
@@ -56,7 +74,16 @@ void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
 
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	gtk_status_icon_set_from_stock(GTK_STATUS_ICON(instance), stock_id);
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 }
 
 void GtkStatusIcon_::set_from_icon_name(Php::Parameters &parameters)
@@ -65,7 +92,16 @@ void GtkStatusIcon_::set_from_icon_name(Php::Parameters &parameters)
 
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
 
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	gtk_status_icon_set_from_icon_name(GTK_STATUS_ICON(instance), icon_name);
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 }
 
 /*
@@ -234,7 +270,17 @@ Php::Value GtkStatusIcon_::get_x11_window_id()
 
 void GtkStatusIcon_::__construct()
 {
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	// This is probably not needed for the default constructor, but adding for consistency
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	instance = (gpointer *)gtk_status_icon_new();
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 }
 
 Php::Value GtkStatusIcon_::new_from_pixbuf(Php::Parameters &parameters)
@@ -244,7 +290,16 @@ Php::Value GtkStatusIcon_::new_from_pixbuf(Php::Parameters &parameters)
 	GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
 	pixbuf = GDK_PIXBUF(phpgtk_pixbuf->get_instance());
 
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	GtkStatusIcon* ret = gtk_status_icon_new_from_pixbuf(pixbuf);
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 
 	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
 	phpgtk_ret->set_instance((gpointer *)ret);
@@ -281,7 +336,16 @@ Php::Value GtkStatusIcon_::new_from_stock(Php::Parameters &parameters)
 
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	GtkStatusIcon* ret = gtk_status_icon_new_from_stock(stock_id);
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 
 	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
 	phpgtk_ret->set_instance((gpointer *)ret);
@@ -294,7 +358,16 @@ Php::Value GtkStatusIcon_::new_from_icon_name(Php::Parameters &parameters)
 
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
 
+	// Install custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+	guint handler_id = g_log_set_handler("Gtk", 
+	                                     G_LOG_LEVEL_CRITICAL,
+	                                     suppress_scale_factor_warning,
+	                                     NULL);
+
 	GtkStatusIcon* ret = gtk_status_icon_new_from_icon_name(icon_name);
+
+	// Remove the custom log handler
+	g_log_remove_handler("Gtk", handler_id);
 
 	GtkStatusIcon_ *phpgtk_ret = new GtkStatusIcon_();
 	phpgtk_ret->set_instance((gpointer *)ret);
