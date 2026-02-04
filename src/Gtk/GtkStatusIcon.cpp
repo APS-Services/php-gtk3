@@ -3,8 +3,6 @@
 #include "GtkStatusIcon.h"
 #include <unistd.h>
 #include <fcntl.h>
-#include <cstdlib>
-#include <cstring>
 
 // Helper function to ensure GTK is initialized
 // GtkStatusIcon requires a display connection, which is established by gtk_init
@@ -23,63 +21,25 @@ static void ensure_gtk_initialized()
 	}
 }
 
-// Helper class to temporarily disable G_DEBUG=fatal-criticals
+// Helper class to temporarily disable fatal-criticals for GTK assertions
 // This prevents GTK assertion failures from aborting the process
 class GDebugFatalSuppressor {
 private:
-	char *saved_g_debug;
-	bool had_g_debug;
+	GLogLevelFlags saved_fatal_mask;
 	
 public:
-	GDebugFatalSuppressor() : saved_g_debug(nullptr), had_g_debug(false) {
-		// Save the current G_DEBUG value
-		const char *current_g_debug = getenv("G_DEBUG");
-		if (current_g_debug != nullptr) {
-			saved_g_debug = strdup(current_g_debug);
-			had_g_debug = true;
-			
-			// Remove "fatal-criticals" and "fatal-warnings" from G_DEBUG
-			// We'll create a new value without these flags
-			std::string new_g_debug;
-			const char *start = current_g_debug;
-			while (*start) {
-				// Skip whitespace and commas
-				while (*start == ' ' || *start == ',') start++;
-				if (!*start) break;
-				
-				// Find end of this flag
-				const char *end = start;
-				while (*end && *end != ' ' && *end != ',') end++;
-				
-				// Check if this is a fatal flag
-				size_t len = end - start;
-				if (!(len == 15 && strncmp(start, "fatal-criticals", 15) == 0) &&
-				    !(len == 14 && strncmp(start, "fatal-warnings", 14) == 0)) {
-					// Not a fatal flag, keep it
-					if (!new_g_debug.empty()) new_g_debug += ",";
-					new_g_debug.append(start, len);
-				}
-				
-				start = end;
-			}
-			
-			// Set the new G_DEBUG value without fatal flags
-			if (new_g_debug.empty()) {
-				unsetenv("G_DEBUG");
-			} else {
-				setenv("G_DEBUG", new_g_debug.c_str(), 1);
-			}
-		}
+	GDebugFatalSuppressor() {
+		// Save the current fatal mask for the "Gtk" log domain
+		// and set it to only fatal on G_LOG_LEVEL_ERROR (not CRITICAL or WARNING)
+		// This prevents g_return_val_if_fail from aborting the process
+		saved_fatal_mask = g_log_set_always_fatal(G_LOG_FATAL_MASK);
+		// Only make G_LOG_LEVEL_ERROR fatal, not CRITICAL or WARNING
+		g_log_set_always_fatal((GLogLevelFlags)(G_LOG_LEVEL_ERROR));
 	}
 	
 	~GDebugFatalSuppressor() {
-		// Restore the original G_DEBUG value
-		if (had_g_debug) {
-			if (saved_g_debug != nullptr) {
-				setenv("G_DEBUG", saved_g_debug, 1);
-				free(saved_g_debug);
-			}
-		}
+		// Restore the original fatal mask
+		g_log_set_always_fatal(saved_fatal_mask);
 	}
 };
 
