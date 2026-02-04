@@ -38,8 +38,8 @@ public:
 			return; // Failed to dup, don't suppress
 		}
 		
-		// Open /dev/null
-		dev_null = open("/dev/null", O_WRONLY);
+		// Open /dev/null with O_CLOEXEC to prevent fd leaks to child processes
+		dev_null = open("/dev/null", O_WRONLY | O_CLOEXEC);
 		if (dev_null == -1) {
 			close(saved_stderr);
 			saved_stderr = -1;
