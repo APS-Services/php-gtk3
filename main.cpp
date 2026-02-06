@@ -14,6 +14,22 @@
 
 // https://www.sitepoint.com/developing-php-extensions-c-php-cpp-advanced/
 
+#ifdef WITH_WEBKIT
+/**
+ * Fix signal conflict between PHP 8.2+ and WebKit's JavaScriptCore
+ * This function runs before main() and before any extension initialization
+ * to ensure JSC_SIGNAL_FOR_GC is set before JavaScriptCore is loaded
+ */
+__attribute__((constructor))
+static void setup_jsc_signal() {
+    if (getenv("JSC_SIGNAL_FOR_GC") == nullptr) {
+        // Use SIGUSR2 instead of SIGUSR1 to avoid conflict with PHP
+        std::string signal_num = std::to_string(SIGUSR2);
+        setenv("JSC_SIGNAL_FOR_GC", signal_num.c_str(), 0);
+    }
+}
+#endif
+
 /**
  *  tell the compiler that the get_module is a pure C function
  */
@@ -29,17 +45,6 @@ extern "C"
      */
     PHPCPP_EXPORT void *get_module()
     {
-        // Fix signal conflict between PHP 8.2+ and WebKit's JavaScriptCore
-        // Both try to use signal 10 (SIGUSR1) by default
-        // Tell JavaScriptCore to use a different signal for garbage collection
-        #ifdef WITH_WEBKIT
-        if (getenv("JSC_SIGNAL_FOR_GC") == nullptr) {
-            // Use SIGUSR2 instead of SIGUSR1 to avoid conflict with PHP
-            std::string signal_num = std::to_string(SIGUSR2);
-            setenv("JSC_SIGNAL_FOR_GC", signal_num.c_str(), 0);
-        }
-        #endif
-
         // static(!) Php::Extension object that should stay in memory
         // for the entire duration of the process (that's why it's static)
         static Php::Extension extension("php-gtk3", "1.0");
