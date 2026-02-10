@@ -113,7 +113,7 @@ std::string phpgtk_type_to_string(Php::Type type)
 Php::Value cobject_to_phpobject(gpointer *cobject)
 {
 	if(cobject == NULL) {
-		return NULL;
+		return nullptr;
 	}
 
 	GtkWidget_ *return_parsed = new GtkWidget_();
