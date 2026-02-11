@@ -174,6 +174,8 @@ libgdk_pixbuf-2.0.dll.a
 libglib-2.0.dll.a
 libgladeui-2.dll.a
 libgtksourceview-3.0.dll.a
+libcairo-2.dll.a
+libcairo-gobject-2.dll.a
 ```
 
 ## Compile PHP-GTK3
