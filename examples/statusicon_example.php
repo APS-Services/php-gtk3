@@ -6,8 +6,10 @@
  * 
  * IMPORTANT NOTES:
  * - GtkStatusIcon is DEPRECATED and only works on X11
+ * - GNOME 3.26+ (Ubuntu 17.10+) removed system tray support - you need an extension!
  * - On Wayland, the icon may appear but events (clicks) will NOT work properly
- * - If running on Wayland, use: GDK_BACKEND=x11 php thisfile.php
+ * - If running on Wayland, use: GDK_BACKEND=x11 php statusicon_example.php
+ * - On GNOME, install: sudo apt install gnome-shell-extension-appindicator
  * - For production Wayland apps, consider using AppIndicator instead
  * 
  * Expected signals for GtkStatusIcon:
@@ -22,12 +24,24 @@
 // Check if we're on Wayland and warn the user
 $display = getenv('WAYLAND_DISPLAY');
 if ($display !== false && $display !== '') {
-    echo "WARNING: Wayland detected ($display)\n";
+    echo "⚠ WARNING: Wayland detected ($display)\n";
     echo "GtkStatusIcon does not work properly on Wayland.\n";
     echo "Events (clicks) will not be received.\n";
     echo "To run this example, use: GDK_BACKEND=x11 php statusicon_example.php\n";
-    echo "\nContinuing anyway for demonstration...\n\n";
+    echo "\n";
 }
+
+// Check if we're on GNOME (which might not have system tray)
+$desktop = getenv('XDG_CURRENT_DESKTOP');
+if ($desktop && (strpos($desktop, 'GNOME') !== false || strpos($desktop, 'gnome') !== false)) {
+    echo "⚠ NOTE: GNOME detected\n";
+    echo "GNOME 3.26+ removed system tray support.\n";
+    echo "If the icon doesn't appear, install: sudo apt install gnome-shell-extension-appindicator\n";
+    echo "Then enable it in GNOME Extensions or Tweaks.\n";
+    echo "\n";
+}
+
+echo "Continuing...\n\n";
 
 // Create a simple window (just to keep the app running)
 $window = new GtkWindow();
@@ -150,16 +164,29 @@ $icon->connect("scroll-event", function($icon, $event) {
 
 // Check if the icon is embedded in the system tray
 if ($icon->is_embedded()) {
-    echo "Status icon is successfully embedded in the system tray\n";
+    echo "✓ Status icon is successfully embedded in the system tray\n";
+    echo "You should see the icon in your system tray. Try clicking it!\n";
 } else {
-    echo "WARNING: Status icon is NOT embedded in the system tray\n";
-    echo "This usually means:\n";
-    echo "1. No system tray is available (common on Wayland)\n";
-    echo "2. The desktop environment doesn't support XEmbed tray icons\n";
+    echo "✗ ERROR: Status icon is NOT embedded in the system tray\n";
+    echo "\nThis usually means:\n";
+    echo "1. No system tray is available\n";
+    echo "2. You're using GNOME 3.26+ which removed system tray support\n";
+    echo "3. The desktop environment doesn't support XEmbed tray icons\n";
+    echo "\nSolutions:\n";
+    echo "- On GNOME: Install gnome-shell-extension-appindicator\n";
+    echo "  Ubuntu/Debian: sudo apt install gnome-shell-extension-appindicator\n";
+    echo "  Then enable it in GNOME Tweaks or Extensions app\n";
+    echo "- Or use a different desktop environment (XFCE, MATE, KDE)\n";
+    echo "\nThe application will continue but the tray icon won't work.\n";
 }
 
-echo "\nApplication started. The status icon should appear in your system tray.\n";
-echo "Try clicking on it (left-click and right-click).\n";
-echo "Close this window or use the tray menu to quit.\n\n";
+echo "\n" . str_repeat("=", 70) . "\n";
+echo "Application started.\n";
+if ($icon->is_embedded()) {
+    echo "The status icon should appear in your system tray.\n";
+    echo "Try clicking on it (left-click and right-click).\n";
+}
+echo "Close this window or use the tray menu to quit.\n";
+echo str_repeat("=", 70) . "\n\n";
 
 Gtk::main();

@@ -31,7 +31,26 @@ When you create a `GtkStatusIcon` on Wayland:
 
 ## Solutions and Workarounds
 
-### Solution 1: Force X11 Backend (Recommended for Quick Fix)
+### Solution 0: Install GNOME Extension (For GNOME Users)
+
+**If you're using GNOME 3.26 or newer (Ubuntu 17.10+), even `GDK_BACKEND=x11` won't work without a system tray extension.**
+
+Install one of these GNOME Shell extensions:
+
+1. **AppIndicator and KStatusNotifierItem Support** (recommended):
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install gnome-shell-extension-appindicator
+   # Then enable it in GNOME Tweaks or Extensions app
+   ```
+
+2. **TopIcons Plus** or **Tray Icons: Reloaded**:
+   - Available from https://extensions.gnome.org/
+   - Search for "tray icons" or "system tray"
+
+After installing and enabling the extension, restart GNOME Shell (Alt+F2, type 'r', press Enter) or log out and back in.
+
+### Solution 1: Force X11 Backend
 
 Force GTK to use X11 instead of Wayland by setting the `GDK_BACKEND` environment variable:
 
@@ -46,13 +65,14 @@ putenv('GDK_BACKEND=x11');
 
 **Pros:**
 - Simple and immediate fix
-- Works with existing code
+- Works with existing code (if desktop environment supports system tray)
 - Full GtkStatusIcon functionality
 
 **Cons:**
 - Requires XWayland to be installed
 - Not a "native" Wayland solution
 - May have minor visual inconsistencies
+- **Still requires system tray support in desktop environment (GNOME needs extension)**
 
 ### Solution 2: Check Backend at Runtime
 
@@ -113,13 +133,17 @@ See `examples/statusicon_example.php` for a complete working example that:
 
 ## Desktop Environment Compatibility
 
+**IMPORTANT: GNOME has removed system tray support** starting with GNOME 3.26 (2017). Even on X11, GtkStatusIcon will not work on modern GNOME without extensions.
+
 | Desktop Environment | Wayland | X11 | Notes |
 |---------------------|---------|-----|-------|
-| GNOME (Ubuntu) | ❌ No | ✅ Yes | Use GDK_BACKEND=x11 |
-| KDE Plasma | ⚠️ Limited | ✅ Yes | May work with SNI bridge |
-| XFCE | N/A | ✅ Yes | X11 only |
-| MATE | N/A | ✅ Yes | X11 only |
+| GNOME 3.26+ (Ubuntu 17.10+) | ❌ No | ❌ No | System tray removed. Need TopIcons or AppIndicator extension |
+| GNOME 3.24 and older | ❌ No | ✅ Yes | Use GDK_BACKEND=x11 |
+| KDE Plasma | ⚠️ Limited | ✅ Yes | SNI support, may work with compatibility bridge |
+| XFCE | N/A | ✅ Yes | X11 only, full support |
+| MATE | N/A | ✅ Yes | X11 only, full support |
 | Cinnamon | ⚠️ Limited | ✅ Yes | Some Wayland support |
+| Ubuntu Unity | N/A | ✅ Yes | X11 only, full support |
 
 ## Testing Your Application
 
@@ -148,7 +172,36 @@ if ($icon->is_embedded()) {
 
 ## Frequently Asked Questions
 
-### Q: Why does left-click open a browser tab?
+### Q: Why does left-click open a browser tab even with GDK_BACKEND=x11?
+
+This happens on **GNOME 3.26+** (Ubuntu 17.10+, Ubuntu 18.04+, Ubuntu 20.04+, etc.) because:
+
+1. **GNOME removed system tray support entirely** in version 3.26 (September 2017)
+2. Without a system tray, the icon cannot be displayed
+3. GTK may try to "activate" the application instead, leading to unexpected behavior
+4. If your PHP process has any association with Chrome/Chromium, it might open that instead
+
+**Solutions:**
+1. **Install a GNOME extension** for system tray support (see "Solution 0" above)
+2. **Use a different desktop environment** (XFCE, MATE, KDE)
+3. **Switch to AppIndicator** (requires adding bindings to PHP-GTK3)
+
+### Q: How do I know if my system has a system tray?
+
+Check if the icon is embedded:
+```php
+$icon = new GtkStatusIcon();
+$icon->set_from_icon_name("applications-system");
+$icon->set_visible(true);
+
+if (!$icon->is_embedded()) {
+    echo "ERROR: No system tray available!\n";
+    echo "On GNOME, install gnome-shell-extension-appindicator\n";
+    exit(1);
+}
+```
+
+### Q: Why does left-click open a browser tab on Wayland?
 
 This happens when:
 1. Your application is running on Wayland
@@ -156,7 +209,7 @@ This happens when:
 3. The DE falls back to "activate application" behavior
 4. Your application process is somehow associated with Chrome/Chromium (e.g., if launched from a Chrome-based IDE or terminal)
 
-**Solution**: Use `GDK_BACKEND=x11` to force X11 mode.
+**Solution**: Use `GDK_BACKEND=x11` AND install a system tray extension if using GNOME.
 
 ### Q: Can I make it work natively on Wayland?
 
