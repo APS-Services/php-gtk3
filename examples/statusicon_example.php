@@ -10,12 +10,14 @@
  * - On Wayland, the icon may appear but events (clicks) will NOT work properly
  * - If running on Wayland, use: GDK_BACKEND=x11 php statusicon_example.php
  * - On GNOME, install: sudo apt install gnome-shell-extension-appindicator
+ * - **KNOWN BUG:** The 'activate' signal doesn't work with gnome-shell-extension-appindicator
+ *   Use 'button-press-event' instead (see example below)
  * - For production Wayland apps, consider using AppIndicator instead
  * 
  * Expected signals for GtkStatusIcon:
- * - activate: Left-click on the icon
- * - popup-menu: Right-click on the icon  
- * - button-press-event: Any button press (with event details)
+ * - activate: Left-click (BROKEN on GNOME with appindicator extension!)
+ * - button-press-event: Any button press - USE THIS for left-click on GNOME
+ * - popup-menu: Right-click (works properly)
  * - button-release-event: Any button release (with event details)
  * - scroll-event: Mouse wheel scroll
  * - size-changed: Icon size changed
@@ -74,17 +76,44 @@ $icon->set_title("My Application");
 // Make it visible
 $icon->set_visible(true);
 
-// Connect to the 'activate' signal (left-click)
-// NOTE: This will ONLY work on X11, not on Wayland
+// IMPORTANT: On GNOME with gnome-shell-extension-appindicator, the 'activate' signal
+// has a known bug and doesn't work. Use 'button-press-event' instead!
+
+// Method 1 (RECOMMENDED): Use button-press-event for left-click detection
+// This works with gnome-shell-extension-appindicator
+$icon->connect("button-press-event", function($icon, $event) {
+    if ($event->button == 1) {  // 1 = left button
+        echo "Icon was left-clicked (button-press-event, button 1)\n";
+        
+        $dialog = new GtkMessageDialog(
+            null,
+            GtkDialogFlags::MODAL,
+            GtkMessageType::INFO,
+            GtkButtonsType::OK,
+            "Status icon was clicked!\n\n(Detected via button-press-event)"
+        );
+        $dialog->run();
+        $dialog->destroy();
+        
+        return true;  // Prevent further event processing
+    }
+    
+    return false;  // Let other events (right-click, etc.) be handled normally
+});
+
+// Method 2 (BROKEN on GNOME with appindicator extension): Connect to 'activate' signal
+// NOTE: This signal has a known bug with gnome-shell-extension-appindicator and won't fire.
+// It works fine on X11 without the extension, or on other desktop environments.
+// Keeping this here for reference, but use button-press-event instead!
 $icon->connect("activate", function() {
-    echo "Icon was left-clicked (activate signal)\n";
+    echo "Icon was activated (activate signal) - this won't work on GNOME with appindicator!\n";
     
     $dialog = new GtkMessageDialog(
         null,
         GtkDialogFlags::MODAL,
         GtkMessageType::INFO,
         GtkButtonsType::OK,
-        "Status icon was activated!\n\nThis only works on X11."
+        "If you see this, the activate signal works on your system!"
     );
     $dialog->run();
     $dialog->destroy();
@@ -139,19 +168,6 @@ $icon->connect("popup-menu", function($icon, $button, $activate_time) {
         $button,                 // button
         $activate_time           // activate time
     );
-});
-
-// Optional: Connect to button-press-event for more control
-// This gives access to the raw GdkEventButton
-$icon->connect("button-press-event", function($icon, $event) {
-    echo "Button press event received\n";
-    
-    // You can check which button was pressed
-    $button = $event->button;
-    echo "Button number: $button\n";
-    
-    // Return false to allow other handlers to process
-    return false;
 });
 
 // Optional: Connect to scroll-event

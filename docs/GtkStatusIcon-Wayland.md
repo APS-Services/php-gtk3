@@ -172,6 +172,38 @@ if ($icon->is_embedded()) {
 
 ## Frequently Asked Questions
 
+### Q: The activate signal doesn't work but popup-menu does - why?
+
+**This is a known issue with gnome-shell-extension-appindicator!**
+
+The extension has a bug where it doesn't properly forward the `activate` signal (left-click) from StatusNotifierItem back to GtkStatusIcon, but it does forward `popup-menu` (right-click) and `button-press-event`.
+
+**Workaround:** Use `button-press-event` instead of `activate`:
+
+```php
+// BROKEN: activate signal doesn't work with gnome-shell-extension-appindicator
+// $icon->connect("activate", function() { ... });
+
+// WORKING: Use button-press-event and check for button 1 (left-click)
+$icon->connect("button-press-event", function($icon, $event) {
+    if ($event->button == 1) {  // 1 = left button
+        echo "Left-click detected!\n";
+        // Handle left-click here
+        return true;  // Prevent further processing
+    }
+    return false;  // Let other buttons be handled normally
+});
+
+// popup-menu still works for right-click
+$icon->connect("popup-menu", function($icon, $button, $activate_time) {
+    // Show your menu here
+});
+```
+
+This is specifically a problem with:
+- GNOME with gnome-shell-extension-appindicator installed
+- The extension converts XEmbed to StatusNotifierItem but doesn't map all signals correctly
+
 ### Q: Why does left-click open a browser tab even with GDK_BACKEND=x11?
 
 This happens on **GNOME 3.26+** (Ubuntu 17.10+, Ubuntu 18.04+, Ubuntu 20.04+, etc.) because:
@@ -183,8 +215,9 @@ This happens on **GNOME 3.26+** (Ubuntu 17.10+, Ubuntu 18.04+, Ubuntu 20.04+, et
 
 **Solutions:**
 1. **Install a GNOME extension** for system tray support (see "Solution 0" above)
-2. **Use a different desktop environment** (XFCE, MATE, KDE)
-3. **Switch to AppIndicator** (requires adding bindings to PHP-GTK3)
+2. **Use `button-press-event` instead of `activate`** (see FAQ above)
+3. **Use a different desktop environment** (XFCE, MATE, KDE)
+4. **Switch to AppIndicator** (requires adding bindings to PHP-GTK3)
 
 ### Q: How do I know if my system has a system tray?
 
