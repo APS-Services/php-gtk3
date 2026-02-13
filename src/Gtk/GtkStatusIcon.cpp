@@ -36,11 +36,13 @@ static void warn_if_wayland()
 	
 	if (!warning_shown && is_wayland_backend()) {
 		warning_shown = true;
-		Php::warning << "GtkStatusIcon is deprecated and does not work on Wayland. "
-		            << "The system tray icon will not be visible. "
-		            << "Possible workarounds: "
-		            << "(1) Set GDK_BACKEND=x11 to force X11 compatibility mode, or "
-		            << "(2) Use a desktop environment that supports XEmbed system tray protocol."
+		Php::warning << "GtkStatusIcon is deprecated and does not work properly on Wayland. "
+		            << "The icon may appear but click events (activate, popup-menu, etc.) will NOT be received. "
+		            << "The desktop environment may show unexpected behavior (e.g., opening wrong applications). "
+		            << "Workarounds: "
+		            << "(1) Set GDK_BACKEND=x11 environment variable to force X11 compatibility mode, or "
+		            << "(2) Use a desktop environment with XEmbed system tray support. "
+		            << "For native Wayland support, consider using AppIndicator/StatusNotifierItem instead."
 		            << std::flush;
 	}
 }
