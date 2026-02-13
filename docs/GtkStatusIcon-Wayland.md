@@ -65,7 +65,7 @@ $gdkBackend = getenv('GDK_BACKEND');
 
 if ($waylandDisplay !== false && $waylandDisplay !== '' && $gdkBackend !== 'x11') {
     echo "Warning: Running on Wayland. System tray icon will not work properly.\n";
-    echo "Please restart with: GDK_BACKEND=x11 php " . basename(__FILE__) . "\n";
+    echo "Please restart with: GDK_BACKEND=x11 php your_script.php\n";
     
     // Either exit or disable tray icon functionality
     // exit(1);

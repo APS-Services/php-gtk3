@@ -25,7 +25,7 @@ if ($display !== false && $display !== '') {
     echo "WARNING: Wayland detected ($display)\n";
     echo "GtkStatusIcon does not work properly on Wayland.\n";
     echo "Events (clicks) will not be received.\n";
-    echo "To run this example, use: GDK_BACKEND=x11 php " . basename(__FILE__) . "\n";
+    echo "To run this example, use: GDK_BACKEND=x11 php statusicon_example.php\n";
     echo "\nContinuing anyway for demonstration...\n\n";
 }
 
