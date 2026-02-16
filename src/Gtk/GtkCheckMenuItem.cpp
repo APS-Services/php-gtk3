@@ -19,6 +19,12 @@ void GtkCheckMenuItem_::__construct()
 
 Php::Value GtkCheckMenuItem_::new_with_label(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkCheckMenuItem::new_with_label: First parameter (label) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_label = parameters[0];
 	gchar *label = (gchar *)s_label.c_str();
 

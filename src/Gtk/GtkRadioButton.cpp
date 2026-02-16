@@ -39,6 +39,12 @@ Php::Value GtkRadioButton_::new_from_widget(Php::Parameters &parameters)
 
 Php::Value GtkRadioButton_::new_with_label(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkRadioButton::new_with_label: First parameter (label) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_label = parameters[0];
 	gchar *label = (gchar *)s_label.c_str();
 
@@ -62,6 +68,12 @@ Php::Value GtkRadioButton_::new_with_label_from_widget(Php::Parameters &paramete
 	}
 
 	// --
+	if (!parameters[1].isString()) {
+		std::string error_msg = "GtkRadioButton::new_with_label_from_widget: Second parameter (label) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[1].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_label = parameters[1];
 	gchar *label = (gchar *)s_label.c_str();
 

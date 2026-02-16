@@ -13,6 +13,12 @@ GtkExpander_::~GtkExpander_() = default;
 
 void GtkExpander_::__construct(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkExpander::__construct: First parameter (label) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_label = parameters[0];
 	gchar *label = (gchar *)s_label.c_str();
 
@@ -22,6 +28,12 @@ void GtkExpander_::__construct(Php::Parameters &parameters)
 
 Php::Value GtkExpander_::new_with_mnemonic(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkExpander::new_with_mnemonic: First parameter (label) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_label = parameters[0];
 	gchar *label = (gchar *)s_label.c_str();
 
