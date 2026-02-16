@@ -216,6 +216,12 @@ Php::Value GtkStatusIcon_::get_title()
 
 void GtkStatusIcon_::set_name(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkStatusIcon::set_name: First parameter (name) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string c_name = parameters[0];
 
 	gchar *name = (gchar *)c_name.c_str();

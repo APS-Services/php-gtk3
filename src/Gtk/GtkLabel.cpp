@@ -280,6 +280,12 @@ Php::Value GtkLabel_::get_angle()
 
 void GtkLabel_::set_label(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkLabel::set_label: First parameter (label) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_str = parameters[0];
 	gchar *str = (gchar *)s_str.c_str();
 

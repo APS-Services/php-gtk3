@@ -408,6 +408,12 @@ void GtkWidget_::grab_default()
 
 void GtkWidget_::set_name(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkWidget::set_name: First parameter (name) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_name = parameters[0];
 	gchar *name = (gchar *)s_name.c_str();
 
