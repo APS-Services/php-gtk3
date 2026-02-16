@@ -68,6 +68,12 @@ Php::Value GtkEntry_::get_text()
  */
 void GtkEntry_::set_text(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkEntry::set_text: First parameter (text) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string text = parameters[0];
 	gtk_entry_set_text(GTK_ENTRY(instance), text.c_str());
 }

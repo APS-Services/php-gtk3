@@ -30,6 +30,12 @@ void GtkLabel_::__construct(Php::Parameters &parameters)
 
 void GtkLabel_::set_text(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkLabel::set_text: First parameter (text) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_str = parameters[0];
 	gchar *str = (gchar *)s_str.c_str();
 
@@ -39,6 +45,12 @@ void GtkLabel_::set_text(Php::Parameters &parameters)
 
 void GtkLabel_::set_markup(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkLabel::set_markup: First parameter (markup) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_str = parameters[0];
 	gchar *str = (gchar *)s_str.c_str();
 
@@ -48,6 +60,12 @@ void GtkLabel_::set_markup(Php::Parameters &parameters)
 
 void GtkLabel_::set_markup_with_mnemonic(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkLabel::set_markup_with_mnemonic: First parameter (markup) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_str = parameters[0];
 	gchar *str = (gchar *)s_str.c_str();
 
@@ -176,6 +194,12 @@ void GtkLabel_::set_selectable(Php::Parameters &parameters)
 
 void GtkLabel_::set_text_with_mnemonic(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkLabel::set_text_with_mnemonic: First parameter (text) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_str = parameters[0];
 	gchar *str = (gchar *)s_str.c_str();
 

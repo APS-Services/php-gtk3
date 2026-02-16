@@ -1607,6 +1607,12 @@ Php::Value GtkWidget_::get_tooltip_markup()
 
 void GtkWidget_::set_tooltip_markup(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkWidget::set_tooltip_markup: First parameter (markup) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_markup = parameters[0];
 	gchar *markup = (gchar *)s_markup.c_str();
 
@@ -1623,6 +1629,12 @@ Php::Value GtkWidget_::get_tooltip_text()
 
 void GtkWidget_::set_tooltip_text(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkWidget::set_tooltip_text: First parameter (text) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_text = parameters[0];
 	gchar *text = (gchar *)s_text.c_str();
 

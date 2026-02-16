@@ -81,6 +81,12 @@ Php::Value GtkMessageDialog_::new_with_markup(Php::Parameters &parameters)
 
 void GtkMessageDialog_::set_markup(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkMessageDialog::set_markup: First parameter (markup) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_str = parameters[0];
 	gchar *str = (gchar *)s_str.c_str();
 

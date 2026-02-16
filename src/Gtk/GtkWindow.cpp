@@ -745,6 +745,12 @@ Php::Value GtkWindow_::set_icon_from_file(Php::Parameters &parameters)
  */
 void GtkWindow_::set_icon_name(Php::Parameters &parameters)
 {
+    if (!parameters[0].isString()) {
+        std::string error_msg = "GtkWindow::set_icon_name: First parameter (icon_name) must be a string, ";
+        error_msg += phpgtk_type_to_string(parameters[0].type());
+        error_msg += " given";
+        throw Php::Exception(error_msg);
+    }
     std::string filename = parameters[0];
 
     return gtk_window_set_icon_name(GTK_WINDOW(instance), filename.c_str());

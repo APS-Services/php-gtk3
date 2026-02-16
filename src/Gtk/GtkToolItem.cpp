@@ -49,6 +49,12 @@ Php::Value GtkToolItem_::get_expand()
 
 void GtkToolItem_::set_tooltip_text(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkToolItem::set_tooltip_text: First parameter (text) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_text = parameters[0];
 	gchar *text = (gchar *)s_text.c_str();
 
@@ -58,6 +64,12 @@ void GtkToolItem_::set_tooltip_text(Php::Parameters &parameters)
 
 void GtkToolItem_::set_tooltip_markup(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkToolItem::set_tooltip_markup: First parameter (markup) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_text = parameters[0];
 	gchar *text = (gchar *)s_text.c_str();
 

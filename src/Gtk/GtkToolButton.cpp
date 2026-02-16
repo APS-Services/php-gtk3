@@ -60,6 +60,12 @@ Php::Value GtkToolButton_::get_use_underline()
 
 void GtkToolButton_::set_icon_name(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkToolButton::set_icon_name: First parameter (icon_name) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_icon_name = parameters[0];
 	gchar *icon_name = (gchar *)s_icon_name.c_str();
 

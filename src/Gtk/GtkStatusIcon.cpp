@@ -176,6 +176,12 @@ void GtkStatusIcon_::set_has_tooltip(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_tooltip_text(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkStatusIcon::set_tooltip_text: First parameter (text) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string c_text = parameters[0];
 
 	gchar *text = (gchar *)c_text.c_str();
@@ -185,6 +191,12 @@ void GtkStatusIcon_::set_tooltip_text(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_tooltip_markup(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkStatusIcon::set_tooltip_markup: First parameter (markup) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string c_markup = parameters[0];
 
 	gchar *markup = (gchar *)c_markup.c_str();
