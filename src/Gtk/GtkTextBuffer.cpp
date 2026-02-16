@@ -197,6 +197,12 @@ void GtkTextBuffer_::insert_with_tags_by_name(Php::Parameters &parameters)
 	const gchar *first_tag_name = NULL;
 	std::string s_first_tag_name;
 	if(parameters.size() >= 4) {
+		if (!parameters[3].isString()) {
+			std::string error_msg = "GtkTextBuffer::insert_with_tags_by_name: Fourth parameter (first_tag_name) must be a string, ";
+			error_msg += phpgtk_type_to_string(parameters[3].type());
+			error_msg += " given";
+			throw Php::Exception(error_msg);
+		}
 		s_first_tag_name.assign((const char *)parameters[3]);
 		first_tag_name = s_first_tag_name.c_str();
 	}
