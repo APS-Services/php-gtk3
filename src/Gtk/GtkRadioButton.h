@@ -7,6 +7,8 @@
 
 	#include "GtkCheckButton.h"
 
+	#include "../../php-gtk.h"
+
     /**
      * GtkRadioButton_
      * 

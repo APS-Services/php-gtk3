@@ -49,7 +49,12 @@ Php::Value GtkToolItem_::get_expand()
 
 void GtkToolItem_::set_tooltip_text(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkToolItem::set_tooltip_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_text = parameters[0].stringValue();
 	gchar *text = (gchar *)s_text.c_str();
 
 	gtk_tool_item_set_tooltip_text (GTK_TOOL_ITEM(instance), text);
@@ -58,10 +63,15 @@ void GtkToolItem_::set_tooltip_text(Php::Parameters &parameters)
 
 void GtkToolItem_::set_tooltip_markup(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
-	gchar *text = (gchar *)s_text.c_str();
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkToolItem::set_tooltip_markup: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_markup = parameters[0].stringValue();
+	gchar *markup = (gchar *)s_markup.c_str();
 
-	gtk_tool_item_set_tooltip_markup (GTK_TOOL_ITEM(instance), text);
+	gtk_tool_item_set_tooltip_markup (GTK_TOOL_ITEM(instance), markup);
 
 }
 
@@ -180,7 +190,7 @@ Php::Value GtkToolItem_::retrieve_proxy_menu_item()
 
 void GtkToolItem_::set_proxy_menu_item(Php::Parameters &parameters)
 {
-	std::string s_menu_item_id = parameters[0];
+	std::string s_menu_item_id = parameters[0].stringValue();
 	gchar *menu_item_id = (gchar *)s_menu_item_id.c_str();
 
 	GtkWidget *menu_item;
@@ -196,7 +206,7 @@ void GtkToolItem_::set_proxy_menu_item(Php::Parameters &parameters)
 
 Php::Value GtkToolItem_::get_proxy_menu_item(Php::Parameters &parameters)
 {
-	std::string s_menu_item_id = parameters[0];
+	std::string s_menu_item_id = parameters[0].stringValue();
 	gchar *menu_item_id = (gchar *)s_menu_item_id.c_str();
 
 	gpointer *ret = (gpointer *)gtk_tool_item_get_proxy_menu_item (GTK_TOOL_ITEM(instance), menu_item_id);

@@ -14,8 +14,13 @@ GtkFrame_::~GtkFrame_() = default;
 void GtkFrame_::__construct(Php::Parameters &parameters)
 {
 	std::string s_str = "";
-	 if (parameters.size() > 0 && ! parameters[0].isNull()) {
-		s_str.assign((const char *)parameters[0]);
+	if (parameters.size() > 0 && !parameters[0].isNull()) {
+		if (!parameters[0].isString()) {
+			Php::warning << "GtkFrame::__construct: First parameter (label) should be a string, " 
+			            << phpgtk_type_to_string(parameters[0].type()) 
+			            << " given (auto-converting)" << std::flush;
+		}
+		s_str = parameters[0].stringValue();
 	}
 
 	instance = (gpointer *)gtk_frame_new (s_str.c_str());
@@ -24,7 +29,12 @@ void GtkFrame_::__construct(Php::Parameters &parameters)
 
 void GtkFrame_::set_label(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkFrame::set_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gtk_frame_set_label (GTK_FRAME(instance), label);

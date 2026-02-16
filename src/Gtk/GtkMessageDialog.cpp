@@ -29,13 +29,13 @@ void GtkMessageDialog_::__construct(Php::Parameters &parameters)
 	int int_buttons = (int)parameters[3];
 	GtkButtonsType buttons = (GtkButtonsType)int_buttons;
 
-	std::string s_message_format = parameters[4];
+	std::string s_message_format = parameters[4].stringValue();
 	gchar *message_format = (gchar *)s_message_format.c_str();
 
 
 	std::string s_text = "";
 	if(parameters.size() > 1) {
-		std::string a_text = parameters[1];
+		std::string a_text = parameters[1].stringValue();
 		s_text = a_text;
 	}
 	
@@ -63,12 +63,12 @@ Php::Value GtkMessageDialog_::new_with_markup(Php::Parameters &parameters)
 	int int_buttons = (int)parameters[3];
 	GtkButtonsType buttons = (GtkButtonsType)int_buttons;
 
-	std::string s_message_format = parameters[4];
+	std::string s_message_format = parameters[4].stringValue();
 	gchar *message_format = (gchar *)s_message_format.c_str();
 
 	std::string s_text = "";
 	if(parameters.size() > 1) {
-		std::string a_text = parameters[1];
+		std::string a_text = parameters[1].stringValue();
 		s_text = a_text;
 	}
 
@@ -81,7 +81,12 @@ Php::Value GtkMessageDialog_::new_with_markup(Php::Parameters &parameters)
 
 void GtkMessageDialog_::set_markup(Php::Parameters &parameters)
 {
-	std::string s_str = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkMessageDialog::set_markup: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG(instance), str);
@@ -90,11 +95,11 @@ void GtkMessageDialog_::set_markup(Php::Parameters &parameters)
 
 void GtkMessageDialog_::format_secondary_text(Php::Parameters &parameters)
 {
-	std::string s_message_format = parameters[0];
+	std::string s_message_format = parameters[0].stringValue();
 
 	std::string s_text = "";
 	if(parameters.size() > 1) {
-		std::string a_text = parameters[1];
+		std::string a_text = parameters[1].stringValue();
 		s_text = a_text;
 	}
 
@@ -104,11 +109,11 @@ void GtkMessageDialog_::format_secondary_text(Php::Parameters &parameters)
 
 void GtkMessageDialog_::format_secondary_markup(Php::Parameters &parameters)
 {
-	std::string s_message_format = parameters[0];
+	std::string s_message_format = parameters[0].stringValue();
 
 	std::string s_text = "";
 	if(parameters.size() > 1) {
-		std::string a_text = parameters[1];
+		std::string a_text = parameters[1].stringValue();
 		s_text = a_text;
 	}
 

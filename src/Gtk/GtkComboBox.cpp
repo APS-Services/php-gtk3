@@ -212,7 +212,7 @@ Php::Value GtkComboBox_::get_active_id()
 
 void GtkComboBox_::set_active_id(Php::Parameters &parameters)
 {
-	std::string s_active_id = parameters[0];
+	std::string s_active_id = parameters[0].stringValue();
 	gchar *active_id = (gchar *)s_active_id.c_str();
 
 	gtk_combo_box_set_active_id (GTK_COMBO_BOX(instance), active_id);
@@ -303,12 +303,12 @@ Php::Value GtkComboBox_::get_row_separator_func()
 
 void GtkComboBox_::set_row_separator_func(Php::Parameters &parameters)
 {
-	// std::string s_func = parameters[0];
+	// std::string s_func = parameters[0].stringValue();
 	// gchar *func = (gchar *)s_func.c_str();
 
 	// gpointer data = (gpointer)parameters[1];
 
-	// std::string s_destroy = parameters[2];
+	// std::string s_destroy = parameters[2].stringValue();
 	// gchar *destroy = (gchar *)s_destroy.c_str();
 
 	// gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX(instance), func, data, destroy);
@@ -418,7 +418,7 @@ void GtkComboBox_::add_attribute(Php::Parameters &parameters)
 	Php::Value object = parameters[0];
 	GtkCellRenderer_ *passedRenderer = (GtkCellRenderer_ *)object.implementation();
 
-	std::string atribute = parameters[1];
+	std::string atribute = parameters[1].stringValue();
 
 	gint column = (int)parameters[2];
 

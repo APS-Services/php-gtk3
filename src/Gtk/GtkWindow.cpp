@@ -29,7 +29,12 @@ void GtkWindow_::__construct(Php::Parameters &parameters)
  */
 void GtkWindow_::set_title(Php::Parameters &parameters)
 {
-    std::string title = parameters[0];
+    if (!parameters[0].isString()) {
+        Php::warning << "GtkWindow::set_title: First parameter (title) should be a string, " 
+                    << phpgtk_type_to_string(parameters[0].type()) 
+                    << " given (auto-converting)" << std::flush;
+    }
+    std::string title = parameters[0].stringValue();
 
     gtk_window_set_title(GTK_WINDOW(instance), title.c_str());
 }
@@ -729,7 +734,7 @@ Php::Value GtkWindow_::get_icon()
  */
 Php::Value GtkWindow_::set_icon_from_file(Php::Parameters &parameters)
 {
-    std::string filename = parameters[0];
+    std::string filename = parameters[0].stringValue();
 
     return gtk_window_set_icon_from_file(GTK_WINDOW(instance), filename.c_str(), NULL);
 }
@@ -739,7 +744,12 @@ Php::Value GtkWindow_::set_icon_from_file(Php::Parameters &parameters)
  */
 void GtkWindow_::set_icon_name(Php::Parameters &parameters)
 {
-    std::string filename = parameters[0];
+    if (!parameters[0].isString()) {
+        Php::warning << "GtkWindow::set_icon_name: First parameter (icon_name) should be a string, " 
+                    << phpgtk_type_to_string(parameters[0].type()) 
+                    << " given (auto-converting)" << std::flush;
+    }
+    std::string filename = parameters[0].stringValue();
 
     return gtk_window_set_icon_name(GTK_WINDOW(instance), filename.c_str());
 }
@@ -825,7 +835,7 @@ void GtkWindow_::set_default_icon(Php::Parameters &parameters)
  */
 Php::Value GtkWindow_::set_default_icon_from_file(Php::Parameters &parameters)
 {
-    std::string filename = parameters[0];
+    std::string filename = parameters[0].stringValue();
 
     return gtk_window_set_default_icon_from_file(filename.c_str(), NULL);
 }
@@ -837,7 +847,7 @@ Php::Value GtkWindow_::set_default_icon_from_file(Php::Parameters &parameters)
  */
 void GtkWindow_::set_default_icon_name(Php::Parameters &parameters)
 {
-    std::string filename = parameters[0];
+    std::string filename = parameters[0].stringValue();
 
     return gtk_window_set_default_icon_name(filename.c_str());
 }

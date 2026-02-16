@@ -20,7 +20,7 @@ void GtkPageSetup_::__construct()
 Php::Value GtkPageSetup_::new_from_file(Php::Parameters &parameters)
 {
 
-	std::string s_file_name = parameters[0];
+	std::string s_file_name = parameters[0].stringValue();
 	gchar *file_name = (gchar *)s_file_name.c_str();
 
 	GError *error;
@@ -33,7 +33,7 @@ Php::Value GtkPageSetup_::new_from_file(Php::Parameters &parameters)
 
 Php::Value GtkPageSetup_::new_from_key_file(Php::Parameters &parameters)
 {
-	// std::string s_group_name = parameters[0];
+	// std::string s_group_name = parameters[0].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 
@@ -233,7 +233,7 @@ Php::Value GtkPageSetup_::get_page_height(Php::Parameters &parameters)
 
 Php::Value GtkPageSetup_::load_file(Php::Parameters &parameters)
 {
-	std::string s_file_name = parameters[0];
+	std::string s_file_name = parameters[0].stringValue();
 	gchar *file_name = (gchar *)s_file_name.c_str();
 
 	GError *error;
@@ -245,7 +245,7 @@ Php::Value GtkPageSetup_::load_file(Php::Parameters &parameters)
 Php::Value GtkPageSetup_::load_key_file(Php::Parameters &parameters)
 {
 
-	// std::string s_group_name = parameters[1];
+	// std::string s_group_name = parameters[1].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 
@@ -259,7 +259,7 @@ Php::Value GtkPageSetup_::load_key_file(Php::Parameters &parameters)
 
 Php::Value GtkPageSetup_::to_file(Php::Parameters &parameters)
 {
-	std::string s_file_name = parameters[0];
+	std::string s_file_name = parameters[0].stringValue();
 	gchar *file_name = (gchar *)s_file_name.c_str();
 
 	GError *error;
@@ -271,7 +271,7 @@ Php::Value GtkPageSetup_::to_file(Php::Parameters &parameters)
 void GtkPageSetup_::to_key_file(Php::Parameters &parameters)
 {
 
-	// std::string s_group_name = parameters[1];
+	// std::string s_group_name = parameters[1].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 	// gtk_page_setup_to_key_file (GTK_PAGE_SETUP(instance), key_file, group_name);

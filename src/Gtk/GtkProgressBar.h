@@ -6,6 +6,8 @@
     #include <gtk/gtk.h>
 
 	#include "GtkWidget.h"
+	
+	#include "../../php-gtk.h"
 
     /**
      * GtkProgressBar_

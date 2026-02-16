@@ -26,7 +26,7 @@ void GtkStack_::add_named(Php::Parameters &parameters)
 		child = GTK_WIDGET(phpgtk_child->get_instance());
 	}
 
-	std::string s_name = parameters[1];
+	std::string s_name = parameters[1].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_stack_add_named (GTK_STACK(instance), child, name);
@@ -42,10 +42,10 @@ void GtkStack_::add_titled(Php::Parameters &parameters)
 		child = GTK_WIDGET(phpgtk_child->get_instance());
 	}
 
-	std::string s_name = parameters[1];
+	std::string s_name = parameters[1].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
-	std::string s_title = parameters[2];
+	std::string s_title = parameters[2].stringValue();
 	gchar *title = (gchar *)s_title.c_str();
 
 	gtk_stack_add_titled (GTK_STACK(instance), child, name, title);
@@ -55,7 +55,7 @@ void GtkStack_::add_titled(Php::Parameters &parameters)
 
 Php::Value GtkStack_::get_child_by_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gpointer *ret = (gpointer *)gtk_stack_get_child_by_name (GTK_STACK(instance), name);
@@ -85,7 +85,7 @@ Php::Value GtkStack_::get_visible_child()
 
 void GtkStack_::set_visible_child_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_stack_set_visible_child_name (GTK_STACK(instance), name);
@@ -101,7 +101,7 @@ Php::Value GtkStack_::get_visible_child_name()
 
 void GtkStack_::set_visible_child_full(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	int int_transition = (int)parameters[1];

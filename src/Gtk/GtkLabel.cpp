@@ -15,7 +15,12 @@ void GtkLabel_::__construct(Php::Parameters &parameters)
 {
 	std::string s_str = "";
 	if(parameters.size() > 0) {
-		s_str.assign((const char *)parameters[0]);
+		if (!parameters[0].isString()) {
+			Php::warning << "GtkLabel::__construct: First parameter (text) should be a string, " 
+			            << phpgtk_type_to_string(parameters[0].type()) 
+			            << " given (auto-converting)" << std::flush;
+		}
+		s_str = parameters[0].stringValue();
 	}
 
 	instance = (gpointer *)gtk_label_new (s_str.c_str());
@@ -24,7 +29,12 @@ void GtkLabel_::__construct(Php::Parameters &parameters)
 
 void GtkLabel_::set_text(Php::Parameters &parameters)
 {
-	std::string s_str = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkLabel::set_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_text (GTK_LABEL(instance), str);
@@ -33,7 +43,12 @@ void GtkLabel_::set_text(Php::Parameters &parameters)
 
 void GtkLabel_::set_markup(Php::Parameters &parameters)
 {
-	std::string s_str = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkLabel::set_markup: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_markup (GTK_LABEL(instance), str);
@@ -42,7 +57,12 @@ void GtkLabel_::set_markup(Php::Parameters &parameters)
 
 void GtkLabel_::set_markup_with_mnemonic(Php::Parameters &parameters)
 {
-	std::string s_str = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkLabel::set_markup_with_mnemonic: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_markup_with_mnemonic (GTK_LABEL(instance), str);
@@ -51,7 +71,7 @@ void GtkLabel_::set_markup_with_mnemonic(Php::Parameters &parameters)
 
 void GtkLabel_::set_pattern(Php::Parameters &parameters)
 {
-	std::string s_str = parameters[0];
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_pattern (GTK_LABEL(instance), str);
@@ -170,7 +190,12 @@ void GtkLabel_::set_selectable(Php::Parameters &parameters)
 
 void GtkLabel_::set_text_with_mnemonic(Php::Parameters &parameters)
 {
-	std::string s_str = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkLabel::set_text_with_mnemonic: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_text_with_mnemonic (GTK_LABEL(instance), str);
@@ -274,7 +299,12 @@ Php::Value GtkLabel_::get_angle()
 
 void GtkLabel_::set_label(Php::Parameters &parameters)
 {
-	std::string s_str = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkLabel::set_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_label (GTK_LABEL(instance), str);

@@ -8,6 +8,8 @@
 
     #include "PangoContext.h"
     #include "PangoLayoutLine.h"
+    
+    #include "../../php-gtk.h"
 
     class PangoLayout_ : public GObject_
     {

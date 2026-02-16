@@ -33,7 +33,7 @@ void GtkEntryBuffer_::set_buffer(GtkEntryBuffer *pased_buffer)
 void GtkEntryBuffer_::__construct(Php::Parameters &parameters)
 {
 	// Cast the param
-	std::string passed_text = parameters[0];
+	std::string passed_text = parameters[0].stringValue();
 	gchar *text = (gchar *)passed_text.c_str();
 
 	// Create the buffer
@@ -54,7 +54,12 @@ Php::Value GtkEntryBuffer_::get_text()
 void GtkEntryBuffer_::set_text(Php::Parameters &parameters)
 {
 	// Cast the param
-	std::string passed_text = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkEntryBuffer::set_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string passed_text = parameters[0].stringValue();
 	gchar *text = (gchar *)passed_text.c_str();
 
 	// Create the buffer

@@ -13,7 +13,7 @@ GtkFileChooserDialog_::~GtkFileChooserDialog_() = default;
 
 void GtkFileChooserDialog_::__construct(Php::Parameters &parameters)
 {
-	std::string s_title = parameters[0];
+	std::string s_title = parameters[0].stringValue();
 	gchar *title = (gchar *)s_title.c_str();
 
 	Php::Value object_parent = parameters[1];
@@ -133,7 +133,7 @@ Php::Value GtkFileChooserDialog_::get_create_folders()
 
 void GtkFileChooserDialog_::set_current_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(instance), name);
@@ -149,7 +149,7 @@ Php::Value GtkFileChooserDialog_::get_current_name()
 
 Php::Value GtkFileChooserDialog_::set_filename(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	bool ret = gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(instance), name);
@@ -166,7 +166,7 @@ Php::Value GtkFileChooserDialog_::get_filename()
 
 Php::Value GtkFileChooserDialog_::select_filename(Php::Parameters &parameters)
 {
-	std::string s_filename = parameters[0];
+	std::string s_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)s_filename.c_str();
 
 	bool ret = gtk_file_chooser_select_filename (GTK_FILE_CHOOSER(instance), filename);
@@ -176,7 +176,7 @@ Php::Value GtkFileChooserDialog_::select_filename(Php::Parameters &parameters)
 
 void GtkFileChooserDialog_::unselect_filename(Php::Parameters &parameters)
 {
-	std::string s_filename = parameters[0];
+	std::string s_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)s_filename.c_str();
 
 	gtk_file_chooser_unselect_filename (GTK_FILE_CHOOSER(instance), filename);
@@ -210,7 +210,7 @@ Php::Value GtkFileChooserDialog_::get_filenames()
 
 Php::Value GtkFileChooserDialog_::set_current_folder(Php::Parameters &parameters)
 {
-	std::string s_filename = parameters[0];
+	std::string s_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)s_filename.c_str();
 
 	bool ret = gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(instance), filename);
@@ -234,7 +234,7 @@ Php::Value GtkFileChooserDialog_::get_uri()
 
 Php::Value GtkFileChooserDialog_::set_uri(Php::Parameters &parameters)
 {
-	std::string s_uri = parameters[0];
+	std::string s_uri = parameters[0].stringValue();
 	gchar *uri = (gchar *)s_uri.c_str();
 
 	bool ret = gtk_file_chooser_set_uri (GTK_FILE_CHOOSER(instance), uri);
@@ -244,7 +244,7 @@ Php::Value GtkFileChooserDialog_::set_uri(Php::Parameters &parameters)
 
 Php::Value GtkFileChooserDialog_::select_uri(Php::Parameters &parameters)
 {
-	std::string s_uri = parameters[0];
+	std::string s_uri = parameters[0].stringValue();
 	gchar *uri = (gchar *)s_uri.c_str();
 
 	bool ret = gtk_file_chooser_select_uri (GTK_FILE_CHOOSER(instance), uri);
@@ -254,7 +254,7 @@ Php::Value GtkFileChooserDialog_::select_uri(Php::Parameters &parameters)
 
 void GtkFileChooserDialog_::unselect_uri(Php::Parameters &parameters)
 {
-	std::string s_uri = parameters[0];
+	std::string s_uri = parameters[0].stringValue();
 	gchar *uri = (gchar *)s_uri.c_str();
 
 	gtk_file_chooser_unselect_uri (GTK_FILE_CHOOSER(instance), uri);
@@ -276,7 +276,7 @@ Php::Value GtkFileChooserDialog_::get_uris()
 
 Php::Value GtkFileChooserDialog_::set_current_folder_uri(Php::Parameters &parameters)
 {
-	std::string s_uri = parameters[0];
+	std::string s_uri = parameters[0].stringValue();
 	gchar *uri = (gchar *)s_uri.c_str();
 
 	bool ret = gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER(instance), uri);
