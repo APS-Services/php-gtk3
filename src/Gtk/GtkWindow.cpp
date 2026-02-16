@@ -29,6 +29,12 @@ void GtkWindow_::__construct(Php::Parameters &parameters)
  */
 void GtkWindow_::set_title(Php::Parameters &parameters)
 {
+    if (!parameters[0].isString()) {
+        std::string error_msg = "GtkWindow::set_title: First parameter (title) must be a string, ";
+        error_msg += phpgtk_type_to_string(parameters[0].type());
+        error_msg += " given";
+        throw Php::Exception(error_msg);
+    }
     std::string title = parameters[0];
 
     gtk_window_set_title(GTK_WINDOW(instance), title.c_str());

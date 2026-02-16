@@ -128,6 +128,12 @@ Php::Value GtkFontButton_::get_use_size()
 
 void GtkFontButton_::set_title(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkFontButton::set_title: First parameter (title) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string s_title = parameters[0];
 	gchar *title = (gchar *)s_title.c_str();
 

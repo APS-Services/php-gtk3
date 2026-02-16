@@ -194,6 +194,12 @@ void GtkStatusIcon_::set_tooltip_markup(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_title(Php::Parameters &parameters)
 {
+	if (!parameters[0].isString()) {
+		std::string error_msg = "GtkStatusIcon::set_title: First parameter (title) must be a string, ";
+		error_msg += phpgtk_type_to_string(parameters[0].type());
+		error_msg += " given";
+		throw Php::Exception(error_msg);
+	}
 	std::string c_title = parameters[0];
 
 	gchar *title = (gchar *)c_title.c_str();
