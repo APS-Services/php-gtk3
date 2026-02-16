@@ -16,7 +16,10 @@ void GtkLabel_::__construct(Php::Parameters &parameters)
 	std::string s_str = "";
 	if(parameters.size() > 0) {
 		if (!parameters[0].isString()) {
-			throw Php::Exception("GtkLabel::__construct: First parameter (text) must be a string");
+			std::string error_msg = "GtkLabel::__construct: First parameter (text) must be a string, ";
+			error_msg += phpgtk_type_to_string(parameters[0].type());
+			error_msg += " given";
+			throw Php::Exception(error_msg);
 		}
 		s_str.assign((const char *)parameters[0]);
 	}
