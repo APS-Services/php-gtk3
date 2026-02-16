@@ -70,10 +70,10 @@ void GtkToolItem_::set_tooltip_markup(Php::Parameters &parameters)
 		error_msg += " given";
 		throw Php::Exception(error_msg);
 	}
-	std::string s_text = parameters[0];
-	gchar *text = (gchar *)s_text.c_str();
+	std::string s_markup = parameters[0];
+	gchar *markup = (gchar *)s_markup.c_str();
 
-	gtk_tool_item_set_tooltip_markup (GTK_TOOL_ITEM(instance), text);
+	gtk_tool_item_set_tooltip_markup (GTK_TOOL_ITEM(instance), markup);
 
 }
 
