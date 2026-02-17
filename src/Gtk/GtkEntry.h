@@ -8,6 +8,8 @@
     #include "GtkWidget.h"
     #include "GtkEntryBuffer.h"
     #include "GtkEntryCompletion.h"
+    
+    #include "../../php-gtk.h"
 
     /**
      * 
