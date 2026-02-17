@@ -22,7 +22,7 @@ GtkTreeViewColumn_::~GtkTreeViewColumn_() = default;
  */
 void GtkTreeViewColumn_::__construct(Php::Parameters &parameters)
 {
-    std::string title = std::string(parameters[0]);
+    std::string title = parameters[0].stringValue();
 
     // Get the renderer
     Php::Value object = parameters[1];
@@ -30,7 +30,7 @@ void GtkTreeViewColumn_::__construct(Php::Parameters &parameters)
     GtkCellRenderer_ *passedRenderer = (GtkCellRenderer_ *)object.implementation();
 
     // Get type and column
-    std::string t_column = std::string(parameters[2]);
+    std::string t_column = parameters[2].stringValue();
     int n_column = parameters[3];
 
     instance = (gpointer *)gtk_tree_view_column_new_with_attributes(title.c_str(), GTK_CELL_RENDERER(passedRenderer->get_instance()), t_column.c_str(), n_column, NULL);
@@ -46,7 +46,7 @@ void GtkTreeViewColumn_::set_title(Php::Parameters &parameters)
                     << phpgtk_type_to_string(parameters[0].type()) 
                     << " given (auto-converting)" << std::flush;
     }
-    std::string title = std::string(parameters[0]);
+    std::string title = parameters[0].stringValue();
 
     gtk_tree_view_column_set_title(GTK_TREE_VIEW_COLUMN(instance), title.c_str());
 }

@@ -409,7 +409,7 @@ Php::Value GtkMenu_::get_accel_group()
 
 void GtkMenu_::set_accel_path(Php::Parameters &parameters)
 {
-	std::string s_accel_path = std::string(parameters[0]);
+	std::string s_accel_path = parameters[0].stringValue();
 	gchar *accel_path = (gchar *)s_accel_path.c_str();
 
 	gtk_menu_set_accel_path (GTK_MENU(instance), accel_path);

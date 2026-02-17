@@ -24,7 +24,7 @@ Php::Value GtkCheckButton_::new_with_label(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_label = std::string(parameters[0]);
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	GtkWidget *ret = gtk_check_button_new_with_label (label);
@@ -36,7 +36,7 @@ Php::Value GtkCheckButton_::new_with_label(Php::Parameters &parameters)
 
 Php::Value GtkCheckButton_::new_with_mnemonic(Php::Parameters &parameters)
 {
-	std::string s_label = std::string(parameters[0]);
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	GtkWidget *ret = gtk_check_button_new_with_mnemonic (label);

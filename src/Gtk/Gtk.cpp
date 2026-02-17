@@ -127,7 +127,7 @@ Php::Value Gtk_::show_uri_on_window(Php::Parameters &parameters)
     }
 
     // Init URI
-    std::string s_uri = std::string(parameters[1]);
+    std::string s_uri = parameters[1].stringValue();
     char* uri = (char*)s_uri.c_str();
 
     // @TODO

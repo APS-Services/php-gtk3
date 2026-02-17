@@ -18,7 +18,7 @@ void GtkExpander_::__construct(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_label = std::string(parameters[0]);
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	instance = (gpointer *)gtk_expander_new (label);
@@ -32,7 +32,7 @@ Php::Value GtkExpander_::new_with_mnemonic(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_label = std::string(parameters[0]);
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gpointer *ret = (gpointer *)gtk_expander_new_with_mnemonic (label);
@@ -81,7 +81,7 @@ void GtkExpander_::set_label(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_label = std::string(parameters[0]);
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gtk_expander_set_label (GTK_EXPANDER(instance), label);

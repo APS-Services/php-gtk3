@@ -19,7 +19,7 @@ void GtkPrintSettings_::__construct()
 
 Php::Value GtkPrintSettings_::new_from_file(Php::Parameters &parameters)
 {
-	std::string s_file_name = std::string(parameters[0]);
+	std::string s_file_name = parameters[0].stringValue();
 	gchar *file_name = (gchar *)s_file_name.c_str();
 
 	GError *error;
@@ -32,10 +32,10 @@ Php::Value GtkPrintSettings_::new_from_file(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::new_from_key_file(Php::Parameters &parameters)
 {
-	// std::string s_group_name = std::string(parameters[0]);
+	// std::string s_group_name = parameters[0].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
-	// std::string s_group_name = std::string(parameters[0]);
+	// std::string s_group_name = parameters[0].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 	// GError *error;
@@ -61,7 +61,7 @@ Php::Value GtkPrintSettings_::copy()
 
 Php::Value GtkPrintSettings_::has_key(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	bool ret = gtk_print_settings_has_key (GTK_PRINT_SETTINGS(instance), key);
@@ -71,7 +71,7 @@ Php::Value GtkPrintSettings_::has_key(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::get(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	std::string ret = gtk_print_settings_get (GTK_PRINT_SETTINGS(instance), key);
@@ -81,10 +81,10 @@ Php::Value GtkPrintSettings_::get(Php::Parameters &parameters)
 
 void GtkPrintSettings_::set(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
-	std::string s_value = std::string(parameters[1]);
+	std::string s_value = parameters[1].stringValue();
 	gchar *value = (gchar *)s_value.c_str();
 
 	gtk_print_settings_set (GTK_PRINT_SETTINGS(instance), key, value);
@@ -93,7 +93,7 @@ void GtkPrintSettings_::set(Php::Parameters &parameters)
 
 void GtkPrintSettings_::unset(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gtk_print_settings_unset (GTK_PRINT_SETTINGS(instance), key);
@@ -119,7 +119,7 @@ void GtkPrintSettings_::foreach(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::get_bool(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	bool ret = gtk_print_settings_get_bool (GTK_PRINT_SETTINGS(instance), key);
@@ -129,7 +129,7 @@ Php::Value GtkPrintSettings_::get_bool(Php::Parameters &parameters)
 
 void GtkPrintSettings_::set_bool(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gboolean value = (gboolean)parameters[1];
@@ -140,7 +140,7 @@ void GtkPrintSettings_::set_bool(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::get_double(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gdouble ret = gtk_print_settings_get_double (GTK_PRINT_SETTINGS(instance), key);
@@ -150,7 +150,7 @@ Php::Value GtkPrintSettings_::get_double(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::get_double_with_default(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gdouble def = (gdouble)parameters[1];
@@ -162,7 +162,7 @@ Php::Value GtkPrintSettings_::get_double_with_default(Php::Parameters &parameter
 
 void GtkPrintSettings_::set_double(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gdouble value = (gdouble)parameters[1];
@@ -173,7 +173,7 @@ void GtkPrintSettings_::set_double(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::get_length(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	int int_unit = (int)parameters[1];
@@ -186,7 +186,7 @@ Php::Value GtkPrintSettings_::get_length(Php::Parameters &parameters)
 
 void GtkPrintSettings_::set_length(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gdouble value = (gdouble)parameters[1];
@@ -200,7 +200,7 @@ void GtkPrintSettings_::set_length(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::get_int(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gint ret = gtk_print_settings_get_int (GTK_PRINT_SETTINGS(instance), key);
@@ -210,7 +210,7 @@ Php::Value GtkPrintSettings_::get_int(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::get_int_with_default(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gint def = (gint)parameters[1];
@@ -222,7 +222,7 @@ Php::Value GtkPrintSettings_::get_int_with_default(Php::Parameters &parameters)
 
 void GtkPrintSettings_::set_int(Php::Parameters &parameters)
 {
-	std::string s_key = std::string(parameters[0]);
+	std::string s_key = parameters[0].stringValue();
 	gchar *key = (gchar *)s_key.c_str();
 
 	gint value = (gint)parameters[1];
@@ -240,7 +240,7 @@ Php::Value GtkPrintSettings_::get_printer()
 
 void GtkPrintSettings_::set_printer(Php::Parameters &parameters)
 {
-	std::string s_printer = std::string(parameters[0]);
+	std::string s_printer = parameters[0].stringValue();
 	gchar *printer = (gchar *)s_printer.c_str();
 
 	gtk_print_settings_set_printer (GTK_PRINT_SETTINGS(instance), printer);
@@ -586,7 +586,7 @@ Php::Value GtkPrintSettings_::get_default_source()
 
 void GtkPrintSettings_::set_default_source(Php::Parameters &parameters)
 {
-	std::string s_default_source = std::string(parameters[0]);
+	std::string s_default_source = parameters[0].stringValue();
 	gchar *default_source = (gchar *)s_default_source.c_str();
 
 	gtk_print_settings_set_default_source (GTK_PRINT_SETTINGS(instance), default_source);
@@ -602,7 +602,7 @@ Php::Value GtkPrintSettings_::get_media_type()
 
 void GtkPrintSettings_::set_media_type(Php::Parameters &parameters)
 {
-	std::string s_media_type = std::string(parameters[0]);
+	std::string s_media_type = parameters[0].stringValue();
 	gchar *media_type = (gchar *)s_media_type.c_str();
 
 	gtk_print_settings_set_media_type (GTK_PRINT_SETTINGS(instance), media_type);
@@ -618,7 +618,7 @@ Php::Value GtkPrintSettings_::get_dither()
 
 void GtkPrintSettings_::set_dither(Php::Parameters &parameters)
 {
-	std::string s_dither = std::string(parameters[0]);
+	std::string s_dither = parameters[0].stringValue();
 	gchar *dither = (gchar *)s_dither.c_str();
 
 	gtk_print_settings_set_dither (GTK_PRINT_SETTINGS(instance), dither);
@@ -634,7 +634,7 @@ Php::Value GtkPrintSettings_::get_finishings()
 
 void GtkPrintSettings_::set_finishings(Php::Parameters &parameters)
 {
-	std::string s_finishings = std::string(parameters[0]);
+	std::string s_finishings = parameters[0].stringValue();
 	gchar *finishings = (gchar *)s_finishings.c_str();
 
 	gtk_print_settings_set_finishings (GTK_PRINT_SETTINGS(instance), finishings);
@@ -650,7 +650,7 @@ Php::Value GtkPrintSettings_::get_output_bin()
 
 void GtkPrintSettings_::set_output_bin(Php::Parameters &parameters)
 {
-	std::string s_output_bin = std::string(parameters[0]);
+	std::string s_output_bin = parameters[0].stringValue();
 	gchar *output_bin = (gchar *)s_output_bin.c_str();
 
 	gtk_print_settings_set_output_bin (GTK_PRINT_SETTINGS(instance), output_bin);
@@ -659,7 +659,7 @@ void GtkPrintSettings_::set_output_bin(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::load_file(Php::Parameters &parameters)
 {
-	std::string s_file_name = std::string(parameters[0]);
+	std::string s_file_name = parameters[0].stringValue();
 	gchar *file_name = (gchar *)s_file_name.c_str();
 
 	GError *error;
@@ -671,7 +671,7 @@ Php::Value GtkPrintSettings_::load_file(Php::Parameters &parameters)
 Php::Value GtkPrintSettings_::load_key_file(Php::Parameters &parameters)
 {
 
-	// std::string s_group_name = std::string(parameters[1]);
+	// std::string s_group_name = parameters[1].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 
@@ -685,7 +685,7 @@ Php::Value GtkPrintSettings_::load_key_file(Php::Parameters &parameters)
 
 Php::Value GtkPrintSettings_::to_file(Php::Parameters &parameters)
 {
-	std::string s_file_name = std::string(parameters[0]);
+	std::string s_file_name = parameters[0].stringValue();
 	gchar *file_name = (gchar *)s_file_name.c_str();
 
 	GError *error;
@@ -697,7 +697,7 @@ Php::Value GtkPrintSettings_::to_file(Php::Parameters &parameters)
 void GtkPrintSettings_::to_key_file(Php::Parameters &parameters)
 {
 
-	// std::string s_group_name = std::string(parameters[1]);
+	// std::string s_group_name = parameters[1].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 	// gtk_print_settings_to_key_file (GTK_PRINT_SETTINGS(instance), key_file, group_name);

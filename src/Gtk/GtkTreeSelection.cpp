@@ -228,7 +228,7 @@ Php::Value GtkTreeSelection_::count_selected_rows()
 
 void GtkTreeSelection_::select_path(Php::Parameters &parameters)
 {
-	std::string param_path = std::string(parameters[0]);
+	std::string param_path = parameters[0].stringValue();
 	GtkTreePath *path = gtk_tree_path_new_from_string(param_path.c_str());
 
 	gtk_tree_selection_select_path (GTK_TREE_SELECTION(instance), path);
@@ -237,7 +237,7 @@ void GtkTreeSelection_::select_path(Php::Parameters &parameters)
 
 void GtkTreeSelection_::unselect_path(Php::Parameters &parameters)
 {
-	std::string param_path = std::string(parameters[0]);
+	std::string param_path = parameters[0].stringValue();
 	GtkTreePath *path = gtk_tree_path_new_from_string(param_path.c_str());
 
 	gtk_tree_selection_unselect_path (GTK_TREE_SELECTION(instance), path);
@@ -246,7 +246,7 @@ void GtkTreeSelection_::unselect_path(Php::Parameters &parameters)
 
 Php::Value GtkTreeSelection_::path_is_selected(Php::Parameters &parameters)
 {
-	std::string param_path = std::string(parameters[0]);
+	std::string param_path = parameters[0].stringValue();
 	GtkTreePath *path = gtk_tree_path_new_from_string(param_path.c_str());
 
 	bool ret = gtk_tree_selection_path_is_selected (GTK_TREE_SELECTION(instance), path);
@@ -299,10 +299,10 @@ void GtkTreeSelection_::unselect_all()
 
 void GtkTreeSelection_::unselect_range(Php::Parameters &parameters)
 {
-	std::string param_start_path = std::string(parameters[0]);
+	std::string param_start_path = parameters[0].stringValue();
 	GtkTreePath *start_path = gtk_tree_path_new_from_string(param_start_path.c_str());
 
-	std::string param_end_path = std::string(parameters[1]);
+	std::string param_end_path = parameters[1].stringValue();
 	GtkTreePath *end_path = gtk_tree_path_new_from_string(param_end_path.c_str());
 
 	gtk_tree_selection_unselect_range (GTK_TREE_SELECTION(instance), start_path, end_path);
@@ -310,10 +310,10 @@ void GtkTreeSelection_::unselect_range(Php::Parameters &parameters)
 }
 void GtkTreeSelection_::select_range(Php::Parameters& parameters)
 {
-	std::string param_start_path = std::string(parameters[0]);
+	std::string param_start_path = parameters[0].stringValue();
 	GtkTreePath* start_path = gtk_tree_path_new_from_string(param_start_path.c_str());
 
-	std::string param_end_path = std::string(parameters[1]);
+	std::string param_end_path = parameters[1].stringValue();
 	GtkTreePath* end_path = gtk_tree_path_new_from_string(param_end_path.c_str());
 
 	gtk_tree_selection_select_range(GTK_TREE_SELECTION(instance), start_path, end_path);

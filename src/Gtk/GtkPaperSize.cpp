@@ -29,7 +29,7 @@ GtkPaperSize_::~GtkPaperSize_() = default;
 
 void GtkPaperSize_::__construct(Php::Parameters &parameters)
 {
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	instance = gtk_paper_size_new (name);
@@ -38,10 +38,10 @@ void GtkPaperSize_::__construct(Php::Parameters &parameters)
 
 Php::Value GtkPaperSize_::new_from_ppd(Php::Parameters &parameters)
 {
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
-	std::string s_ppd_display_name = std::string(parameters[1]);
+	std::string s_ppd_display_name = parameters[1].stringValue();
 	gchar *ppd_display_name = (gchar *)s_ppd_display_name.c_str();
 
 	gdouble width = (gdouble)parameters[2];
@@ -58,7 +58,7 @@ Php::Value GtkPaperSize_::new_from_ppd(Php::Parameters &parameters)
 Php::Value GtkPaperSize_::new_from_ipp(Php::Parameters &parameters)
 {
 
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gdouble width = (gdouble)parameters[1];
@@ -74,10 +74,10 @@ Php::Value GtkPaperSize_::new_from_ipp(Php::Parameters &parameters)
 
 Php::Value GtkPaperSize_::new_custom(Php::Parameters &parameters)
 {
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
-	std::string s_display_name = std::string(parameters[1]);
+	std::string s_display_name = parameters[1].stringValue();
 	gchar *display_name = (gchar *)s_display_name.c_str();
 
 	gdouble width = (gdouble)parameters[2];
@@ -250,7 +250,7 @@ Php::Value GtkPaperSize_::get_default()
 
 Php::Value GtkPaperSize_::new_from_key_file(Php::Parameters &parameters)
 {
-	// std::string s_group_name = std::string(parameters[0]);
+	// std::string s_group_name = parameters[0].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 
@@ -267,7 +267,7 @@ Php::Value GtkPaperSize_::new_from_key_file(Php::Parameters &parameters)
 void GtkPaperSize_::to_key_file(Php::Parameters &parameters)
 {
 
-	// std::string s_group_name = std::string(parameters[1]);
+	// std::string s_group_name = parameters[1].stringValue();
 	// gchar *group_name = (gchar *)s_group_name.c_str();
 
 	// gtk_paper_size_to_key_file (instance, key_file, group_name);

@@ -13,7 +13,7 @@ GtkColorChooserDialog_::~GtkColorChooserDialog_() = default;
 
 void GtkColorChooserDialog_::__construct(Php::Parameters &parameters)
 {
-	std::string s_title = std::string(parameters[0]);
+	std::string s_title = parameters[0].stringValue();
 	gchar *title = (gchar *)s_title.c_str();
 
 	GtkWindow *parent;

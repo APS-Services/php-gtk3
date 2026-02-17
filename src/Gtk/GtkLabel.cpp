@@ -34,7 +34,7 @@ void GtkLabel_::set_text(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_str = std::string(parameters[0]);
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_text (GTK_LABEL(instance), str);
@@ -48,7 +48,7 @@ void GtkLabel_::set_markup(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_str = std::string(parameters[0]);
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_markup (GTK_LABEL(instance), str);
@@ -62,7 +62,7 @@ void GtkLabel_::set_markup_with_mnemonic(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_str = std::string(parameters[0]);
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_markup_with_mnemonic (GTK_LABEL(instance), str);
@@ -71,7 +71,7 @@ void GtkLabel_::set_markup_with_mnemonic(Php::Parameters &parameters)
 
 void GtkLabel_::set_pattern(Php::Parameters &parameters)
 {
-	std::string s_str = std::string(parameters[0]);
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_pattern (GTK_LABEL(instance), str);
@@ -195,7 +195,7 @@ void GtkLabel_::set_text_with_mnemonic(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_str = std::string(parameters[0]);
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_text_with_mnemonic (GTK_LABEL(instance), str);
@@ -304,7 +304,7 @@ void GtkLabel_::set_label(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_str = std::string(parameters[0]);
+	std::string s_str = parameters[0].stringValue();
 	gchar *str = (gchar *)s_str.c_str();
 
 	gtk_label_set_label (GTK_LABEL(instance), str);

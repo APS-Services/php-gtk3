@@ -145,7 +145,7 @@ Php::Value GtkMenuShell_::get_parent_shell()
 void GtkMenuShell_::bind_model(Php::Parameters &parameters)
 {
 
-	// std::string s_action_namespace = std::string(parameters[1]);
+	// std::string s_action_namespace = parameters[1].stringValue();
 	// gchar *action_namespace = (gchar *)s_action_namespace.c_str();
 
 	// gboolean with_separators = (gboolean)parameters[2];

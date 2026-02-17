@@ -24,7 +24,7 @@ void GtkHeaderBar_::set_title(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_title = std::string(parameters[0]);
+	std::string s_title = parameters[0].stringValue();
 	gchar *title = (gchar *)s_title.c_str();
 
 	gtk_header_bar_set_title (GTK_HEADER_BAR(instance), title);
@@ -40,7 +40,7 @@ Php::Value GtkHeaderBar_::get_title()
 
 void GtkHeaderBar_::set_subtitle(Php::Parameters &parameters)
 {
-	std::string s_subtitle = std::string(parameters[0]);
+	std::string s_subtitle = parameters[0].stringValue();
 	gchar *subtitle = (gchar *)s_subtitle.c_str();
 
 	gtk_header_bar_set_subtitle (GTK_HEADER_BAR(instance), subtitle);
@@ -135,7 +135,7 @@ Php::Value GtkHeaderBar_::get_show_close_button()
 
 void GtkHeaderBar_::set_decoration_layout(Php::Parameters &parameters)
 {
-	std::string s_layout = std::string(parameters[0]);
+	std::string s_layout = parameters[0].stringValue();
 	gchar *layout = (gchar *)s_layout.c_str();
 
 	gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR(instance), layout);

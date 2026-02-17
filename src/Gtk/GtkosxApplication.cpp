@@ -153,7 +153,7 @@ Php::Value GtkosxApplication_::get_bundle_id()
 
 Php::Value GtkosxApplication_::get_bundle_info(Php::Parameters &parameters)
 {
-	std::string s_str = std::string(parameters[0]);
+	std::string s_str = parameters[0].stringValue();
 	gchar *key = (gchar *)s_str.c_str();
 
 	std::string ret = gtkosx_application_get_bundle_info (key);

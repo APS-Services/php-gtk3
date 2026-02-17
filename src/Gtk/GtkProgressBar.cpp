@@ -75,7 +75,7 @@ void GtkProgressBar_::set_text(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_text = std::string(parameters[0]);
+	std::string s_text = parameters[0].stringValue();
 	gchar *text = (gchar *)s_text.c_str();
 
 	gtk_progress_bar_set_text (GTK_PROGRESS_BAR(instance), text);

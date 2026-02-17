@@ -117,7 +117,7 @@ void GtkTreeView_::expand_all()
 
 Php::Value GtkTreeView_::expand_row(Php::Parameters &parameters)
 {
-	std::string param_path = std::string(parameters[0]);
+	std::string param_path = parameters[0].stringValue();
 	GtkTreePath *path = gtk_tree_path_new_from_string(param_path.c_str());
 
 	bool open_all = false;
@@ -133,7 +133,7 @@ Php::Value GtkTreeView_::expand_row(Php::Parameters &parameters)
 
 Php::Value GtkTreeView_::row_expanded(Php::Parameters &parameters)
 {
-	std::string param_path = std::string(parameters[0]);
+	std::string param_path = parameters[0].stringValue();
 	GtkTreePath *path = gtk_tree_path_new_from_string(param_path.c_str());
 
 	// 
@@ -144,7 +144,7 @@ Php::Value GtkTreeView_::row_expanded(Php::Parameters &parameters)
 
 Php::Value GtkTreeView_::collapse_row(Php::Parameters &parameters)
 {
-	std::string param_path = std::string(parameters[0]);
+	std::string param_path = parameters[0].stringValue();
 	GtkTreePath *path = gtk_tree_path_new_from_string(param_path.c_str());
 
 	// 
@@ -249,7 +249,7 @@ void GtkTreeView_::unselect_all()
 // Basic implementaion
 void GtkTreeView_::scroll_to_cell(Php::Parameters& parameters)
 {
-	std::string param_path = std::string(parameters[0]);
+	std::string param_path = parameters[0].stringValue();
 	GtkTreePath* path = gtk_tree_path_new_from_string(param_path.c_str());
 
 	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(instance), path, NULL, FALSE, 0,0);

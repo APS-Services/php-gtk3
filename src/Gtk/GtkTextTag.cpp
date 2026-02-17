@@ -30,7 +30,7 @@ void GtkTextTag_::set_tag(GtkTextTag *passed_tag)
 
 void GtkTextTag_::__construct(Php::Parameters &parameters)
 {
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	tag = gtk_text_tag_new (name);

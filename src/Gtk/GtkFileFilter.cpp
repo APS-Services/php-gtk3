@@ -24,7 +24,7 @@ void GtkFileFilter_::set_name(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_file_filter_set_name (GTK_FILE_FILTER(instance), name);
@@ -40,7 +40,7 @@ Php::Value GtkFileFilter_::get_name()
 
 void GtkFileFilter_::add_mime_type(Php::Parameters &parameters)
 {
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_file_filter_add_mime_type (GTK_FILE_FILTER(instance), name);
@@ -49,7 +49,7 @@ void GtkFileFilter_::add_mime_type(Php::Parameters &parameters)
 
 void GtkFileFilter_::add_pattern(Php::Parameters &parameters)
 {
-	std::string s_name = std::string(parameters[0]);
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_file_filter_add_pattern (GTK_FILE_FILTER(instance), name);

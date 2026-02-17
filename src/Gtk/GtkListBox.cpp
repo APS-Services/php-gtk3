@@ -94,7 +94,7 @@ Php::Value GtkListBox_::get_selected_row()
 
 void GtkListBox_::selected_foreach(Php::Parameters &parameters)
 {
-	// std::string s_func = std::string(parameters[0]);
+	// std::string s_func = parameters[0].stringValue();
 	// gchar *func = (gchar *)s_func.c_str();
 
 	// gpointer data = (gpointer)parameters[1];
@@ -221,12 +221,12 @@ void GtkListBox_::invalidate_sort()
 
 void GtkListBox_::set_filter_func(Php::Parameters &parameters)
 {
-	// std::string s_func = std::string(parameters[0]);
+	// std::string s_func = parameters[0].stringValue();
 	// gchar *func = (gchar *)s_func.c_str();
 
 	// gpointer data = (gpointer)parameters[1];
 
-	// std::string s_destroy = std::string(parameters[2]);
+	// std::string s_destroy = parameters[2].stringValue();
 	// gchar *destroy = (gchar *)s_destroy.c_str();
 
 	// gtk_list_box_set_filter_func (GTK_LIST_BOX(instance), func, data, destroy);
@@ -237,12 +237,12 @@ void GtkListBox_::set_filter_func(Php::Parameters &parameters)
 
 void GtkListBox_::set_header_func(Php::Parameters &parameters)
 {
-	// std::string s_func = std::string(parameters[0]);
+	// std::string s_func = parameters[0].stringValue();
 	// gchar *func = (gchar *)s_func.c_str();
 
 	// gpointer data = (gpointer)parameters[1];
 
-	// std::string s_destroy = std::string(parameters[2]);
+	// std::string s_destroy = parameters[2].stringValue();
 	// gchar *destroy = (gchar *)s_destroy.c_str();
 
 	// gtk_list_box_set_header_func (GTK_LIST_BOX(instance), func, data, destroy);
@@ -253,12 +253,12 @@ void GtkListBox_::set_header_func(Php::Parameters &parameters)
 
 void GtkListBox_::set_sort_func(Php::Parameters &parameters)
 {
-	// std::string s_func = std::string(parameters[0]);
+	// std::string s_func = parameters[0].stringValue();
 	// gchar *func = (gchar *)s_func.c_str();
 
 	// gpointer data = (gpointer)parameters[1];
 
-	// std::string s_destroy = std::string(parameters[2]);
+	// std::string s_destroy = parameters[2].stringValue();
 	// gchar *destroy = (gchar *)s_destroy.c_str();
 
 	// gtk_list_box_set_sort_func (GTK_LIST_BOX(instance), func, data, destroy);
@@ -288,12 +288,12 @@ void GtkListBox_::drag_unhighlight_row()
 
 void GtkListBox_::bind_model(Php::Parameters &parameters)
 {
-	// std::string s_create_widget_func = std::string(parameters[0]);
+	// std::string s_create_widget_func = parameters[0].stringValue();
 	// gchar *create_widget_func = (gchar *)s_create_widget_func.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
 
-	// std::string s_user_data_free_func = std::string(parameters[2]);
+	// std::string s_user_data_free_func = parameters[2].stringValue();
 	// gchar *user_data_free_func = (gchar *)s_user_data_free_func.c_str();
 
 	// gtk_list_box_bind_model (GTK_LIST_BOX(instance), create_widget_func, user_data, user_data_free_func);
