@@ -20,7 +20,7 @@ void GtkFrame_::__construct(Php::Parameters &parameters)
 			            << phpgtk_type_to_string(parameters[0].type()) 
 			            << " given (auto-converting)" << std::flush;
 		}
-		s_str = parameters[0];
+		s_str = parameters[0].stringValue();
 	}
 
 	instance = (gpointer *)gtk_frame_new (s_str.c_str());

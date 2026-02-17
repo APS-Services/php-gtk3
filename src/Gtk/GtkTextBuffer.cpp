@@ -202,7 +202,7 @@ void GtkTextBuffer_::insert_with_tags_by_name(Php::Parameters &parameters)
 			            << phpgtk_type_to_string(parameters[3].type()) 
 			            << " given (auto-converting)" << std::flush;
 		}
-		s_first_tag_name = parameters[3];
+		s_first_tag_name = parameters[3].stringValue();
 		first_tag_name = s_first_tag_name.c_str();
 	}
 
