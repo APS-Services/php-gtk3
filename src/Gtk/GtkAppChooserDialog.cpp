@@ -48,7 +48,7 @@ void GtkAppChooserDialog_::__construc(Php::Parameters &parameters)
 	int int_flags = (int)parameters[1];
 	GtkDialogFlags flags = (GtkDialogFlags)int_flags;
 
-	std::string s_file = parameters[2];
+	std::string s_file = std::string(parameters[2]);
 	gchar *path = (gchar *)s_file.c_str();
 
 	GFile *file = g_file_new_for_path(path);
@@ -81,7 +81,7 @@ Php::Value GtkAppChooserDialog_::new_for_content_type(Php::Parameters &parameter
 	int int_flags = (int)parameters[1];
 	GtkDialogFlags flags = (GtkDialogFlags)int_flags;
 
-	std::string s_content_type = parameters[2];
+	std::string s_content_type = std::string(parameters[2]);
 	gchar *content_type = (gchar *)s_content_type.c_str();
 
 	GtkWidget *ret = gtk_app_chooser_dialog_new_for_content_type (parent, flags, content_type);
@@ -104,7 +104,7 @@ Php::Value GtkAppChooserDialog_::get_widget()
 
 void GtkAppChooserDialog_::set_heading(Php::Parameters &parameters)
 {
-	std::string s_heading = parameters[0];
+	std::string s_heading = std::string(parameters[0]);
 	gchar *heading = (gchar *)s_heading.c_str();
 
 	gtk_app_chooser_dialog_set_heading (GTK_APP_CHOOSER_DIALOG(instance), heading);

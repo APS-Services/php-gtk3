@@ -13,7 +13,7 @@ GtkToolButton_::~GtkToolButton_() = default;
 
 void GtkToolButton_::__construct(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	std::string s_label = std::string(parameters[0]);
 	gchar *label = (gchar *)s_label.c_str();
 
 	instance = (gpointer *)gtk_tool_button_new (NULL, NULL);
@@ -28,7 +28,7 @@ void GtkToolButton_::set_label(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_label = parameters[0];
+	std::string s_label = std::string(parameters[0]);
 	gchar *label = (gchar *)s_label.c_str();
 
 	gtk_tool_button_set_label (GTK_TOOL_BUTTON(instance), label);
@@ -64,7 +64,7 @@ void GtkToolButton_::set_icon_name(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_icon_name = parameters[0];
+	std::string s_icon_name = std::string(parameters[0]);
 	gchar *icon_name = (gchar *)s_icon_name.c_str();
 
 	gtk_tool_button_set_icon_name (GTK_TOOL_BUTTON(instance), icon_name);

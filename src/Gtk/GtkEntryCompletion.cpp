@@ -108,7 +108,7 @@ Php::Value GtkEntryCompletion_::get_minimum_key_length()
 
 Php::Value GtkEntryCompletion_::compute_prefix(Php::Parameters &parameters)
 {
-	std::string s_key = parameters[0];
+	std::string s_key = std::string(parameters[0]);
 	gchar *key = (gchar *)s_key.c_str();
 
 	std::string ret = gtk_entry_completion_compute_prefix (GTK_ENTRY_COMPLETION(instance), key);
@@ -139,7 +139,7 @@ void GtkEntryCompletion_::insert_action_text(Php::Parameters &parameters)
 {
 	gint index_ = (gint)parameters[0];
 
-	std::string s_text = parameters[1];
+	std::string s_text = std::string(parameters[1]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gtk_entry_completion_insert_action_text (GTK_ENTRY_COMPLETION(instance), index_, text);
@@ -150,7 +150,7 @@ void GtkEntryCompletion_::insert_action_markup(Php::Parameters &parameters)
 {
 	gint index_ = (gint)parameters[0];
 
-	std::string s_markup = parameters[1];
+	std::string s_markup = std::string(parameters[1]);
 	gchar *markup = (gchar *)s_markup.c_str();
 
 	gtk_entry_completion_insert_action_markup (GTK_ENTRY_COMPLETION(instance), index_, markup);

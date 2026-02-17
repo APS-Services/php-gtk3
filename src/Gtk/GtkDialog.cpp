@@ -21,7 +21,7 @@ void GtkDialog_::__construct()
 
 Php::Value GtkDialog_::new_with_buttons(Php::Parameters &parameters)
 {
-    std::string s_title = parameters[0];
+    std::string s_title = std::string(parameters[0]);
     gchar *title = (gchar *)s_title.c_str();
 
     Php::Value object_parent = parameters[1];
@@ -70,7 +70,7 @@ void GtkDialog_::response(Php::Parameters &parameters)
 
 void GtkDialog_::add_button(Php::Parameters &parameters)
 {
-    std::string s_button_text = parameters[0];
+    std::string s_button_text = std::string(parameters[0]);
     gchar *button_text = (gchar *)s_button_text.c_str();
 
     gint response_id = (gint)parameters[1];

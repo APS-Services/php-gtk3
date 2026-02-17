@@ -13,7 +13,7 @@ GtkAspectFrame_::~GtkAspectFrame_() = default;
 
 void GtkAspectFrame_::__construct(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	std::string s_label = std::string(parameters[0]);
 	gchar *label = (gchar *)s_label.c_str();
 
 	double d_xalign = parameters[1];

@@ -134,7 +134,7 @@ void GtkWidgetPath_::iter_add_class(Php::Parameters &parameters)
 {
 	gint pos = (gint)parameters[0];
 
-	std::string s_name = parameters[1];
+	std::string s_name = std::string(parameters[1]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_widget_path_iter_add_class (instance, pos, name);
@@ -145,7 +145,7 @@ void GtkWidgetPath_::iter_add_region(Php::Parameters &parameters)
 {
 	// gint pos = (gint)parameters[0];
 
-	// std::string s_name = parameters[1];
+	// std::string s_name = std::string(parameters[1]);
 	// gchar *name = (gchar *)s_name.c_str();
 
 	// int int_flags = (int)parameters[2];
@@ -237,7 +237,7 @@ Php::Value GtkWidgetPath_::iter_has_class(Php::Parameters &parameters)
 {
 	gint pos = (gint)parameters[0];
 
-	std::string s_name = parameters[1];
+	std::string s_name = std::string(parameters[1]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	bool ret = gtk_widget_path_iter_has_class (instance, pos, name);
@@ -249,7 +249,7 @@ Php::Value GtkWidgetPath_::iter_has_name(Php::Parameters &parameters)
 {
 	gint pos = (gint)parameters[0];
 
-	std::string s_name = parameters[1];
+	std::string s_name = std::string(parameters[1]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	bool ret = gtk_widget_path_iter_has_name (instance, pos, name);
@@ -302,7 +302,7 @@ Php::Value GtkWidgetPath_::iter_has_region(Php::Parameters &parameters)
 {
 	// gint pos = (gint)parameters[0];
 
-	// std::string s_name = parameters[1];
+	// std::string s_name = std::string(parameters[1]);
 	// gchar *name = (gchar *)s_name.c_str();
 
 	// int int_flags = (int)parameters[2];
@@ -343,7 +343,7 @@ void GtkWidgetPath_::iter_remove_class(Php::Parameters &parameters)
 {
 	gint pos = (gint)parameters[0];
 
-	std::string s_name = parameters[1];
+	std::string s_name = std::string(parameters[1]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_widget_path_iter_remove_class (instance, pos, name);
@@ -354,7 +354,7 @@ void GtkWidgetPath_::iter_remove_region(Php::Parameters &parameters)
 {
 	// gint pos = (gint)parameters[0];
 
-	// std::string s_name = parameters[1];
+	// std::string s_name = std::string(parameters[1]);
 	// gchar *name = (gchar *)s_name.c_str();
 
 	// gtk_widget_path_iter_remove_region (instance, pos, name);
@@ -372,7 +372,7 @@ void GtkWidgetPath_::iter_set_name(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[1].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_name = parameters[1];
+	std::string s_name = std::string(parameters[1]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_widget_path_iter_set_name (instance, pos, name);
@@ -383,7 +383,7 @@ void GtkWidgetPath_::iter_set_object_name(Php::Parameters &parameters)
 {
 	gint pos = (gint)parameters[0];
 
-	std::string s_name = parameters[1];
+	std::string s_name = std::string(parameters[1]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_widget_path_iter_set_object_name (instance, pos, name);

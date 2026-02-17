@@ -331,7 +331,7 @@ Php::Value GtkStyleContext_::lookup_color(Php::Parameters &parameters)
 		throw Php::Exception("GtkStyleContext_::lookup_color: First parameter (color_name) must be a string");
 	}
 	
-	std::string s_color_name = parameters[0];
+	std::string s_color_name = std::string(parameters[0]);
 	gchar *color_name = (gchar *)s_color_name.c_str();
 
 	GdkRGBA color;
@@ -357,7 +357,7 @@ Php::Value GtkStyleContext_::lookup_icon_set(Php::Parameters &parameters)
 		throw Php::Exception("GtkStyleContext_::lookup_icon_set: First parameter (stock_id) must be a string");
 	}
 	
-	std::string s_stock_id = parameters[0];
+	std::string s_stock_id = std::string(parameters[0]);
 	gchar *stock_id = (gchar *)s_stock_id.c_str();
 	
 	G_GNUC_BEGIN_IGNORE_DEPRECATIONS
@@ -638,7 +638,7 @@ void GtkStyleContext_::set_path(Php::Parameters &parameters)
 
 void GtkStyleContext_::add_class(Php::Parameters &parameters)
 {
-	std::string s_class_name = parameters[0];
+	std::string s_class_name = std::string(parameters[0]);
 	gchar *class_name = (gchar *)s_class_name.c_str();
 
 	gtk_style_context_add_class (GTK_STYLE_CONTEXT(instance), class_name);
@@ -646,7 +646,7 @@ void GtkStyleContext_::add_class(Php::Parameters &parameters)
 
 void GtkStyleContext_::remove_class(Php::Parameters &parameters)
 {
-	std::string s_class_name = parameters[0];
+	std::string s_class_name = std::string(parameters[0]);
 	gchar *class_name = (gchar *)s_class_name.c_str();
 
 	gtk_style_context_remove_class (GTK_STYLE_CONTEXT(instance), class_name);
@@ -662,7 +662,7 @@ Php::Value GtkStyleContext_::has_class(Php::Parameters &parameters)
 		throw Php::Exception("GtkStyleContext_::has_class: First parameter (class_name) must be a string");
 	}
 	
-	std::string s_class_name = parameters[0];
+	std::string s_class_name = std::string(parameters[0]);
 	gchar *class_name = (gchar *)s_class_name.c_str();
 
 	gboolean ret = gtk_style_context_has_class (GTK_STYLE_CONTEXT(instance), class_name);
@@ -697,7 +697,7 @@ void GtkStyleContext_::add_region(Php::Parameters &parameters)
 		throw Php::Exception("GtkStyleContext_::add_region: First parameter (region_name) must be a string");
 	}
 	
-	std::string s_region_name = parameters[0];
+	std::string s_region_name = std::string(parameters[0]);
 	gchar *region_name = (gchar *)s_region_name.c_str();
 
 	if (!parameters[1].isNumeric()) {
@@ -721,7 +721,7 @@ void GtkStyleContext_::remove_region(Php::Parameters &parameters)
 		throw Php::Exception("GtkStyleContext_::remove_region: First parameter (region_name) must be a string");
 	}
 	
-	std::string s_region_name = parameters[0];
+	std::string s_region_name = std::string(parameters[0]);
 	gchar *region_name = (gchar *)s_region_name.c_str();
 
 	G_GNUC_BEGIN_IGNORE_DEPRECATIONS
@@ -738,7 +738,7 @@ Php::Value GtkStyleContext_::has_region(Php::Parameters &parameters)
 	if (!parameters[0].isString()) {
 		throw Php::Exception("GtkStyleContext_::has_region: First parameter (region_name) must be a string");
 	}
-	std::string s_region_name = parameters[0];
+	std::string s_region_name = std::string(parameters[0]);
 	gchar *region_name = (gchar *)s_region_name.c_str();
 
 	GtkRegionFlags flags_return = (GtkRegionFlags)0;

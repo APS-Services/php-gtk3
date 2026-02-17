@@ -47,7 +47,7 @@ void GtkTextBuffer_::insert(Php::Parameters &parameters)
 	GtkTextIter_ *phpgtk_iter = (GtkTextIter_ *)object_iter.implementation();
 	GtkTextIter iter = phpgtk_iter->get_instance();
 
-	std::string s_text = parameters[1];
+	std::string s_text = std::string(parameters[1]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
@@ -60,7 +60,7 @@ void GtkTextBuffer_::insert(Php::Parameters &parameters)
 
 void GtkTextBuffer_::insert_at_cursor(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	std::string s_text = std::string(parameters[0]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
@@ -78,7 +78,7 @@ Php::Value GtkTextBuffer_::insert_interactive(Php::Parameters &parameters)
 	GtkTextIter_ *phpgtk_iter = (GtkTextIter_ *)object_iter.implementation();
 	GtkTextIter iter = phpgtk_iter->get_instance();
 
-	std::string s_text = parameters[1];
+	std::string s_text = std::string(parameters[1]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
@@ -96,7 +96,7 @@ Php::Value GtkTextBuffer_::insert_interactive(Php::Parameters &parameters)
 
 Php::Value GtkTextBuffer_::insert_interactive_at_cursor(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	std::string s_text = std::string(parameters[0]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
@@ -161,7 +161,7 @@ void GtkTextBuffer_::insert_with_tags(Php::Parameters &parameters)
 	GtkTextIter_ *phpgtk_iter = (GtkTextIter_ *)object_iter.implementation();
 	GtkTextIter iter = phpgtk_iter->get_instance();
 	
-	std::string s_text = parameters[1];
+	std::string s_text = std::string(parameters[1]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
@@ -187,7 +187,7 @@ void GtkTextBuffer_::insert_with_tags_by_name(Php::Parameters &parameters)
 	GtkTextIter iter = phpgtk_iter->get_instance();
 	
 
-	std::string s_text = parameters[1];
+	std::string s_text = std::string(parameters[1]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
@@ -218,7 +218,7 @@ void GtkTextBuffer_::insert_markup(Php::Parameters &parameters)
 	GtkTextIter iter = phpgtk_iter->get_instance();
 	
 
-	std::string s_markup = parameters[1];
+	std::string s_markup = std::string(parameters[1]);
 	gchar *markup = (gchar *)s_markup.c_str();
 
 	gint len = -1;
@@ -288,7 +288,7 @@ void GtkTextBuffer_::set_text(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_text = parameters[0];
+	std::string s_text = std::string(parameters[0]);
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = s_text.length();
@@ -353,7 +353,7 @@ void GtkTextBuffer_::insert_pixbuf(Php::Parameters &parameters)
 
 Php::Value GtkTextBuffer_::create_mark(Php::Parameters &parameters)
 {
-	std::string s_mark_name = parameters[0];
+	std::string s_mark_name = std::string(parameters[0]);
 	gchar *mark_name = (gchar *)s_mark_name.c_str();
 
 	Php::Value object_where = parameters[1];
@@ -389,7 +389,7 @@ void GtkTextBuffer_::move_mark(Php::Parameters &parameters)
 
 void GtkTextBuffer_::move_mark_by_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = std::string(parameters[0]);
 	gchar *name = (gchar *)s_name.c_str();
 
 
@@ -434,7 +434,7 @@ void GtkTextBuffer_::delete_mark(Php::Parameters &parameters)
 
 void GtkTextBuffer_::delete_mark_by_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = std::string(parameters[0]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_text_buffer_delete_mark_by_name (GTK_TEXT_BUFFER(instance), name);
@@ -443,7 +443,7 @@ void GtkTextBuffer_::delete_mark_by_name(Php::Parameters &parameters)
 
 Php::Value GtkTextBuffer_::get_mark(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = std::string(parameters[0]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	GtkTextMark *ret = gtk_text_buffer_get_mark (GTK_TEXT_BUFFER(instance), name);
@@ -553,7 +553,7 @@ void GtkTextBuffer_::remove_tag(Php::Parameters &parameters)
 
 void GtkTextBuffer_::apply_tag_by_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = std::string(parameters[0]);
 	gchar *name = (gchar *)s_name.c_str();
 
 
@@ -572,7 +572,7 @@ void GtkTextBuffer_::apply_tag_by_name(Php::Parameters &parameters)
 
 void GtkTextBuffer_::remove_tag_by_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = std::string(parameters[0]);
 	gchar *name = (gchar *)s_name.c_str();
 
 
@@ -607,10 +607,10 @@ void GtkTextBuffer_::remove_all_tags(Php::Parameters &parameters)
 
 Php::Value GtkTextBuffer_::create_tag(Php::Parameters &parameters)
 {
-	std::string s_tag_name = parameters[0];
+	std::string s_tag_name = std::string(parameters[0]);
 	gchar *tag_name = (gchar *)s_tag_name.c_str();
 
-	std::string s_first_property_name = parameters[1];
+	std::string s_first_property_name = std::string(parameters[1]);
 	gchar *first_property_name = (gchar *)s_first_property_name.c_str();
 
 	GtkTextTag *ret = gtk_text_buffer_create_tag (GTK_TEXT_BUFFER(instance), tag_name, first_property_name);

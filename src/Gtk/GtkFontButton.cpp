@@ -19,7 +19,7 @@ void GtkFontButton_::__construct()
 
 Php::Value GtkFontButton_::new_with_font(Php::Parameters &parameters)
 {
-	std::string s_fontname = parameters[0];
+	std::string s_fontname = std::string(parameters[0]);
 	gchar *fontname = (gchar *)s_fontname.c_str();
 
 	GtkWidget *ret = gtk_font_button_new_with_font (fontname);
@@ -31,7 +31,7 @@ Php::Value GtkFontButton_::new_with_font(Php::Parameters &parameters)
 
 Php::Value GtkFontButton_::set_font_name(Php::Parameters &parameters)
 {
-	// std::string s_fontname = parameters[0];
+	// std::string s_fontname = std::string(parameters[0]);
 	// gchar *fontname = (gchar *)s_fontname.c_str();
 
 	// bool ret = gtk_font_chooser_set_font (GTK_FONT_BUTTON(instance), fontname);
@@ -44,7 +44,7 @@ Php::Value GtkFontButton_::set_font_name(Php::Parameters &parameters)
 
 void GtkFontButton_::set_font(Php::Parameters &parameters)
 {
-	std::string s_fontname = parameters[0];
+	std::string s_fontname = std::string(parameters[0]);
 	gchar *fontname = (gchar *)s_fontname.c_str();
 
 	gtk_font_chooser_set_font (GTK_FONT_CHOOSER(instance), fontname);
@@ -133,7 +133,7 @@ void GtkFontButton_::set_title(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_title = parameters[0];
+	std::string s_title = std::string(parameters[0]);
 	gchar *title = (gchar *)s_title.c_str();
 
 	gtk_font_button_set_title (GTK_FONT_BUTTON(instance), title);

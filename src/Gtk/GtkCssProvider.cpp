@@ -9,10 +9,10 @@ GtkCssProvider_::~GtkCssProvider_() = default;
 
 Php::Value GtkCssProvider_::get_named(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = std::string(parameters[0]);
 	gchar *name = (gchar *)s_name.c_str();
 
-	std::string s_variant = parameters[1];
+	std::string s_variant = std::string(parameters[1]);
 	gchar *variant = (gchar *)s_variant.c_str();
 
 	GtkCssProvider *ret = gtk_css_provider_get_named (name, variant);
@@ -24,7 +24,7 @@ Php::Value GtkCssProvider_::get_named(Php::Parameters &parameters)
 
 Php::Value GtkCssProvider_::load_from_data(Php::Parameters &parameters)
 {
-	std::string s_data = parameters[0];
+	std::string s_data = std::string(parameters[0]);
 	gchar *data = (gchar *)s_data.c_str();
 
 	gssize length = s_data.length();
@@ -38,7 +38,7 @@ Php::Value GtkCssProvider_::load_from_data(Php::Parameters &parameters)
 
 Php::Value GtkCssProvider_::load_from_file(Php::Parameters &parameters)
 {
-	std::string s_file = parameters[0];
+	std::string s_file = std::string(parameters[0]);
 	gchar *filepath = (gchar *)s_file.c_str();
 
 	GFile *file = g_file_new_for_path(filepath);
@@ -54,7 +54,7 @@ Php::Value GtkCssProvider_::load_from_file(Php::Parameters &parameters)
 
 Php::Value GtkCssProvider_::load_from_path(Php::Parameters &parameters)
 {
-	std::string s_path = parameters[0];
+	std::string s_path = std::string(parameters[0]);
 	gchar *path = (gchar *)s_path.c_str();
 
 	GError *error = NULL;
@@ -66,7 +66,7 @@ Php::Value GtkCssProvider_::load_from_path(Php::Parameters &parameters)
 
 void GtkCssProvider_::load_from_resource(Php::Parameters &parameters)
 {
-	std::string s_resource_path = parameters[0];
+	std::string s_resource_path = std::string(parameters[0]);
 	gchar *resource_path = (gchar *)s_resource_path.c_str();
 
 	gtk_css_provider_load_from_resource (GTK_CSS_PROVIDER(instance), resource_path);

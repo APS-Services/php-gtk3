@@ -25,7 +25,7 @@ void PangoLayout_::set_text(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_text = parameters[0];
+	std::string s_text = std::string(parameters[0]);
 	gchar* text = (gchar*) s_text.c_str();
 
 	gint length = (gint) parameters[1];
@@ -43,7 +43,7 @@ void PangoLayout_::set_markup(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string s_markup = parameters[0];
+	std::string s_markup = std::string(parameters[0]);
 	gchar* markup = (gchar*) s_markup.c_str();
 
 	gint length = (gint) parameters[1];

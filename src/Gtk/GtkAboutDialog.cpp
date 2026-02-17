@@ -26,7 +26,7 @@ Php::Value GtkAboutDialog_::get_program_name()
 
 void GtkAboutDialog_::set_program_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = std::string(parameters[0]);
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG(instance), name);
@@ -42,7 +42,7 @@ Php::Value GtkAboutDialog_::get_version()
 
 void GtkAboutDialog_::set_version(Php::Parameters &parameters)
 {
-	std::string s_version = parameters[0];
+	std::string s_version = std::string(parameters[0]);
 	gchar *version = (gchar *)s_version.c_str();
 
 	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(instance), version);
@@ -58,7 +58,7 @@ Php::Value GtkAboutDialog_::get_copyright()
 
 void GtkAboutDialog_::set_copyright(Php::Parameters &parameters)
 {
-	std::string s_copyright = parameters[0];
+	std::string s_copyright = std::string(parameters[0]);
 	gchar *copyright = (gchar *)s_copyright.c_str();
 
 	gtk_about_dialog_set_copyright (GTK_ABOUT_DIALOG(instance), copyright);
@@ -74,7 +74,7 @@ Php::Value GtkAboutDialog_::get_comments()
 
 void GtkAboutDialog_::set_comments(Php::Parameters &parameters)
 {
-	std::string s_comments = parameters[0];
+	std::string s_comments = std::string(parameters[0]);
 	gchar *comments = (gchar *)s_comments.c_str();
 
 	gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG(instance), comments);
@@ -90,7 +90,7 @@ Php::Value GtkAboutDialog_::get_license()
 
 void GtkAboutDialog_::set_license(Php::Parameters &parameters)
 {
-	std::string s_license = parameters[0];
+	std::string s_license = std::string(parameters[0]);
 	gchar *license = (gchar *)s_license.c_str();
 
 	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG(instance), license);
@@ -137,7 +137,7 @@ Php::Value GtkAboutDialog_::get_website()
 
 void GtkAboutDialog_::set_website(Php::Parameters &parameters)
 {
-	std::string s_website = parameters[0];
+	std::string s_website = std::string(parameters[0]);
 	gchar *website = (gchar *)s_website.c_str();
 
 	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG(instance), website);
@@ -153,7 +153,7 @@ Php::Value GtkAboutDialog_::get_website_label()
 
 void GtkAboutDialog_::set_website_label(Php::Parameters &parameters)
 {
-	std::string s_website_label = parameters[0];
+	std::string s_website_label = std::string(parameters[0]);
 	gchar *website_label = (gchar *)s_website_label.c_str();
 
 	gtk_about_dialog_set_website_label (GTK_ABOUT_DIALOG(instance), website_label);
@@ -169,7 +169,7 @@ Php::Value GtkAboutDialog_::get_authors()
 
 void GtkAboutDialog_::set_authors(Php::Parameters &parameters)
 {
-	std::string s_authors = parameters[0];
+	std::string s_authors = std::string(parameters[0]);
 
 	static const gchar* authors[] = { (gchar *)s_authors.c_str(), nullptr };
 
@@ -186,7 +186,7 @@ Php::Value GtkAboutDialog_::get_artists()
 
 void GtkAboutDialog_::set_artists(Php::Parameters &parameters)
 {
-	std::string s_artists = parameters[0];
+	std::string s_artists = std::string(parameters[0]);
 	
 	static const gchar* artists[] = { (gchar *)s_artists.c_str(), nullptr };
 
@@ -205,7 +205,7 @@ Php::Value GtkAboutDialog_::get_documenters()
 
 void GtkAboutDialog_::set_documenters(Php::Parameters &parameters)
 {
-	std::string s_documenters = parameters[0];
+	std::string s_documenters = std::string(parameters[0]);
 
 	static const gchar* documenters[] = { (gchar *)s_documenters.c_str(), nullptr };
 
@@ -222,7 +222,7 @@ Php::Value GtkAboutDialog_::get_translator_credits()
 
 void GtkAboutDialog_::set_translator_credits(Php::Parameters &parameters)
 {
-	std::string s_translator_credits = parameters[0];
+	std::string s_translator_credits = std::string(parameters[0]);
 	gchar *translator_credits = (gchar *)s_translator_credits.c_str();
 
 	gtk_about_dialog_set_translator_credits (GTK_ABOUT_DIALOG(instance), translator_credits);
@@ -263,7 +263,7 @@ Php::Value GtkAboutDialog_::get_logo_icon_name()
 
 void GtkAboutDialog_::set_logo_icon_name(Php::Parameters &parameters)
 {
-	std::string s_icon_name = parameters[0];
+	std::string s_icon_name = std::string(parameters[0]);
 	gchar *icon_name = (gchar *)s_icon_name.c_str();
 
 	gtk_about_dialog_set_logo_icon_name (GTK_ABOUT_DIALOG(instance), icon_name);
@@ -272,10 +272,10 @@ void GtkAboutDialog_::set_logo_icon_name(Php::Parameters &parameters)
 
 void GtkAboutDialog_::add_credit_section(Php::Parameters &parameters)
 {
-	std::string s_section_name = parameters[0];
+	std::string s_section_name = std::string(parameters[0]);
 	gchar *section_name = (gchar *)s_section_name.c_str();
 
-	std::string s_people = parameters[1];
+	std::string s_people = std::string(parameters[1]);
 	static const gchar* people[] = { (gchar *)s_people.c_str(), nullptr };
 
 	gtk_about_dialog_add_credit_section (GTK_ABOUT_DIALOG(instance), section_name, people);
@@ -286,7 +286,7 @@ void GtkAboutDialog_::gtk_show_about_dialog(Php::Parameters &parameters)
 {
 	// https://stackoverflow.com/questions/21693960/gtkaboutdialog-icon-not-loading
 	
-	// std::string s_first_property_name = parameters[0];
+	// std::string s_first_property_name = std::string(parameters[0]);
 	// gchar *first_property_name = (gchar *)s_first_property_name.c_str();
 
 

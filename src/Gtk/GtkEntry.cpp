@@ -73,7 +73,7 @@ void GtkEntry_::set_text(Php::Parameters &parameters)
 		            << phpgtk_type_to_string(parameters[0].type()) 
 		            << " given (auto-converting)" << std::flush;
 	}
-	std::string text = parameters[0];
+	std::string text = std::string(parameters[0]);
 	gtk_entry_set_text(GTK_ENTRY(instance), text.c_str());
 }
 
@@ -130,7 +130,7 @@ Php::Value GtkEntry_::get_completion()
 void GtkEntry_::set_invisible_char(Php::Parameters &parameters)
 {
 	// Cast string to gunichar
-	std::string string = parameters[0];
+	std::string string = std::string(parameters[0]);
 	char *a = (char *)string.c_str();
 	gunichar ch = g_utf8_get_char(a);
 	
@@ -394,7 +394,7 @@ void GtkEntry_::delete_selection()
  */
 void GtkEntry_::insert_text(Php::Parameters& parameters)
 {
-	std::string new_text = parameters[0];
+	std::string new_text = std::string(parameters[0]);
 	gint new_text_length = parameters[1];
 	gint position = parameters[2];
 	gtk_editable_insert_text(GTK_EDITABLE(instance), new_text.c_str(), new_text_length, &position);
