@@ -6,7 +6,7 @@
     #include <gtk/gtk.h>
 
 	#include "GtkCheckButton.h"
-	
+
 	#include "../../php-gtk.h"
 
     /**

@@ -11,7 +11,7 @@
 	#include "../Gdk/GdkPixbuf.h"
 	#include "GtkWidget.h"
 	#include "GtkMenu.h"
-	
+
 	#include "../../php-gtk.h"
 
 	class GtkStatusIcon_ : public GObject_

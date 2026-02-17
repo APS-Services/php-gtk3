@@ -10,7 +10,7 @@
 	#include "GtkTextTag.h"
     #include "GtkTextTagTable.h"
     #include "../Gdk/GdkPixbuf.h"
-    
+
     #include "../../php-gtk.h"
 
     /**

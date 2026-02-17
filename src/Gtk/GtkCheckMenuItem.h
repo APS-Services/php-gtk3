@@ -6,7 +6,7 @@
     #include <gtk/gtk.h>
 
 	#include "GtkMenuItem.h"
-	
+
 	#include "../../php-gtk.h"
 
     /**
