@@ -368,10 +368,9 @@ void GtkWidgetPath_::iter_set_name(Php::Parameters &parameters)
 	gint pos = (gint)parameters[0];
 
 	if (!parameters[1].isString()) {
-		std::string error_msg = "GtkWidgetPath::iter_set_name: Second parameter (name) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[1].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkWidgetPath::iter_set_name: Second parameter (name) should be a string, " 
+		            << phpgtk_type_to_string(parameters[1].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_name = parameters[1];
 	gchar *name = (gchar *)s_name.c_str();

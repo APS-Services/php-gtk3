@@ -198,12 +198,11 @@ void GtkTextBuffer_::insert_with_tags_by_name(Php::Parameters &parameters)
 	std::string s_first_tag_name;
 	if(parameters.size() >= 4) {
 		if (!parameters[3].isString()) {
-			std::string error_msg = "GtkTextBuffer::insert_with_tags_by_name: Fourth parameter (first_tag_name) must be a string, ";
-			error_msg += phpgtk_type_to_string(parameters[3].type());
-			error_msg += " given";
-			throw Php::Exception(error_msg);
+			Php::warning << "GtkTextBuffer::insert_with_tags_by_name: Fourth parameter (first_tag_name) should be a string, " 
+			            << phpgtk_type_to_string(parameters[3].type()) 
+			            << " given (auto-converting)" << std::flush;
 		}
-		s_first_tag_name.assign((const char *)parameters[3]);
+		s_first_tag_name = parameters[3];
 		first_tag_name = s_first_tag_name.c_str();
 	}
 
@@ -285,10 +284,9 @@ Php::Value GtkTextBuffer_::backspace(Php::Parameters &parameters)
 void GtkTextBuffer_::set_text(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkTextBuffer::set_text: First parameter (text) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkTextBuffer::set_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_text = parameters[0];
 	gchar *text = (gchar *)s_text.c_str();

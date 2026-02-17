@@ -20,10 +20,9 @@ void GtkFileFilter_::__construct()
 void GtkFileFilter_::set_name(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkFileFilter::set_name: First parameter (name) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkFileFilter::set_name: First parameter (name) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_name = parameters[0];
 	gchar *name = (gchar *)s_name.c_str();

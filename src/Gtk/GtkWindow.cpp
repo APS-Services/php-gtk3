@@ -30,10 +30,9 @@ void GtkWindow_::__construct(Php::Parameters &parameters)
 void GtkWindow_::set_title(Php::Parameters &parameters)
 {
     if (!parameters[0].isString()) {
-        std::string error_msg = "GtkWindow::set_title: First parameter (title) must be a string, ";
-        error_msg += phpgtk_type_to_string(parameters[0].type());
-        error_msg += " given";
-        throw Php::Exception(error_msg);
+        Php::warning << "GtkWindow::set_title: First parameter (title) should be a string, " 
+                    << phpgtk_type_to_string(parameters[0].type()) 
+                    << " given (auto-converting)" << std::flush;
     }
     std::string title = parameters[0];
 
@@ -746,10 +745,9 @@ Php::Value GtkWindow_::set_icon_from_file(Php::Parameters &parameters)
 void GtkWindow_::set_icon_name(Php::Parameters &parameters)
 {
     if (!parameters[0].isString()) {
-        std::string error_msg = "GtkWindow::set_icon_name: First parameter (icon_name) must be a string, ";
-        error_msg += phpgtk_type_to_string(parameters[0].type());
-        error_msg += " given";
-        throw Php::Exception(error_msg);
+        Php::warning << "GtkWindow::set_icon_name: First parameter (icon_name) should be a string, " 
+                    << phpgtk_type_to_string(parameters[0].type()) 
+                    << " given (auto-converting)" << std::flush;
     }
     std::string filename = parameters[0];
 

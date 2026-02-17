@@ -67,10 +67,9 @@ void GtkComboBoxText_::insert(Php::Parameters &parameters)
 void GtkComboBoxText_::append_text(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkComboBoxText::append_text: First parameter (text) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkComboBoxText::append_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_text = parameters[0];
 	gchar *text = (gchar *)s_text.c_str();
@@ -82,10 +81,9 @@ void GtkComboBoxText_::append_text(Php::Parameters &parameters)
 void GtkComboBoxText_::prepend_text(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkComboBoxText::prepend_text: First parameter (text) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkComboBoxText::prepend_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_text = parameters[0];
 	gchar *text = (gchar *)s_text.c_str();
@@ -99,10 +97,9 @@ void GtkComboBoxText_::insert_text(Php::Parameters &parameters)
 	gint position = (gint)parameters[0];
 
 	if (!parameters[1].isString()) {
-		std::string error_msg = "GtkComboBoxText::insert_text: Second parameter (text) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[1].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkComboBoxText::insert_text: Second parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[1].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_text = parameters[1];
 	gchar *text = (gchar *)s_text.c_str();

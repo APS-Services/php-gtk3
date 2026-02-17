@@ -24,10 +24,9 @@ void GtkToolButton_::__construct(Php::Parameters &parameters)
 void GtkToolButton_::set_label(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkToolButton::set_label: First parameter (label) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkToolButton::set_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_label = parameters[0];
 	gchar *label = (gchar *)s_label.c_str();
@@ -61,10 +60,9 @@ Php::Value GtkToolButton_::get_use_underline()
 void GtkToolButton_::set_icon_name(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkToolButton::set_icon_name: First parameter (icon_name) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkToolButton::set_icon_name: First parameter (icon_name) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_icon_name = parameters[0];
 	gchar *icon_name = (gchar *)s_icon_name.c_str();

@@ -409,10 +409,9 @@ void GtkWidget_::grab_default()
 void GtkWidget_::set_name(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkWidget::set_name: First parameter (name) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkWidget::set_name: First parameter (name) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_name = parameters[0];
 	gchar *name = (gchar *)s_name.c_str();
@@ -1608,10 +1607,9 @@ Php::Value GtkWidget_::get_tooltip_markup()
 void GtkWidget_::set_tooltip_markup(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkWidget::set_tooltip_markup: First parameter (markup) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkWidget::set_tooltip_markup: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_markup = parameters[0];
 	gchar *markup = (gchar *)s_markup.c_str();
@@ -1630,10 +1628,9 @@ Php::Value GtkWidget_::get_tooltip_text()
 void GtkWidget_::set_tooltip_text(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkWidget::set_tooltip_text: First parameter (text) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkWidget::set_tooltip_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_text = parameters[0];
 	gchar *text = (gchar *)s_text.c_str();

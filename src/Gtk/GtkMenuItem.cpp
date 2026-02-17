@@ -20,10 +20,9 @@ void GtkMenuItem_::__construct()
 Php::Value GtkMenuItem_::new_with_label(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkMenuItem::new_with_label: First parameter (label) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkMenuItem::new_with_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_label = parameters[0];
 	gchar *label = (gchar *)s_label.c_str();
@@ -66,10 +65,9 @@ Php::Value GtkMenuItem_::get_label()
 void GtkMenuItem_::set_label(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkMenuItem::set_label: First parameter (label) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkMenuItem::set_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string s_label = parameters[0];
 	gchar *label = (gchar *)s_label.c_str();

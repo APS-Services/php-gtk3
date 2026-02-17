@@ -177,10 +177,9 @@ void GtkStatusIcon_::set_has_tooltip(Php::Parameters &parameters)
 void GtkStatusIcon_::set_tooltip_text(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkStatusIcon::set_tooltip_text: First parameter (text) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkStatusIcon::set_tooltip_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string c_text = parameters[0];
 
@@ -192,10 +191,9 @@ void GtkStatusIcon_::set_tooltip_text(Php::Parameters &parameters)
 void GtkStatusIcon_::set_tooltip_markup(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkStatusIcon::set_tooltip_markup: First parameter (markup) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkStatusIcon::set_tooltip_markup: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string c_markup = parameters[0];
 
@@ -207,10 +205,9 @@ void GtkStatusIcon_::set_tooltip_markup(Php::Parameters &parameters)
 void GtkStatusIcon_::set_title(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkStatusIcon::set_title: First parameter (title) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkStatusIcon::set_title: First parameter (title) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string c_title = parameters[0];
 
@@ -229,10 +226,9 @@ Php::Value GtkStatusIcon_::get_title()
 void GtkStatusIcon_::set_name(Php::Parameters &parameters)
 {
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkStatusIcon::set_name: First parameter (name) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkStatusIcon::set_name: First parameter (name) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string c_name = parameters[0];
 

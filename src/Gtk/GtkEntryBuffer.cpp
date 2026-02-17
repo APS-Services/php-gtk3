@@ -55,10 +55,9 @@ void GtkEntryBuffer_::set_text(Php::Parameters &parameters)
 {
 	// Cast the param
 	if (!parameters[0].isString()) {
-		std::string error_msg = "GtkEntryBuffer::set_text: First parameter (text) must be a string, ";
-		error_msg += phpgtk_type_to_string(parameters[0].type());
-		error_msg += " given";
-		throw Php::Exception(error_msg);
+		Php::warning << "GtkEntryBuffer::set_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
 	}
 	std::string passed_text = parameters[0];
 	gchar *text = (gchar *)passed_text.c_str();
