@@ -1736,6 +1736,8 @@ extern "C"
         gtkwindow.method<&GtkWindow_::get_size>("get_size");
         gtkwindow.method<&GtkWindow_::get_screen>("get_screen");
         gtkwindow.method<&GtkWindow_::list_toplevels>("list_toplevels");
+        gtkwindow.method<&GtkWindow_::begin_move_drag>("begin_move_drag");
+        gtkwindow.method<&GtkWindow_::begin_resize_drag>("begin_resize_drag");
 
         // GtkWindowType
         Php::Class<Php::Base> gtkwindowtype("GtkWindowType");

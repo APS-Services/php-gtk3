@@ -574,6 +574,20 @@
              */
             void set_interactive_debugging(Php::Parameters &parameters);
 
+            /**
+             * Starts moving a window. This function is used if an application has window move implemented as a pressed-button handler.
+             *
+             * https://developer.gnome.org/gtk3/stable/GtkWindow.html#gtk-window-begin-move-drag
+             */
+            void begin_move_drag(Php::Parameters &parameters);
+
+            /**
+             * Starts resizing a window. This function is used if an application has window resizing implemented as a pressed-button handler.
+             *
+             * https://developer.gnome.org/gtk3/stable/GtkWindow.html#gtk-window-begin-resize-drag
+             */
+            void begin_resize_drag(Php::Parameters &parameters);
+
             Php::Value get_size();
             Php::Value get_screen();
             static Php::Value list_toplevels();
