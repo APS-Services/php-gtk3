@@ -761,6 +761,7 @@ extern "C"
         gdkevent.property("button", nullptr);
         gdkevent.property("key", nullptr);
         gdkevent.property("focus_change", nullptr);
+        gdkevent.property("touch", nullptr);
 
         // GdkEventButton
         Php::Class<GdkEventButton_> gdkeventbutton("GdkEventButton");
@@ -990,6 +991,20 @@ extern "C"
         gdkeventcrossing.property("detail", nullptr);
         gdkeventcrossing.property("focus", nullptr);
         gdkeventcrossing.property("state", nullptr);
+
+        // GdkEventTouch
+        Php::Class<GdkEventTouch_> gdkeventtouch("GdkEventTouch");
+        gdkeventtouch.method<&GdkEventTouch_::__construct>("__construct");
+        gdkeventtouch.property("type", nullptr);
+        gdkeventtouch.property("send_event", nullptr);
+        gdkeventtouch.property("time", nullptr);
+        gdkeventtouch.property("x", nullptr);
+        gdkeventtouch.property("y", nullptr);
+        gdkeventtouch.property("axes", nullptr);
+        gdkeventtouch.property("state", nullptr);
+        gdkeventtouch.property("emulating_pointer", nullptr);
+        gdkeventtouch.property("x_root", nullptr);
+        gdkeventtouch.property("y_root", nullptr);
 
         // GdkEventType
         Php::Class<Php::Base> gdkeventtype("GdkEventType");
@@ -4489,6 +4504,7 @@ extern "C"
         extension.add(std::move(gdkeventscroll));
         extension.add(std::move(gdkeventmotion));
         extension.add(std::move(gdkeventcrossing));
+        extension.add(std::move(gdkeventtouch));
         extension.add(std::move(gdkeventtype));
         extension.add(std::move(gdkcursor));
         extension.add(std::move(gdkcursortype));
