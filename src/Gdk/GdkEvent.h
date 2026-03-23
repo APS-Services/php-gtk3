@@ -11,6 +11,7 @@
     #include "GdkEventScroll.h"
     #include "GdkEventMotion.h"
     #include "GdkEventCrossing.h"
+    #include "GdkEventTouch.h"
 
     /**
      *

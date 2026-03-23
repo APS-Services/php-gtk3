@@ -86,6 +86,15 @@ void GdkEvent_::populate(GdkEvent *event)
         self["crossing"] = gdkeventcrossing;
     }
 
+    // GdkEventTouch - for touch events
+    if (event->type == GDK_TOUCH_BEGIN || event->type == GDK_TOUCH_UPDATE ||
+        event->type == GDK_TOUCH_END || event->type == GDK_TOUCH_CANCEL) {
+        GdkEventTouch_ *eventtouch_ = new GdkEventTouch_();
+        Php::Value gdkeventtouch = Php::Object("GdkEventTouch", eventtouch_);
+        eventtouch_->populate(event->touch);
+        self["touch"] = gdkeventtouch;
+    }
+
 
     /**
 
