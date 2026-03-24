@@ -70,7 +70,11 @@ PHP-GTK3 includes `GtkStatusIcon` for creating system tray icons:
 
 - ✅ **Windows** - Full support using native system tray
 - ✅ **Linux (X11)** - Full support
-- ⚠️ **Linux (Wayland)** - **Not supported**
+- ⚠️ **Linux (Wayland)** - **Not supported** - events will not work
+
+**Important Wayland Notes:**
+
+On Wayland, `GtkStatusIcon` may appear but click events (`activate`, `popup-menu`, etc.) will **not** be received. The desktop environment may show unexpected behavior (e.g., opening wrong applications).
 
 **Quick Workaround for Wayland:**
 
@@ -78,6 +82,10 @@ PHP-GTK3 includes `GtkStatusIcon` for creating system tray icons:
 # Force X11 compatibility mode
 GDK_BACKEND=x11 php your_app.php
 ```
+
+**See detailed documentation and examples:**
+- [GtkStatusIcon Wayland Issues and Solutions](docs/GtkStatusIcon-Wayland.md)
+- [StatusIcon Example Code](examples/statusicon_example.php)
 
 ## Example
 

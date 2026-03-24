@@ -1,0 +1,208 @@
+<?php
+/**
+ * GtkStatusIcon Example
+ * 
+ * This example demonstrates how to create and use a system tray icon (status icon).
+ * 
+ * IMPORTANT NOTES:
+ * - GtkStatusIcon is DEPRECATED and only works on X11
+ * - GNOME 3.26+ (Ubuntu 17.10+) removed system tray support - you need an extension!
+ * - On Wayland, the icon may appear but events (clicks) will NOT work properly
+ * - If running on Wayland, use: GDK_BACKEND=x11 php statusicon_example.php
+ * - On GNOME, install: sudo apt install gnome-shell-extension-appindicator
+ * - **KNOWN BUG:** The 'activate' signal doesn't work with gnome-shell-extension-appindicator
+ *   Use 'button-press-event' instead (see example below)
+ * - For production Wayland apps, consider using AppIndicator instead
+ * 
+ * Expected signals for GtkStatusIcon:
+ * - activate: Left-click (BROKEN on GNOME with appindicator extension!)
+ * - button-press-event: Any button press - USE THIS for left-click on GNOME
+ * - popup-menu: Right-click (works properly)
+ * - button-release-event: Any button release (with event details)
+ * - scroll-event: Mouse wheel scroll
+ * - size-changed: Icon size changed
+ */
+
+// Check if we're on Wayland and warn the user
+$display = getenv('WAYLAND_DISPLAY');
+if ($display !== false && $display !== '') {
+    echo "⚠ WARNING: Wayland detected ($display)\n";
+    echo "GtkStatusIcon does not work properly on Wayland.\n";
+    echo "Events (clicks) will not be received.\n";
+    echo "To run this example, use: GDK_BACKEND=x11 php statusicon_example.php\n";
+    echo "\n";
+}
+
+// Check if we're on GNOME (which might not have system tray)
+$desktop = getenv('XDG_CURRENT_DESKTOP');
+if ($desktop && (strpos($desktop, 'GNOME') !== false || strpos($desktop, 'gnome') !== false)) {
+    echo "⚠ NOTE: GNOME detected\n";
+    echo "GNOME 3.26+ removed system tray support.\n";
+    echo "If the icon doesn't appear, install: sudo apt install gnome-shell-extension-appindicator\n";
+    echo "Then enable it in GNOME Extensions or Tweaks.\n";
+    echo "\n";
+}
+
+echo "Continuing...\n\n";
+
+// Create a simple window (just to keep the app running)
+$window = new GtkWindow();
+$window->set_title("StatusIcon Example");
+$window->set_default_size(300, 200);
+$window->connect("destroy", function() {
+    Gtk::main_quit();
+});
+
+$label = new GtkLabel("This app has a system tray icon.\nCheck your system tray!");
+$window->add($label);
+$window->show_all();
+
+// Create the status icon
+$icon = new GtkStatusIcon();
+
+// Set icon from icon name (use a standard icon)
+$icon->set_from_icon_name("applications-system");
+
+// Alternative ways to set the icon:
+// $icon->set_from_file("/path/to/icon.png");
+// $icon->set_from_stock("gtk-about");
+
+// Set tooltip
+$icon->set_tooltip_text("Click me! (Only works on X11)");
+
+// Set title
+$icon->set_title("My Application");
+
+// Make it visible
+$icon->set_visible(true);
+
+// IMPORTANT: On GNOME with gnome-shell-extension-appindicator, the 'activate' signal
+// has a known bug and doesn't work. Use 'button-press-event' instead!
+
+// Method 1 (RECOMMENDED): Use button-press-event for left-click detection
+// This works with gnome-shell-extension-appindicator
+$icon->connect("button-press-event", function($icon, $event) {
+    if ($event->button == 1) {  // 1 = left button
+        echo "Icon was left-clicked (button-press-event, button 1)\n";
+        
+        $dialog = new GtkMessageDialog(
+            null,
+            GtkDialogFlags::MODAL,
+            GtkMessageType::INFO,
+            GtkButtonsType::OK,
+            "Status icon was clicked!\n\n(Detected via button-press-event)"
+        );
+        $dialog->run();
+        $dialog->destroy();
+        
+        return true;  // Prevent further event processing
+    }
+    
+    return false;  // Let other events (right-click, etc.) be handled normally
+});
+
+// Method 2 (BROKEN on GNOME with appindicator extension): Connect to 'activate' signal
+// NOTE: This signal has a known bug with gnome-shell-extension-appindicator and won't fire.
+// It works fine on X11 without the extension, or on other desktop environments.
+// Keeping this here for reference, but use button-press-event instead!
+$icon->connect("activate", function() {
+    echo "Icon was activated (activate signal) - this won't work on GNOME with appindicator!\n";
+    
+    $dialog = new GtkMessageDialog(
+        null,
+        GtkDialogFlags::MODAL,
+        GtkMessageType::INFO,
+        GtkButtonsType::OK,
+        "If you see this, the activate signal works on your system!"
+    );
+    $dialog->run();
+    $dialog->destroy();
+});
+
+// Connect to the 'popup-menu' signal (right-click)
+// NOTE: This will ONLY work on X11, not on Wayland
+$icon->connect("popup-menu", function($icon, $button, $activate_time) {
+    echo "Icon was right-clicked (popup-menu signal)\n";
+    echo "Button: $button, Time: $activate_time\n";
+    
+    // Create a popup menu
+    $menu = new GtkMenu();
+    
+    $item1 = new GtkMenuItem("Show Window");
+    $item1->connect("activate", function() use ($window) {
+        $window->present();
+    });
+    $menu->append($item1);
+    
+    $item2 = new GtkMenuItem("About");
+    $item2->connect("activate", function() {
+        $dialog = new GtkMessageDialog(
+            null,
+            GtkDialogFlags::MODAL,
+            GtkMessageType::INFO,
+            GtkButtonsType::OK,
+            "StatusIcon Example\n\nDemonstrates system tray functionality.\n\nNOTE: Only works on X11!"
+        );
+        $dialog->run();
+        $dialog->destroy();
+    });
+    $menu->append($item2);
+    
+    $separator = new GtkSeparatorMenuItem();
+    $menu->append($separator);
+    
+    $item3 = new GtkMenuItem("Quit");
+    $item3->connect("activate", function() {
+        Gtk::main_quit();
+    });
+    $menu->append($item3);
+    
+    $menu->show_all();
+    
+    // Position and show the menu at the icon location
+    $menu->popup(
+        null,                    // parent menu shell
+        null,                    // parent menu item
+        array($icon, "position_menu"), // position function
+        null,                    // data
+        $button,                 // button
+        $activate_time           // activate time
+    );
+});
+
+// Optional: Connect to scroll-event
+$icon->connect("scroll-event", function($icon, $event) {
+    echo "Scroll event received\n";
+    $direction = $event->direction;
+    echo "Direction: $direction\n";
+    return false;
+});
+
+// Check if the icon is embedded in the system tray
+if ($icon->is_embedded()) {
+    echo "✓ Status icon is successfully embedded in the system tray\n";
+    echo "You should see the icon in your system tray. Try clicking it!\n";
+} else {
+    echo "✗ ERROR: Status icon is NOT embedded in the system tray\n";
+    echo "\nThis usually means:\n";
+    echo "1. No system tray is available\n";
+    echo "2. You're using GNOME 3.26+ which removed system tray support\n";
+    echo "3. The desktop environment doesn't support XEmbed tray icons\n";
+    echo "\nSolutions:\n";
+    echo "- On GNOME: Install gnome-shell-extension-appindicator\n";
+    echo "  Ubuntu/Debian: sudo apt install gnome-shell-extension-appindicator\n";
+    echo "  Then enable it in GNOME Tweaks or Extensions app\n";
+    echo "- Or use a different desktop environment (XFCE, MATE, KDE)\n";
+    echo "\nThe application will continue but the tray icon won't work.\n";
+}
+
+echo "\n" . str_repeat("=", 70) . "\n";
+echo "Application started.\n";
+if ($icon->is_embedded()) {
+    echo "The status icon should appear in your system tray.\n";
+    echo "Try clicking on it (left-click and right-click).\n";
+}
+echo "Close this window or use the tray menu to quit.\n";
+echo str_repeat("=", 70) . "\n\n";
+
+Gtk::main();
