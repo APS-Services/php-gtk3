@@ -15,7 +15,7 @@ GtkWidget_::~GtkWidget_() = default;
 
 Php::Value GtkWidget_::__construct(Php::Parameters &parameters)
 {
-// // 	std::string s_first_property_name = parameters[0];
+// // 	std::string s_first_property_name = parameters[0].stringValue();
 // 	gchar *first_property_name = (gchar *)s_first_property_name.c_str();
 
 // 	GtkWidget *ret = instance = (gpointer *)gtk_widget_new (first_property_name);
@@ -240,7 +240,7 @@ void GtkWidget_::size_allocate_with_baseline(Php::Parameters &parameters)
 
 void GtkWidget_::add_accelerator(Php::Parameters &parameters)
 {
-// // 	std::string s_accel_signal = parameters[0];
+// // 	std::string s_accel_signal = parameters[0].stringValue();
 // 	gchar *accel_signal = (gchar *)s_accel_signal.c_str();
 
 // // 	GtkAccelGroup *accel_group;
@@ -297,7 +297,7 @@ Php::Value GtkWidget_::remove_accelerator(Php::Parameters &parameters)
 
 void GtkWidget_::set_accel_path(Php::Parameters &parameters)
 {
-// // 	std::string s_accel_path = parameters[0];
+// // 	std::string s_accel_path = parameters[0].stringValue();
 // 	gchar *accel_path = (gchar *)s_accel_path.c_str();
 
 // // 	GtkAccelGroup *accel_group;
@@ -408,7 +408,12 @@ void GtkWidget_::grab_default()
 
 void GtkWidget_::set_name(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkWidget::set_name: First parameter (name) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_widget_set_name (GTK_WIDGET(instance), name);
@@ -789,10 +794,10 @@ void GtkWidget_::path(Php::Parameters &parameters)
 {
 // // 	guint path_length = (int)parameters[0];
 
-// // 	std::string s_path = parameters[1];
+// // 	std::string s_path = parameters[1].stringValue();
 // 	gchar *path = (gchar *)s_path.c_str();
 
-// // 	std::string s_path_reversed = parameters[2];
+// // 	std::string s_path_reversed = parameters[2].stringValue();
 // 	gchar *path_reversed = (gchar *)s_path_reversed.c_str();
 
 // 	gtk_widget_path (GTK_WIDGET(instance), path_length, path, path_reversed);
@@ -804,10 +809,10 @@ void GtkWidget_::class_path(Php::Parameters &parameters)
 {
 // // 	guint path_length = (int)parameters[0];
 
-// // 	std::string s_path = parameters[1];
+// // 	std::string s_path = parameters[1].stringValue();
 // 	gchar *path = (gchar *)s_path.c_str();
 
-// // 	std::string s_path_reversed = parameters[2];
+// // 	std::string s_path_reversed = parameters[2].stringValue();
 // 	gchar *path_reversed = (gchar *)s_path_reversed.c_str();
 
 // 	gtk_widget_class_path (GTK_WIDGET(instance), path_length, path, path_reversed);
@@ -831,7 +836,7 @@ void GtkWidget_::override_background_color(Php::Parameters &parameters)
 
 	GdkRGBA color;
 	if(parameters[1].isString()) {
-		std::string s_color = parameters[1];
+		std::string s_color = parameters[1].stringValue();
 		gdk_rgba_parse(&color, s_color.c_str());
 	}
 	else {
@@ -852,7 +857,7 @@ void GtkWidget_::override_color(Php::Parameters &parameters)
 
 	GdkRGBA color;
 	if(parameters[1].isString()) {
-		std::string s_color = parameters[1];
+		std::string s_color = parameters[1].stringValue();
 		gdk_rgba_parse(&color, s_color.c_str());
 	}
 	else {
@@ -874,7 +879,7 @@ void GtkWidget_::override_font(Php::Parameters &parameters)
 
 void GtkWidget_::override_symbolic_color(Php::Parameters &parameters)
 {
-// // 	std::string s_name = parameters[0];
+// // 	std::string s_name = parameters[0].stringValue();
 // 	gchar *name = (gchar *)s_name.c_str();
 
 // // 	GdkRGBA *color;
@@ -1021,7 +1026,7 @@ void GtkWidget_::modify_base(Php::Parameters &parameters)
 
 void GtkWidget_::modify_font(Php::Parameters &parameters)
 {
-	std::string s_font_desc = parameters[0];
+	std::string s_font_desc = parameters[0].stringValue();
 
 	PangoFontDescription *font_desc = pango_font_description_from_string(s_font_desc.c_str());
 
@@ -1092,7 +1097,7 @@ Php::Value GtkWidget_::get_font_map()
 
 Php::Value GtkWidget_::create_pango_layout(Php::Parameters &parameters)
 {
-// // 	std::string s_text = parameters[0];
+// // 	std::string s_text = parameters[0].stringValue();
 // 	gchar *text = (gchar *)s_text.c_str();
 
 // 	PangoLayout ret = gtk_widget_create_pango_layout (GTK_WIDGET(instance), text);
@@ -1103,7 +1108,7 @@ Php::Value GtkWidget_::create_pango_layout(Php::Parameters &parameters)
 
 Php::Value GtkWidget_::render_icon(Php::Parameters &parameters)
 {
-// // 	std::string s_stock_id = parameters[0];
+// // 	std::string s_stock_id = parameters[0].stringValue();
 // 	gchar *stock_id = (gchar *)s_stock_id.c_str();
 
 // // 	GtkIconSize *size;
@@ -1113,7 +1118,7 @@ Php::Value GtkWidget_::render_icon(Php::Parameters &parameters)
 // 		size = GTK_WIDGET(phpgtk_size->get_instance());
 // 	}
 
-// // 	std::string s_detail = parameters[2];
+// // 	std::string s_detail = parameters[2].stringValue();
 // 	gchar *detail = (gchar *)s_detail.c_str();
 
 // 	GdkPixbuf ret = gtk_widget_render_icon (GTK_WIDGET(instance), stock_id, size, detail);
@@ -1125,7 +1130,7 @@ Php::Value GtkWidget_::render_icon(Php::Parameters &parameters)
 
 Php::Value GtkWidget_::render_icon_pixbuf(Php::Parameters &parameters)
 {
-// // 	std::string s_stock_id = parameters[0];
+// // 	std::string s_stock_id = parameters[0].stringValue();
 // 	gchar *stock_id = (gchar *)s_stock_id.c_str();
 
 // // 	GtkIconSize *size;
@@ -1205,7 +1210,7 @@ void GtkWidget_::set_redraw_on_allocate(Php::Parameters &parameters)
 
 void GtkWidget_::set_composite_name(Php::Parameters &parameters)
 {
-// // 	std::string s_name = parameters[0];
+// // 	std::string s_name = parameters[0].stringValue();
 // 	gchar *name = (gchar *)s_name.c_str();
 
 // 	gtk_widget_set_composite_name (GTK_WIDGET(instance), name);
@@ -1247,7 +1252,7 @@ void GtkWidget_::class_install_style_property_parser(Php::Parameters &parameters
 
 Php::Value GtkWidget_::class_find_style_property(Php::Parameters &parameters)
 {
-// // 	std::string s_property_name = parameters[0];
+// // 	std::string s_property_name = parameters[0].stringValue();
 // 	gchar *property_name = (gchar *)s_property_name.c_str();
 
 // 	GParamSpec ret = gtk_widget_class_find_style_property (GTK_WIDGET(instance), property_name);
@@ -1298,7 +1303,7 @@ Php::Value GtkWidget_::send_focus_change(Php::Parameters &parameters)
 
 void GtkWidget_::style_get(Php::Parameters &parameters)
 {
-// // 	std::string s_first_property_name = parameters[0];
+// // 	std::string s_first_property_name = parameters[0].stringValue();
 // 	gchar *first_property_name = (gchar *)s_first_property_name.c_str();
 
 // 	gtk_widget_style_get (GTK_WIDGET(instance), first_property_name);
@@ -1308,7 +1313,7 @@ void GtkWidget_::style_get(Php::Parameters &parameters)
 
 void GtkWidget_::style_get_property(Php::Parameters &parameters)
 {
-	// std::string s_property_name = parameters[0];
+	// std::string s_property_name = parameters[0].stringValue();
 	// gchar *property_name = (gchar *)s_property_name.c_str();
 
 
@@ -1322,7 +1327,7 @@ void GtkWidget_::style_get_property(Php::Parameters &parameters)
 
 void GtkWidget_::style_get_valist(Php::Parameters &parameters)
 {
-// // 	std::string s_first_property_name = parameters[0];
+// // 	std::string s_first_property_name = parameters[0].stringValue();
 // 	gchar *first_property_name = (gchar *)s_first_property_name.c_str();
 
 //
@@ -1374,7 +1379,7 @@ Php::Value GtkWidget_::child_focus(Php::Parameters &parameters)
 
 void GtkWidget_::child_notify(Php::Parameters &parameters)
 {
-	std::string s_child_property = parameters[0];
+	std::string s_child_property = parameters[0].stringValue();
 	gchar *child_property = (gchar *)s_child_property.c_str();
 
 	gtk_widget_child_notify (GTK_WIDGET(instance), child_property);
@@ -1601,7 +1606,12 @@ Php::Value GtkWidget_::get_tooltip_markup()
 
 void GtkWidget_::set_tooltip_markup(Php::Parameters &parameters)
 {
-	std::string s_markup = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkWidget::set_tooltip_markup: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_markup = parameters[0].stringValue();
 	gchar *markup = (gchar *)s_markup.c_str();
 
 	gtk_widget_set_tooltip_markup (GTK_WIDGET(instance), markup);
@@ -1617,7 +1627,12 @@ Php::Value GtkWidget_::get_tooltip_text()
 
 void GtkWidget_::set_tooltip_text(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkWidget::set_tooltip_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_text = parameters[0].stringValue();
 	gchar *text = (gchar *)s_text.c_str();
 
 	gtk_widget_set_tooltip_text (GTK_WIDGET(instance), text);
@@ -2148,7 +2163,7 @@ Php::Value GtkWidget_::get_modifier_mask(Php::Parameters &parameters)
 
 void GtkWidget_::insert_action_group(Php::Parameters &parameters)
 {
-// // 	std::string s_name = parameters[0];
+// // 	std::string s_name = parameters[0].stringValue();
 // 	gchar *name = (gchar *)s_name.c_str();
 
 //
@@ -2183,7 +2198,7 @@ Php::Value GtkWidget_::list_action_prefixes()
 
 Php::Value GtkWidget_::get_action_group(Php::Parameters &parameters)
 {
-// // 	std::string s_prefix = parameters[0];
+// // 	std::string s_prefix = parameters[0].stringValue();
 // 	gchar *prefix = (gchar *)s_prefix.c_str();
 
 // 	GActionGroup ret = gtk_widget_get_action_group (GTK_WIDGET(instance), prefix);
@@ -2227,7 +2242,7 @@ Php::Value GtkWidget_::class_get_css_name()
 
 void GtkWidget_::class_set_css_name(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	std::string s_text = parameters[0].stringValue();
 
  	gtk_widget_class_set_css_name (GTK_WIDGET_GET_CLASS(instance), s_text.c_str());
 }
@@ -2610,7 +2625,7 @@ void GtkWidget_::class_set_template(Php::Parameters &parameters)
 
 void GtkWidget_::class_set_template_from_resource(Php::Parameters &parameters)
 {
-	// std::string s_resource_name = parameters[0];
+	// std::string s_resource_name = parameters[0].stringValue();
 	// gchar *resource_name = (gchar *)s_resource_name.c_str();
 
 	// gtk_widget_class_set_template_from_resource (GTK_WIDGET(instance), resource_name);
@@ -2622,7 +2637,7 @@ void GtkWidget_::class_set_template_from_resource(Php::Parameters &parameters)
 Php::Value GtkWidget_::get_template_child(Php::Parameters &parameters)
 {
 //
-// // 	std::string s_name = parameters[1];
+// // 	std::string s_name = parameters[1].stringValue();
 // 	gchar *name = (gchar *)s_name.c_str();
 
 // 	GObject ret = gtk_widget_get_template_child (GTK_WIDGET(instance), widget_type, name);
@@ -2633,7 +2648,7 @@ Php::Value GtkWidget_::get_template_child(Php::Parameters &parameters)
 
 void GtkWidget_::class_bind_template_child_full(Php::Parameters &parameters)
 {
-// // 	std::string s_name = parameters[0];
+// // 	std::string s_name = parameters[0].stringValue();
 // 	gchar *name = (gchar *)s_name.c_str();
 
 // // 	gboolean internal_child = (gboolean)parameters[1];
@@ -2647,7 +2662,7 @@ void GtkWidget_::class_bind_template_child_full(Php::Parameters &parameters)
 
 void GtkWidget_::class_bind_template_callback_full(Php::Parameters &parameters)
 {
-// // 	std::string s_callback_name = parameters[0];
+// // 	std::string s_callback_name = parameters[0].stringValue();
 // 	gchar *callback_name = (gchar *)s_callback_name.c_str();
 
 //

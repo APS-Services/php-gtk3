@@ -13,7 +13,7 @@ GtkTextMark_::~GtkTextMark_() = default;
 
 void GtkTextMark_::__construct(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gboolean left_gravity = (gboolean)parameters[1];

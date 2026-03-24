@@ -13,7 +13,12 @@ GtkExpander_::~GtkExpander_() = default;
 
 void GtkExpander_::__construct(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkExpander::__construct: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	instance = (gpointer *)gtk_expander_new (label);
@@ -22,7 +27,12 @@ void GtkExpander_::__construct(Php::Parameters &parameters)
 
 Php::Value GtkExpander_::new_with_mnemonic(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkExpander::new_with_mnemonic: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gpointer *ret = (gpointer *)gtk_expander_new_with_mnemonic (label);
@@ -66,7 +76,12 @@ Php::Value GtkExpander_::get_spacing()
 
 void GtkExpander_::set_label(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkExpander::set_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gtk_expander_set_label (GTK_EXPANDER(instance), label);

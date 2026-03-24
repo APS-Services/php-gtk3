@@ -19,7 +19,7 @@ void GtkImage_::__construct()
 
 Php::Value GtkImage_::new_from_file(Php::Parameters &parameters)
 {
-	std::string s_filename = parameters[0];
+	std::string s_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)s_filename.c_str();
 
 	gpointer *ret = (gpointer *)gtk_image_new_from_file (filename);
@@ -77,7 +77,7 @@ Php::Value GtkImage_::get_pixbuf()
 
 void GtkImage_::get_stock(Php::Parameters &parameters)
 {
-	// std::string s_stock_id = parameters[0];
+	// std::string s_stock_id = parameters[0].stringValue();
 	// gchar *stock_id = (gchar *)s_stock_id.c_str();
 
 	// int int_size = (int)parameters[1];
@@ -180,7 +180,7 @@ Php::Value GtkImage_::new_from_animation()
 
 Php::Value GtkImage_::new_from_icon_name(Php::Parameters &parameters)
 {
-	std::string s_icon_name = parameters[0];
+	std::string s_icon_name = parameters[0].stringValue();
 	gchar *icon_name = (gchar *)s_icon_name.c_str();
 
 	int int_size = (int)parameters[1];
@@ -212,7 +212,7 @@ Php::Value GtkImage_::new_from_gicon(Php::Parameters &parameters)
 
 Php::Value GtkImage_::new_from_resource(Php::Parameters &parameters)
 {
-	std::string s_resource_path = parameters[0];
+	std::string s_resource_path = parameters[0].stringValue();
 	gchar *resource_path = (gchar *)s_resource_path.c_str();
 
 	gpointer *ret = (gpointer *)gtk_image_new_from_resource (resource_path);
@@ -239,7 +239,7 @@ Php::Value GtkImage_::new_from_surface()
 
 void GtkImage_::set_from_file(Php::Parameters &parameters)
 {
-	std::string s_filename = parameters[0];
+	std::string s_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)s_filename.c_str();
 
 	gtk_image_set_from_file (GTK_IMAGE(instance), filename);
@@ -279,7 +279,7 @@ void GtkImage_::set_from_pixbuf(Php::Parameters &parameters)
 
 void GtkImage_::set_from_stock(Php::Parameters &parameters)
 {
-	// std::string s_stock_id = parameters[0];
+	// std::string s_stock_id = parameters[0].stringValue();
 	// gchar *stock_id = (gchar *)s_stock_id.c_str();
 
 	// int int_size = (int)parameters[1];
@@ -308,7 +308,7 @@ void GtkImage_::set_from_animation(Php::Parameters &parameters)
 
 void GtkImage_::set_from_icon_name(Php::Parameters &parameters)
 {
-	std::string s_icon_name = parameters[0];
+	std::string s_icon_name = parameters[0].stringValue();
 	gchar *icon_name = (gchar *)s_icon_name.c_str();
 
 	int int_size = (int)parameters[1];
@@ -332,7 +332,7 @@ void GtkImage_::set_from_gicon(Php::Parameters &parameters)
 
 void GtkImage_::set_from_resource(Php::Parameters &parameters)
 {
-	std::string s_resource_path = parameters[0];
+	std::string s_resource_path = parameters[0].stringValue();
 	gchar *resource_path = (gchar *)s_resource_path.c_str();
 
 	gtk_image_set_from_resource (GTK_IMAGE(instance), resource_path);

@@ -13,7 +13,7 @@ GtkFontChooserDialog_::~GtkFontChooserDialog_() = default;
 
 void GtkFontChooserDialog_::__construct(Php::Parameters &parameters)
 {
-	std::string s_title = parameters[0];
+	std::string s_title = parameters[0].stringValue();
 	gchar *title = (gchar *)s_title.c_str();
 
 	Php::Value object_parent = parameters[1];
@@ -50,7 +50,7 @@ Php::Value GtkFontChooserDialog_::get_preview_text()
 
 void GtkFontChooserDialog_::set_preview_text(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	std::string s_text = parameters[0].stringValue();
 	gchar *text = (gchar *)s_text.c_str();
 
 	gtk_font_chooser_set_preview_text (GTK_FONT_CHOOSER(instance), text);

@@ -43,7 +43,7 @@ Php::Value GtkIconTheme_::get_for_screen(Php::Parameters &parameters)
 
 Php::Value GtkIconTheme_::has_icon(Php::Parameters &parameters)
 {
-	std::string s_icon_name = parameters[0];
+	std::string s_icon_name = parameters[0].stringValue();
 	gchar* icon_name = (gchar*)s_icon_name.c_str();
 
 	bool ret = gtk_icon_theme_has_icon(GTK_ICON_THEME(instance), icon_name);
@@ -56,7 +56,7 @@ Php::Value GtkIconTheme_::list_icons(Php::Parameters &parameters)
 {
 	gchar* context = NULL;
 	if(parameters.size() > 0) {
-		std::string s_context = parameters[0];
+		std::string s_context = parameters[0].stringValue();
 		context = (gchar*)s_context.c_str();
 	}
 
@@ -73,7 +73,7 @@ Php::Value GtkIconTheme_::list_icons(Php::Parameters &parameters)
 
 void GtkIconTheme_::add_resource_path(Php::Parameters &parameters)
 {
-	std::string s_path = parameters[0];
+	std::string s_path = parameters[0].stringValue();
 	gchar* path = (gchar*)s_path.c_str();
 
 	gtk_icon_theme_add_resource_path(GTK_ICON_THEME(instance), path);
@@ -81,7 +81,7 @@ void GtkIconTheme_::add_resource_path(Php::Parameters &parameters)
 
 void GtkIconTheme_::append_search_path(Php::Parameters &parameters)
 {
-	std::string s_path = parameters[0];
+	std::string s_path = parameters[0].stringValue();
 	gchar* path = (gchar*)s_path.c_str();
 
 	gtk_icon_theme_append_search_path(GTK_ICON_THEME(instance), path);
@@ -89,7 +89,7 @@ void GtkIconTheme_::append_search_path(Php::Parameters &parameters)
 
 void GtkIconTheme_::prepend_search_path(Php::Parameters &parameters)
 {
-	std::string s_path = parameters[0];
+	std::string s_path = parameters[0].stringValue();
 	gchar* path = (gchar*)s_path.c_str();
 
 	gtk_icon_theme_prepend_search_path(GTK_ICON_THEME(instance), path);

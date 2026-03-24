@@ -19,7 +19,12 @@ void GtkButton_::__construct()
 
 Php::Value GtkButton_::new_with_label(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkButton::new_with_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	GtkWidget *ret = gtk_button_new_with_label (label);
@@ -31,7 +36,7 @@ Php::Value GtkButton_::new_with_label(Php::Parameters &parameters)
 
 Php::Value GtkButton_::new_with_mnemonic(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	GtkWidget *ret = gtk_button_new_with_mnemonic (label);
@@ -43,7 +48,7 @@ Php::Value GtkButton_::new_with_mnemonic(Php::Parameters &parameters)
 
 Php::Value GtkButton_::new_from_icon_name(Php::Parameters &parameters)
 {
-	std::string s_icon_name = parameters[0];
+	std::string s_icon_name = parameters[0].stringValue();
 	gchar *icon_name = (gchar *)s_icon_name.c_str();
 
 	int int_size = (int)parameters[1];
@@ -126,7 +131,12 @@ Php::Value GtkButton_::get_label()
 
 void GtkButton_::set_label(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkButton::set_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gtk_button_set_label (GTK_BUTTON(instance), label);

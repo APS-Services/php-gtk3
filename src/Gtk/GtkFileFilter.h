@@ -7,6 +7,8 @@
 
 	#include "../G/GObject.h"
 
+	#include "../../php-gtk.h"
+
     /**
      * GtkFileFilter_
      * 

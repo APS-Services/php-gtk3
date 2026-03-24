@@ -60,7 +60,7 @@ void GtkStatusIcon_::set_from_pixbuf(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
 {
-	std::string c_filename = parameters[0];
+	std::string c_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)c_filename.c_str();
 
 	// Suppress GTK 3 scale factor warnings during icon loading
@@ -70,7 +70,7 @@ void GtkStatusIcon_::set_from_file(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
 {
-	std::string c_stock_id = parameters[0];
+	std::string c_stock_id = parameters[0].stringValue();
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
 	// Suppress GTK 3 scale factor warnings during icon loading
@@ -80,7 +80,7 @@ void GtkStatusIcon_::set_from_stock(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_from_icon_name(Php::Parameters &parameters)
 {
-	std::string c_icon_name = parameters[0];
+	std::string c_icon_name = parameters[0].stringValue();
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
 
 	// Suppress GTK 3 scale factor warnings during icon loading
@@ -176,7 +176,12 @@ void GtkStatusIcon_::set_has_tooltip(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_tooltip_text(Php::Parameters &parameters)
 {
-	std::string c_text = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkStatusIcon::set_tooltip_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string c_text = parameters[0].stringValue();
 
 	gchar *text = (gchar *)c_text.c_str();
 
@@ -185,7 +190,12 @@ void GtkStatusIcon_::set_tooltip_text(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_tooltip_markup(Php::Parameters &parameters)
 {
-	std::string c_markup = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkStatusIcon::set_tooltip_markup: First parameter (markup) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string c_markup = parameters[0].stringValue();
 
 	gchar *markup = (gchar *)c_markup.c_str();
 
@@ -194,7 +204,12 @@ void GtkStatusIcon_::set_tooltip_markup(Php::Parameters &parameters)
 
 void GtkStatusIcon_::set_title(Php::Parameters &parameters)
 {
-	std::string c_title = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkStatusIcon::set_title: First parameter (title) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string c_title = parameters[0].stringValue();
 
 	gchar *title = (gchar *)c_title.c_str();
 
@@ -210,7 +225,12 @@ Php::Value GtkStatusIcon_::get_title()
 
 void GtkStatusIcon_::set_name(Php::Parameters &parameters)
 {
-	std::string c_name = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkStatusIcon::set_name: First parameter (name) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string c_name = parameters[0].stringValue();
 
 	gchar *name = (gchar *)c_name.c_str();
 
@@ -298,7 +318,7 @@ Php::Value GtkStatusIcon_::new_from_file(Php::Parameters &parameters)
 {
 	warn_if_wayland();
 	
-	std::string c_filename = parameters[0];
+	std::string c_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)c_filename.c_str();
 
 	// Suppress GTK 3 scale factor warnings during icon loading
@@ -314,7 +334,7 @@ Php::Value GtkStatusIcon_::new_from_stock(Php::Parameters &parameters)
 {
 	warn_if_wayland();
 	
-	std::string c_stock_id = parameters[0];
+	std::string c_stock_id = parameters[0].stringValue();
 	gchar *stock_id = (gchar *)c_stock_id.c_str();
 
 	// Suppress GTK 3 scale factor warnings during icon loading
@@ -330,7 +350,7 @@ Php::Value GtkStatusIcon_::new_from_icon_name(Php::Parameters &parameters)
 {
 	warn_if_wayland();
 	
-	std::string c_icon_name = parameters[0];
+	std::string c_icon_name = parameters[0].stringValue();
 	gchar *icon_name = (gchar *)c_icon_name.c_str();
 
 	// Suppress GTK 3 scale factor warnings during icon loading

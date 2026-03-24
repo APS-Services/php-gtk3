@@ -46,7 +46,7 @@ void GtkContainer_::add_with_properties(Php::Parameters &parameters)
 	// 	widget = GTK_WIDGET(phpgtk_widget->get_instance());
 	// }
 
-	// std::string s_first_prop_name = parameters[1];
+	// std::string s_first_prop_name = parameters[1].stringValue();
 	// gchar *first_prop_name = (gchar *)s_first_prop_name.c_str();
 
 
@@ -231,7 +231,7 @@ void GtkContainer_::child_get(Php::Parameters &parameters)
 	// 	child = GTK_WIDGET(phpgtk_child->get_instance());
 	// }
 
-	// std::string s_first_prop_name = parameters[1];
+	// std::string s_first_prop_name = parameters[1].stringValue();
 	// gchar *first_prop_name = (gchar *)s_first_prop_name.c_str();
 
 
@@ -250,7 +250,7 @@ void GtkContainer_::child_set(Php::Parameters &parameters)
 	// 	child = GTK_WIDGET(phpgtk_child->get_instance());
 	// }
 
-	// std::string s_first_prop_name = parameters[1];
+	// std::string s_first_prop_name = parameters[1].stringValue();
 	// gchar *first_prop_name = (gchar *)s_first_prop_name.c_str();
 
 
@@ -269,7 +269,7 @@ void GtkContainer_::child_get_property(Php::Parameters &parameters)
 	// 	child = GTK_WIDGET(phpgtk_child->get_instance());
 	// }
 
-	// std::string s_property_name = parameters[1];
+	// std::string s_property_name = parameters[1].stringValue();
 	// gchar *property_name = (gchar *)s_property_name.c_str();
 
 
@@ -288,7 +288,7 @@ void GtkContainer_::child_set_property(Php::Parameters &parameters)
 	// 	child = GTK_WIDGET(phpgtk_child->get_instance());
 	// }
 
-	// std::string s_property_name = parameters[1];
+	// std::string s_property_name = parameters[1].stringValue();
 	// gchar *property_name = (gchar *)s_property_name.c_str();
 
 
@@ -307,7 +307,7 @@ void GtkContainer_::child_get_valist(Php::Parameters &parameters)
 	// 	child = GTK_WIDGET(phpgtk_child->get_instance());
 	// }
 
-	// std::string s_first_property_name = parameters[1];
+	// std::string s_first_property_name = parameters[1].stringValue();
 	// gchar *first_property_name = (gchar *)s_first_property_name.c_str();
 
 
@@ -326,7 +326,7 @@ void GtkContainer_::child_set_valist(Php::Parameters &parameters)
 	// 	child = GTK_WIDGET(phpgtk_child->get_instance());
 	// }
 
-	// std::string s_first_property_name = parameters[1];
+	// std::string s_first_property_name = parameters[1].stringValue();
 	// gchar *first_property_name = (gchar *)s_first_property_name.c_str();
 
 
@@ -345,7 +345,7 @@ void GtkContainer_::child_notify(Php::Parameters &parameters)
 		child = GTK_WIDGET(phpgtk_child->get_instance());
 	}
 
-	std::string s_child_property = parameters[1];
+	std::string s_child_property = parameters[1].stringValue();
 	gchar *child_property = (gchar *)s_child_property.c_str();
 
 	gtk_container_child_notify (GTK_CONTAINER(instance), child, child_property);
@@ -441,7 +441,7 @@ void GtkContainer_::unset_focus_chain()
 
 Php::Value GtkContainer_::class_find_child_property(Php::Parameters &parameters)
 {
-	// std::string s_property_name = parameters[0];
+	// std::string s_property_name = parameters[0].stringValue();
 	// gchar *property_name = (gchar *)s_property_name.c_str();
 
 	// GParamSpec ret = gtk_container_class_find_child_property (GTK_CONTAINER(instance), property_name);

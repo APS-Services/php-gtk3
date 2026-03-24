@@ -279,7 +279,7 @@ void GtkNotebook_::set_menu_label_text(Php::Parameters &parameters)
 		child = GTK_WIDGET(phpgtk_child->get_instance());
 	}
 
-	std::string s_menu_text = parameters[1];
+	std::string s_menu_text = parameters[1].stringValue();
 	gchar *menu_text = (gchar *)s_menu_text.c_str();
 
 	gtk_notebook_set_menu_label_text (GTK_NOTEBOOK(instance), child, menu_text);
@@ -315,7 +315,7 @@ void GtkNotebook_::set_tab_label_text(Php::Parameters &parameters)
 		child = GTK_WIDGET(phpgtk_child->get_instance());
 	}
 
-	std::string s_tab_text = parameters[1];
+	std::string s_tab_text = parameters[1].stringValue();
 	gchar *tab_text = (gchar *)s_tab_text.c_str();
 
 	gtk_notebook_set_tab_label_text (GTK_NOTEBOOK(instance), child, tab_text);
@@ -446,7 +446,7 @@ void GtkNotebook_::set_current_page(Php::Parameters &parameters)
 
 void GtkNotebook_::set_group_name(Php::Parameters &parameters)
 {
-	std::string s_group_name = parameters[0];
+	std::string s_group_name = parameters[0].stringValue();
 	gchar *group_name = (gchar *)s_group_name.c_str();
 
 	gtk_notebook_set_group_name (GTK_NOTEBOOK(instance), group_name);
