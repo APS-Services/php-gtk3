@@ -53,6 +53,13 @@
             Php::Value get_content_area();
 
             Php::Value get_header_bar();
+
+        private:
+            /**
+             * Validate that display connection is available
+             * Throws exception if display is NULL
+             */
+            static void validate_display_connection();
     };
 
 #endif
