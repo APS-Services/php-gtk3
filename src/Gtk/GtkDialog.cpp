@@ -14,13 +14,28 @@ GtkDialog_::~GtkDialog_() = default;
 
 void GtkDialog_::__construct()
 {
-    instance = (gpointer *)gtk_dialog_new ();
+    // Ensure display is available before creating dialog
+    GdkDisplay *display = gdk_display_get_default();
+    if (display == NULL) {
+        throw Php::Exception("Cannot create GtkDialog: No display connection. Make sure Gtk::init() is called first and DISPLAY is set.");
+    }
 
+    instance = (gpointer *)gtk_dialog_new();
+
+    if (instance == NULL) {
+        throw Php::Exception("Failed to create GtkDialog instance.");
+    }
 }
 
 
 Php::Value GtkDialog_::new_with_buttons(Php::Parameters &parameters)
 {
+    // Ensure display is available before creating dialog
+    GdkDisplay *display = gdk_display_get_default();
+    if (display == NULL) {
+        throw Php::Exception("Cannot create GtkDialog: No display connection. Make sure Gtk::init() is called first and DISPLAY is set.");
+    }
+
     std::string s_title = parameters[0];
     gchar *title = (gchar *)s_title.c_str();
 
@@ -41,10 +56,14 @@ Php::Value GtkDialog_::new_with_buttons(Php::Parameters &parameters)
 
     GtkWidget *instance_dialog = gtk_dialog_new_with_buttons(title, parent, flags, arr[0], (int)arr[1], NULL);
 
+    if (instance_dialog == NULL) {
+        throw Php::Exception("Failed to create GtkDialog with buttons.");
+    }
+
     // Add buttons
     for(int index=2; index < (int)arr.size(); index+=2) {
         gtk_dialog_add_button(GTK_DIALOG(instance_dialog), arr[index], (int)arr[index+1]);
-        
+
     }
 
     // Create object
