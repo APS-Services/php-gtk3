@@ -59,6 +59,9 @@ Php::Value GtkDialog_::new_with_buttons(Php::Parameters &parameters)
     if(arr.size() < 2) {
          throw Php::Exception("parameters expect one button with response");
     }
+    if(arr.size() % 2 != 0) {
+         throw Php::Exception("parameters must contain an even number of elements (button-label, response-id pairs)");
+    }
 
     GtkWidget *instance_dialog = gtk_dialog_new_with_buttons(title, parent, flags, arr[0], (int)arr[1], NULL);
 

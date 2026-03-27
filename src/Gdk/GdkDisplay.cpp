@@ -32,15 +32,15 @@ void GdkDisplay_::set_instance(GdkDisplay *screen)
  */
 Php::Value GdkDisplay_::get_default()
 {
-    GdkDisplay *returndedValue = gdk_display_get_default();
+    GdkDisplay *returnedValue = gdk_display_get_default();
 
     // Validate that we got a valid display connection
-    if (returndedValue == NULL) {
+    if (returnedValue == NULL) {
         throw Php::Exception("Failed to get default display. Make sure GTK is initialized and a graphical display backend is available.");
     }
 
     GdkDisplay_ *returnValue = new GdkDisplay_();
-    returnValue->set_instance(returndedValue);
+    returnValue->set_instance(returnedValue);
 
     return Php::Object("GdkDisplay", returnValue);
 }
@@ -54,10 +54,10 @@ Php::Value GdkDisplay_::get_primary_monitor()
         throw Php::Exception("GdkDisplay instance is NULL. Cannot get primary monitor.");
     }
 
-    GdkMonitor *returndedValue = gdk_display_get_primary_monitor(GDK_DISPLAY(instance));
+    GdkMonitor *returnedValue = gdk_display_get_primary_monitor(GDK_DISPLAY(instance));
 
     GdkMonitor_ *returnValue = new GdkMonitor_();
-    returnValue->set_instance(returndedValue);
+    returnValue->set_instance(returnedValue);
 
     return Php::Object("GdkMonitor", returnValue);
 }
