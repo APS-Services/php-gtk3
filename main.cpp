@@ -918,6 +918,8 @@ extern "C"
         gdkdisplay.method<&GdkDisplay_::get_default>("get_default");
         gdkdisplay.method<&GdkDisplay_::get_primary_monitor>("get_primary_monitor");
         gdkdisplay.method<&GdkDisplay_::get_default_screen>("get_default_screen");
+        gdkdisplay.method<&GdkDisplay_::flush>("flush");
+        gdkdisplay.method<&GdkDisplay_::sync>("sync");
 
         // GdkMonitor
         Php::Class<GdkMonitor_> gdkmonitor("GdkMonitor");
