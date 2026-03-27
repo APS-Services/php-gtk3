@@ -36,7 +36,7 @@ Php::Value GdkDisplay_::get_default()
 
     // Validate that we got a valid display connection
     if (returndedValue == NULL) {
-        throw Php::Exception("Failed to get default display. Make sure GTK is initialized and DISPLAY is set correctly.");
+        throw Php::Exception("Failed to get default display. Make sure GTK is initialized and a graphical display backend is available.");
     }
 
     GdkDisplay_ *returnValue = new GdkDisplay_();
@@ -69,6 +69,10 @@ Php::Value GdkDisplay_::get_default_screen()
     }
 
     GdkScreen* ret = gdk_display_get_default_screen(GDK_DISPLAY(instance));
+
+    if (ret == NULL) {
+        throw Php::Exception("Failed to get default screen from display.");
+    }
 
     GdkScreen_ *returnValue = new GdkScreen_();
     returnValue->set_instance(ret);

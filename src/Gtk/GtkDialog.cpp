@@ -11,14 +11,23 @@ GtkDialog_::GtkDialog_() = default;
  */
 GtkDialog_::~GtkDialog_() = default;
 
+/**
+ * Validate that display connection is available
+ * Throws exception if display is NULL
+ */
+void GtkDialog_::validate_display_connection()
+{
+    GdkDisplay *display = gdk_display_get_default();
+    if (display == NULL) {
+        throw Php::Exception("Cannot create GtkDialog: No display connection. Make sure Gtk::init() is called and a graphical display backend is available.");
+    }
+}
+
 
 void GtkDialog_::__construct()
 {
     // Ensure display is available before creating dialog
-    GdkDisplay *display = gdk_display_get_default();
-    if (display == NULL) {
-        throw Php::Exception("Cannot create GtkDialog: No display connection. Make sure Gtk::init() is called first and DISPLAY is set.");
-    }
+    validate_display_connection();
 
     instance = (gpointer *)gtk_dialog_new();
 
@@ -31,10 +40,7 @@ void GtkDialog_::__construct()
 Php::Value GtkDialog_::new_with_buttons(Php::Parameters &parameters)
 {
     // Ensure display is available before creating dialog
-    GdkDisplay *display = gdk_display_get_default();
-    if (display == NULL) {
-        throw Php::Exception("Cannot create GtkDialog: No display connection. Make sure Gtk::init() is called first and DISPLAY is set.");
-    }
+    validate_display_connection();
 
     std::string s_title = parameters[0];
     gchar *title = (gchar *)s_title.c_str();

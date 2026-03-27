@@ -20,7 +20,7 @@
          */
         public:
 
-            GdkDisplay *instance;
+            GdkDisplay *instance = nullptr;
 
             /**
              *  C++ constructor and destructor
