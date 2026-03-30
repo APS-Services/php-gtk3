@@ -167,7 +167,12 @@ GTKLIBS             =   `pkg-config --libs gtk+-3.0 gladeui-2.0 gtksourceview-3.
 
 COMPILER_FLAGS      +=   -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
-LINKER_DEPENDENCIES =   -lphpcpp ${GTKLIBS} ${WEBVIEW2_LDFLAGS}
+
+ifdef PHPCPP_DIR
+    PHPCPP_LDFLAG   =   -L$(PHPCPP_DIR) -Wl,-rpath,$(PHPCPP_DIR)
+endif
+
+LINKER_DEPENDENCIES =   $(PHPCPP_LDFLAG) -lphpcpp ${GTKLIBS} ${WEBVIEW2_LDFLAGS}
 
 #
 #   Command to remove files, copy files and create directories.
