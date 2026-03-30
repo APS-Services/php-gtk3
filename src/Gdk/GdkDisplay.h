@@ -20,7 +20,7 @@
          */
         public:
 
-            GdkDisplay *instance;
+            GdkDisplay *instance = nullptr;
 
             /**
              *  C++ constructor and destructor
@@ -37,6 +37,8 @@
             static Php::Value get_default();
             Php::Value get_primary_monitor();
             Php::Value get_default_screen();
+            void flush();
+            void sync();
 
 
     };
