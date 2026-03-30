@@ -7,6 +7,8 @@
 
     #include "GtkWidget.h"
 
+    #include "../../php-gtk.h"
+
     /**
      * GtkWidgetPath_
      * 

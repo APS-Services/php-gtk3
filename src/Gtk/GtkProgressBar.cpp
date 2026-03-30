@@ -70,7 +70,12 @@ Php::Value GtkProgressBar_::get_show_text()
 
 void GtkProgressBar_::set_text(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkProgressBar::set_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_text = parameters[0].stringValue();
 	gchar *text = (gchar *)s_text.c_str();
 
 	gtk_progress_bar_set_text (GTK_PROGRESS_BAR(instance), text);

@@ -7,6 +7,8 @@
 
 	#include "GtkButton.h"
 
+	#include "../../php-gtk.h"
+
     /**
      * GtkFontButton_
      * 

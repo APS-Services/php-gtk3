@@ -7,6 +7,8 @@
 
 	#include "GtkComboBox.h"
 	#include "GtkWidget.h"
+	
+	#include "../../php-gtk.h"
 
     /**
      * GtkComboBoxText_

@@ -114,7 +114,12 @@ void GtkClipboard_::clear()
 
 void GtkClipboard_::set_text(Php::Parameters &parameters)
 {
-	std::string s_text = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkClipboard::set_text: First parameter (text) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_text = parameters[0].stringValue();
 	gchar *text = (gchar *)s_text.c_str();
 
 	gint len = -1;
@@ -141,7 +146,7 @@ void GtkClipboard_::set_image(Php::Parameters &parameters)
 
 void GtkClipboard_::request_contents(Php::Parameters &parameters)
 {
-	// std::string s_user_function = parameters[0];
+	// std::string s_user_function = parameters[0].stringValue();
 	// gchar *user_function = (gchar *)s_user_function.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
@@ -153,7 +158,7 @@ void GtkClipboard_::request_contents(Php::Parameters &parameters)
 
 void GtkClipboard_::request_text(Php::Parameters &parameters)
 {
-	// std::string s_user_function = parameters[0];
+	// std::string s_user_function = parameters[0].stringValue();
 	// gchar *user_function = (gchar *)s_user_function.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
@@ -197,7 +202,7 @@ void GtkClipboard_::request_text_callback(GtkClipboard *clipboard, const gchar *
 
 void GtkClipboard_::request_image(Php::Parameters &parameters)
 {
-	// std::string s_user_function = parameters[0];
+	// std::string s_user_function = parameters[0].stringValue();
 	// gchar *user_function = (gchar *)s_user_function.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
@@ -210,7 +215,7 @@ void GtkClipboard_::request_image(Php::Parameters &parameters)
 
 void GtkClipboard_::request_targets(Php::Parameters &parameters)
 {
-	// std::string s_user_function = parameters[0];
+	// std::string s_user_function = parameters[0].stringValue();
 	// gchar *user_function = (gchar *)s_user_function.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
@@ -222,7 +227,7 @@ void GtkClipboard_::request_targets(Php::Parameters &parameters)
 
 void GtkClipboard_::request_rich_text(Php::Parameters &parameters)
 {
-	// std::string s_user_function = parameters[0];
+	// std::string s_user_function = parameters[0].stringValue();
 	// gchar *user_function = (gchar *)s_user_function.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
@@ -235,7 +240,7 @@ void GtkClipboard_::request_rich_text(Php::Parameters &parameters)
 
 void GtkClipboard_::request_uris(Php::Parameters &parameters)
 {
-	// std::string s_user_function = parameters[0];
+	// std::string s_user_function = parameters[0].stringValue();
 	// gchar *user_function = (gchar *)s_user_function.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
@@ -248,7 +253,7 @@ void GtkClipboard_::request_uris(Php::Parameters &parameters)
 
 Php::Value GtkClipboard_::wait_for_contents(Php::Parameters &parameters)
 {
-	// std::string s_target = parameters[0];
+	// std::string s_target = parameters[0].stringValue();
 	// gchar *target = (gchar *)s_target.c_str();
 
 	// GtkSelectionData *ret = gtk_clipboard_wait_for_contents (GTK_CLIPBOARD(instance), target);
@@ -286,7 +291,7 @@ Php::Value GtkClipboard_::wait_for_rich_text(Php::Parameters &parameters)
 	// 	buffer = GTK_TEXT_BUFFER(phpgtk_buffer->get_instance());
 	// }
 
-	// std::string s_target = parameters[1];
+	// std::string s_target = parameters[1].stringValue();
 	// gchar *target = (gchar *)s_target.c_str();
 
 	// guint8 ret = gtk_clipboard_wait_for_rich_text (GTK_CLIPBOARD(instance), buffer, target);
@@ -337,7 +342,7 @@ Php::Value GtkClipboard_::wait_is_uris_available()
 
 Php::Value GtkClipboard_::wait_is_target_available(Php::Parameters &parameters)
 {
-	// std::string s_target = parameters[0];
+	// std::string s_target = parameters[0].stringValue();
 	// gchar *target = (gchar *)s_target.c_str();
 
 	// gboolean ret = gtk_clipboard_wait_is_target_available (GTK_CLIPBOARD(instance), target);

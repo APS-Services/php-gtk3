@@ -19,7 +19,7 @@ void GtkBuilder_::__construct()
 
 Php::Value GtkBuilder_::new_from_file(Php::Parameters &parameters)
 {
-	std::string s_filename = parameters[0];
+	std::string s_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)s_filename.c_str();
 
 	GtkBuilder *builder = gtk_builder_new_from_file (filename);
@@ -32,7 +32,7 @@ Php::Value GtkBuilder_::new_from_file(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::new_from_resource(Php::Parameters &parameters)
 {
-	std::string s_resource_path = parameters[0];
+	std::string s_resource_path = parameters[0].stringValue();
 	gchar *resource_path = (gchar *)s_resource_path.c_str();
 
 	GtkBuilder *builder = gtk_builder_new_from_resource (resource_path);
@@ -44,7 +44,7 @@ Php::Value GtkBuilder_::new_from_resource(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::new_from_string(Php::Parameters &parameters)
 {
-	std::string s_string = parameters[0];
+	std::string s_string = parameters[0].stringValue();
 	gchar *string = (gchar *)s_string.c_str();
 
 	GtkBuilder *builder = gtk_builder_new_from_string (string, s_string.length());
@@ -56,10 +56,10 @@ Php::Value GtkBuilder_::new_from_string(Php::Parameters &parameters)
 
 void GtkBuilder_::add_callback_symbol(Php::Parameters &parameters)
 {
-	// std::string s_callback_name = parameters[0];
+	// std::string s_callback_name = parameters[0].stringValue();
 	// gchar *callback_name = (gchar *)s_callback_name.c_str();
 
-	// std::string s_add_callback_symbol = parameters[1];
+	// std::string s_add_callback_symbol = parameters[1].stringValue();
 	// gchar *add_callback_symbol = (gchar *)s_add_callback_symbol.c_str();
 
 	// gtk_builder_add_callback_symbol ((instance), callback_name, add_callback_symbol);
@@ -69,10 +69,10 @@ void GtkBuilder_::add_callback_symbol(Php::Parameters &parameters)
 
 void GtkBuilder_::add_callback_symbols(Php::Parameters &parameters)
 {
-	// std::string s_callback_name = parameters[0];
+	// std::string s_callback_name = parameters[0].stringValue();
 	// gchar *callback_name = (gchar *)s_callback_name.c_str();
 
-	// std::string s_add_callback_symbol = parameters[1];
+	// std::string s_add_callback_symbol = parameters[1].stringValue();
 	// gchar *add_callback_symbol = (gchar *)s_add_callback_symbol.c_str();
 
 	// gtk_builder_add_callback_symbols ((instance), callback_name, add_callback_symbol);
@@ -82,7 +82,7 @@ void GtkBuilder_::add_callback_symbols(Php::Parameters &parameters)
 
 void GtkBuilder_::lookup_callback_symbol(Php::Parameters &parameters)
 {
-	// std::string s_callback_name = parameters[0];
+	// std::string s_callback_name = parameters[0].stringValue();
 	// gchar *callback_name = (gchar *)s_callback_name.c_str();
 
 	// gtk_builder_lookup_callback_symbol ((instance), callback_name);
@@ -92,7 +92,7 @@ void GtkBuilder_::lookup_callback_symbol(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::add_from_file(Php::Parameters &parameters)
 {
-	std::string s_filename = parameters[0];
+	std::string s_filename = parameters[0].stringValue();
 	gchar *filename = (gchar *)s_filename.c_str();
 
 	GError *err = NULL;
@@ -104,7 +104,7 @@ Php::Value GtkBuilder_::add_from_file(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::add_from_resource(Php::Parameters &parameters)
 {
-	std::string s_resource_path = parameters[0];
+	std::string s_resource_path = parameters[0].stringValue();
 	gchar *resource_path = (gchar *)s_resource_path.c_str();
 
 	GError *err = NULL;
@@ -116,7 +116,7 @@ Php::Value GtkBuilder_::add_from_resource(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::add_from_string(Php::Parameters &parameters)
 {
-	std::string s_buffer = parameters[0];
+	std::string s_buffer = parameters[0].stringValue();
 	gchar *buffer = (gchar *)s_buffer.c_str();
 
 	GError *err = NULL;
@@ -128,7 +128,7 @@ Php::Value GtkBuilder_::add_from_string(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::add_objects_from_file(Php::Parameters &parameters)
 {
-	// std::string s_buffer = parameters[0];
+	// std::string s_buffer = parameters[0].stringValue();
 	// gchar *buffer = (gchar *)s_buffer.c_str();
 
 	// GError *err = NULL;
@@ -142,7 +142,7 @@ Php::Value GtkBuilder_::add_objects_from_file(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::add_objects_from_string(Php::Parameters &parameters)
 {
-	// std::string s_buffer = parameters[0];
+	// std::string s_buffer = parameters[0].stringValue();
 	// gchar *buffer = (gchar *)s_buffer.c_str();
 
 	// GError *err = NULL;
@@ -156,7 +156,7 @@ Php::Value GtkBuilder_::add_objects_from_string(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::add_objects_from_resource(Php::Parameters &parameters)
 {
-	// std::string s_buffer = parameters[0];
+	// std::string s_buffer = parameters[0].stringValue();
 	// gchar *buffer = (gchar *)s_buffer.c_str();
 
 	// GError *err = NULL;
@@ -180,7 +180,7 @@ Php::Value GtkBuilder_::extend_with_template(Php::Parameters &parameters)
 	// GError *err = NULL;
 
 
-	// std::string s_buffer = parameters[2];
+	// std::string s_buffer = parameters[2].stringValue();
 	// gchar *buffer = (gchar *)s_buffer.c_str();
 
 	// int ret = gtk_builder_extend_with_template ((instance), widget, template_type, buffer, &err);
@@ -192,7 +192,7 @@ Php::Value GtkBuilder_::extend_with_template(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::get_object(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	GObject *object = gtk_builder_get_object (GTK_BUILDER(instance), name);
@@ -217,7 +217,7 @@ Php::Value GtkBuilder_::get_objects()
 
 void GtkBuilder_::expose_object(Php::Parameters &parameters)
 {
-	// std::string s_name = parameters[0];
+	// std::string s_name = parameters[0].stringValue();
 	// gchar *name = (gchar *)s_name.c_str();
 
 
@@ -242,7 +242,7 @@ void GtkBuilder_::connect_signals_full(Php::Parameters &parameters)
 
 	gtk_builder_connect_signals_full (GTK_BUILDER(instance), connect_signals_full_callback, NULL);
 
-	// std::string s_func = parameters[0];
+	// std::string s_func = parameters[0].stringValue();
 	// gchar *func = (gchar *)s_func.c_str();
 
 	// gpointer user_data = (gpointer)parameters[1];
@@ -432,7 +432,7 @@ void GtkBuilder_::connect_signals_full_callback1(gpointer user_data, ...)
 
 void GtkBuilder_::set_translation_domain(Php::Parameters &parameters)
 {
-	// std::string s_domain = parameters[0];
+	// std::string s_domain = parameters[0].stringValue();
 	// gchar *domain = (gchar *)s_domain.c_str();
 
 	// gtk_builder_set_translation_domain (GTK_BUILDER(instance), domain);
@@ -477,7 +477,7 @@ void GtkBuilder_::set_application(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::get_type_from_name(Php::Parameters &parameters)
 {
-	std::string s_type_name = parameters[0];
+	std::string s_type_name = parameters[0].stringValue();
 	gchar *type_name = (gchar *)s_type_name.c_str();
 
 	GType ret = gtk_builder_get_type_from_name (GTK_BUILDER(instance), type_name);
@@ -487,7 +487,7 @@ Php::Value GtkBuilder_::get_type_from_name(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::value_from_string(Php::Parameters &parameters)
 {
-	// std::string s_type_name = parameters[0];
+	// std::string s_type_name = parameters[0].stringValue();
 	// gchar *type_name = (gchar *)s_type_name.c_str();
 
 	// gboolean ret = gtk_builder_value_from_string (GTK_BUILDER(instance), type_name);
@@ -499,7 +499,7 @@ Php::Value GtkBuilder_::value_from_string(Php::Parameters &parameters)
 
 Php::Value GtkBuilder_::value_from_string_type(Php::Parameters &parameters)
 {
-	// std::string s_type_name = parameters[0];
+	// std::string s_type_name = parameters[0].stringValue();
 	// gchar *type_name = (gchar *)s_type_name.c_str();
 
 	// gboolean ret = gtk_builder_value_from_string_type (GTK_BUILDER(instance), type_name);

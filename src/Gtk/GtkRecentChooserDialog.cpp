@@ -13,7 +13,7 @@ GtkRecentChooserDialog_::~GtkRecentChooserDialog_() = default;
 
 void GtkRecentChooserDialog_::__construct(Php::Parameters &parameters)
 {
-	std::string s_title = parameters[0];
+	std::string s_title = parameters[0].stringValue();
 	gchar *title = (gchar *)s_title.c_str();
 
 	Php::Value object_parent = parameters[1];
@@ -23,7 +23,7 @@ void GtkRecentChooserDialog_::__construct(Php::Parameters &parameters)
 		parent = GTK_WINDOW(phpgtk_parent->get_instance());
 	}
 
-	// std::string s_first_button_text = parameters[2];
+	// std::string s_first_button_text = parameters[2].stringValue();
 	// gchar *first_button_text = (gchar *)s_first_button_text.c_str();
 
 
@@ -58,7 +58,7 @@ Php::Value GtkRecentChooserDialog_::new_for_manager(Php::Parameters &parameters)
 	// 	manager = GTK_WIDGET(phpgtk_manager->get_instance());
 	// }
 
-	// std::string s_first_button_text = parameters[2];
+	// std::string s_first_button_text = parameters[2].stringValue();
 	// gchar *first_button_text = (gchar *)s_first_button_text.c_str();
 
 
@@ -212,7 +212,7 @@ void GtkRecentChooserDialog_::set_sort_func(Php::Parameters &parameters)
 
 Php::Value GtkRecentChooserDialog_::set_current_uri(Php::Parameters &parameters)
 {
-	std::string s_uri = parameters[0];
+	std::string s_uri = parameters[0].stringValue();
 	gchar *uri = (gchar *)s_uri.c_str();
 
 	GError *error = NULL;
@@ -245,7 +245,7 @@ Php::Value GtkRecentChooserDialog_::get_current_item()
 
 Php::Value GtkRecentChooserDialog_::select_uri(Php::Parameters &parameters)
 {
-	std::string s_uri = parameters[0];
+	std::string s_uri = parameters[0].stringValue();
 	gchar *uri = (gchar *)s_uri.c_str();
 
 	GError *error = NULL;
@@ -257,7 +257,7 @@ Php::Value GtkRecentChooserDialog_::select_uri(Php::Parameters &parameters)
 
 void GtkRecentChooserDialog_::unselect_uri(Php::Parameters &parameters)
 {
-	std::string s_uri = parameters[0];
+	std::string s_uri = parameters[0].stringValue();
 	gchar *uri = (gchar *)s_uri.c_str();
 
 	gtk_recent_chooser_unselect_uri (GTK_RECENT_CHOOSER(instance), uri);

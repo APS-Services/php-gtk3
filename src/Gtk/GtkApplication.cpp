@@ -14,7 +14,7 @@ GtkApplication_::~GtkApplication_() = default;
 
 void GtkApplication_::__construct(Php::Parameters &parameters)
 {
-	std::string s_application_id = parameters[0];
+	std::string s_application_id = parameters[0].stringValue();
 	gchar *application_id = (gchar *)s_application_id.c_str();
 
 	// ----
@@ -99,7 +99,7 @@ Php::Value GtkApplication_::inhibit(Php::Parameters &parameters)
 	int int_flags = (int)parameters[1];
 	GtkApplicationInhibitFlags flags = (GtkApplicationInhibitFlags)int_flags;
 
-	std::string s_reason = parameters[2];
+	std::string s_reason = parameters[2].stringValue();
 	gchar *reason = (gchar *)s_reason.c_str();
 
 	int ret = gtk_application_inhibit (GTK_APPLICATION(instance), window, flags, reason);
@@ -169,7 +169,7 @@ void GtkApplication_::set_menubar(Php::Parameters &parameters)
 
 Php::Value GtkApplication_::get_menu_by_id(Php::Parameters &parameters)
 {
-// // 	std::string s_id = parameters[0];
+// // 	std::string s_id = parameters[0].stringValue();
 // 	gchar *id = (gchar *)s_id.c_str();
 
 // 	GMenu ret = gtk_application_get_menu_by_id (GTK_APPLICATION(instance), id);
@@ -180,10 +180,10 @@ Php::Value GtkApplication_::get_menu_by_id(Php::Parameters &parameters)
 
 void GtkApplication_::add_accelerator(Php::Parameters &parameters)
 {
-// // 	std::string s_accelerator = parameters[0];
+// // 	std::string s_accelerator = parameters[0].stringValue();
 // 	gchar *accelerator = (gchar *)s_accelerator.c_str();
 
-// // 	std::string s_action_name = parameters[1];
+// // 	std::string s_action_name = parameters[1].stringValue();
 // 	gchar *action_name = (gchar *)s_action_name.c_str();
 
 // 
@@ -194,7 +194,7 @@ void GtkApplication_::add_accelerator(Php::Parameters &parameters)
 
 void GtkApplication_::remove_accelerator(Php::Parameters &parameters)
 {
-// // 	std::string s_action_name = parameters[0];
+// // 	std::string s_action_name = parameters[0].stringValue();
 // 	gchar *action_name = (gchar *)s_action_name.c_str();
 
 // 
@@ -212,7 +212,7 @@ Php::Value GtkApplication_::list_action_descriptions()
 
 Php::Value GtkApplication_::get_accels_for_action(Php::Parameters &parameters)
 {
-	std::string s_detailed_action_name = parameters[0];
+	std::string s_detailed_action_name = parameters[0].stringValue();
 	gchar *detailed_action_name = (gchar *)s_detailed_action_name.c_str();
 
 	std::string ret = *gtk_application_get_accels_for_action (GTK_APPLICATION(instance), detailed_action_name);
@@ -222,10 +222,10 @@ Php::Value GtkApplication_::get_accels_for_action(Php::Parameters &parameters)
 
 void GtkApplication_::set_accels_for_action(Php::Parameters &parameters)
 {
-	// std::string s_detailed_action_name = parameters[0];
+	// std::string s_detailed_action_name = parameters[0].stringValue();
 	// gchar *detailed_action_name = (gchar *)s_detailed_action_name.c_str();
 
-	// std::string s_accel = parameters[1];
+	// std::string s_accel = parameters[1].stringValue();
 
 	// gchar* a = (gchar*)s_accel.c_str();
 	// const gchar*  accels = (const gchar* )a;
@@ -239,7 +239,7 @@ void GtkApplication_::set_accels_for_action(Php::Parameters &parameters)
 
 Php::Value GtkApplication_::get_actions_for_accel(Php::Parameters &parameters)
 {
-	// std::string s_accel = parameters[0];
+	// std::string s_accel = parameters[0].stringValue();
 
 	// gchar* a = (gchar*)s_accel.c_str();
 	// const gchar*  b = (const gchar* )a;

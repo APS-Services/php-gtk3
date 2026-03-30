@@ -39,7 +39,12 @@ Php::Value GtkRadioButton_::new_from_widget(Php::Parameters &parameters)
 
 Php::Value GtkRadioButton_::new_with_label(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkRadioButton::new_with_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	GtkWidget *ret = gtk_radio_button_new_with_label (NULL, label);
@@ -62,7 +67,12 @@ Php::Value GtkRadioButton_::new_with_label_from_widget(Php::Parameters &paramete
 	}
 
 	// --
-	std::string s_label = parameters[1];
+	if (!parameters[1].isString()) {
+		Php::warning << "GtkRadioButton::new_with_label_from_widget: Second parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[1].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[1].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	// --
@@ -75,7 +85,7 @@ Php::Value GtkRadioButton_::new_with_label_from_widget(Php::Parameters &paramete
 
 Php::Value GtkRadioButton_::new_with_mnemonic(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	GtkWidget *ret = gtk_radio_button_new_with_mnemonic (NULL, label);
@@ -98,7 +108,7 @@ Php::Value GtkRadioButton_::new_with_mnemonic_from_widget(Php::Parameters &param
 	}
 
 	// -- 
-	std::string s_label = parameters[0];
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	// -- 

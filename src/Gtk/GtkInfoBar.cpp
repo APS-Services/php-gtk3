@@ -57,7 +57,7 @@ void GtkInfoBar_::add_action_widget(Php::Parameters &parameters)
 
 Php::Value GtkInfoBar_::add_button(Php::Parameters &parameters)
 {
-	std::string s_button_text = parameters[0];
+	std::string s_button_text = parameters[0].stringValue();
 	gchar *button_text = (gchar *)s_button_text.c_str();
 
 	gint response_id = (gint)parameters[1];
