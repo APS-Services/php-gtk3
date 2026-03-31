@@ -18,6 +18,6 @@ Checks: >-
   -cppcoreguidelines-init-variables,
   -readability-implicit-bool-conversion
 
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
+WarningsAsErrors: ""
+HeaderFilterRegex: ""
 FormatStyle: file
