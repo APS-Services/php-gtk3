@@ -17,24 +17,23 @@
          * Publics
          */
         public:
+         GdkPixbufFormat *instance{};
 
-            GdkPixbufFormat *instance;
+         /**
+          *  C++ constructor and destructor
+          */
+         GdkPixbufFormat_();
+         ~GdkPixbufFormat_();
 
-            /**
-             *  C++ constructor and destructor
-             */
-            GdkPixbufFormat_();
-            ~GdkPixbufFormat_();
+         /**
+          * Return original GtkWidget
+          */
+         GdkPixbufFormat *get_instance();
 
-            /**
-             * Return original GtkWidget
-             */
-            GdkPixbufFormat *get_instance();
-
-            /**
-             * Set the original GdkPixbufFormat
-             */
-            void set_instance(GdkPixbufFormat *pixbuf_format);
+         /**
+          * Set the original GdkPixbufFormat
+          */
+         void set_instance(GdkPixbufFormat *pixbuf_format);
 
 
     };

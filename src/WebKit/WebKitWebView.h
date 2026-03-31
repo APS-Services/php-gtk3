@@ -80,9 +80,9 @@
         private:
             #ifndef _WIN32
                 // Unix/Linux/macOS: WebKit2GTK specific members
-                WebKitUserContentManager *user_content_manager;
-                std::vector<gulong> signal_handler_ids;
-            #else
+         WebKitUserContentManager *user_content_manager{};
+         std::vector<gulong> signal_handler_ids{};
+#else
                 // Windows: WebView2 specific members
                 // Note: WebView2 state (controller, environment, etc.) is managed 
                 // in WebKitWebView_Windows.cpp via WebView2State structure

@@ -16,20 +16,19 @@
          * Publics
          */
         public:
+         int width{};
+         int height{};
 
-            int width;
-            int height;
+         /**
+          *  C++ constructor and destructor
+          */
+         GtkRequisition_();
+         virtual ~GtkRequisition_();
 
-            /**
-             *  C++ constructor and destructor
-             */
-            GtkRequisition_();
-            virtual ~GtkRequisition_();
-
-            /**
-             * PHP Construct
-             */
-            void __construct(Php::Parameters &parameters);
+         /**
+          * PHP Construct
+          */
+         void __construct(Php::Parameters &parameters);
     };
 
 #endif

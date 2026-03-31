@@ -16,25 +16,24 @@
          * Publics
          */
         public:
+         GdkMonitor *instance{};
 
-            GdkMonitor *instance;
+         /**
+          *  C++ constructor and destructor
+          */
+         GdkMonitor_();
+         ~GdkMonitor_();
 
-            /**
-             *  C++ constructor and destructor
-             */
-            GdkMonitor_();
-            ~GdkMonitor_();
+         /**
+          * Return original GdkMonitor
+          */
+         GdkMonitor *get_instance();
+         void set_instance(GdkMonitor *monitor);
 
-            /**
-             * Return original GdkMonitor
-             */
-            GdkMonitor *get_instance();
-            void set_instance(GdkMonitor *monitor);
-
-            Php::Value get_width_mm();
-            Php::Value get_height_mm();
-            Php::Value get_workarea();
-            Php::Value get_geometry();
+         Php::Value get_width_mm();
+         Php::Value get_height_mm();
+         Php::Value get_workarea();
+         Php::Value get_geometry();
 
 
     };

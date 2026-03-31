@@ -20,27 +20,26 @@
          * Publics
          */
         public:
+         GtkTextTag *tag{};
 
-            GtkTextTag *tag;
+         GtkTextTag *get_tag();
+         void set_tag(GtkTextTag *passed_tag);
 
-            GtkTextTag *get_tag();
-            void set_tag(GtkTextTag *passed_tag);
+         /**
+          *  C++ constructor and destructor
+          */
+         GtkTextTag_();
+         ~GtkTextTag_();
 
-            /**
-             *  C++ constructor and destructor
-             */
-            GtkTextTag_();
-            ~GtkTextTag_();
+         void __construct(Php::Parameters &parameters);
 
-            void __construct(Php::Parameters &parameters);
+         Php::Value get_priority();
 
-            Php::Value get_priority();
+         void set_priority(Php::Parameters &parameters);
 
-            void set_priority(Php::Parameters &parameters);
+         Php::Value event(Php::Parameters &parameters);
 
-            Php::Value event(Php::Parameters &parameters);
-
-            void tag_changed(Php::Parameters &parameters);
+         void tag_changed(Php::Parameters &parameters);
     };
 
 #endif

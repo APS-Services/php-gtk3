@@ -24,13 +24,13 @@
 			/**
 			 * 
 			 */
-			GtkWidget *widget;
+                 GtkWidget *widget{};
 
-            struct st_timeout_add;
+                 struct st_timeout_add;
 
-		/**
-		 * Publics
-		 */
+                 /**
+                  * Publics
+                  */
 		public:
 			/**
 			 *  C++ constructor/destructor

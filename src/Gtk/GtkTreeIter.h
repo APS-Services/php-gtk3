@@ -16,24 +16,23 @@
          * Publics
          */
         public:
+         GtkTreeIter instance{};
 
-            GtkTreeIter instance;
+         /**
+          *  C++ constructor and destructor
+          */
+         GtkTreeIter_();
+         ~GtkTreeIter_();
 
-            /**
-             *  C++ constructor and destructor
-             */
-            GtkTreeIter_();
-            ~GtkTreeIter_();
+         /**
+          * Return original GtkTreeIter
+          */
+         GtkTreeIter get_instance();
 
-            /**
-             * Return original GtkTreeIter
-             */
-            GtkTreeIter get_instance();
-
-            /**
-             * Set the original GtkTreeIter
-             */
-            void set_instance(GtkTreeIter passed_instance);
+         /**
+          * Set the original GtkTreeIter
+          */
+         void set_instance(GtkTreeIter passed_instance);
     };
 
 #endif

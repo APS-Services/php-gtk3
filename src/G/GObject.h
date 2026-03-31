@@ -24,51 +24,51 @@
          * Publics
          */
         public:
-            gpointer *instance;
+         gpointer *instance{};
 
-            /**
-             * Set/Get original gpoint
-             */
-            gpointer *get_instance();
-            void set_instance(gpointer *pased_instance);
+         /**
+          * Set/Get original gpoint
+          */
+         gpointer *get_instance();
+         void set_instance(gpointer *pased_instance);
 
-            /**
-             *  C++ constructor/destructor
-             */
-            GObject_();
-            virtual ~GObject_();
+         /**
+          *  C++ constructor/destructor
+          */
+         GObject_();
+         virtual ~GObject_();
 
-            /**
-             * https://developer.gnome.org/gobject/unstable/gobject-Signals.html#g-signal-connect
-             */
-            Php::Value connect_internal(Php::Parameters &parameters, bool after);
-            Php::Value connect(Php::Parameters &parameters);
-            Php::Value connect_after(Php::Parameters &parameters);
+         /**
+          * https://developer.gnome.org/gobject/unstable/gobject-Signals.html#g-signal-connect
+          */
+         Php::Value connect_internal(Php::Parameters &parameters, bool after);
+         Php::Value connect(Php::Parameters &parameters);
+         Php::Value connect_after(Php::Parameters &parameters);
 
-            /**
-             * Class to abstract php callback for connect method, to call PHP function
-             */
-            static bool connect_callback(gpointer user_data, ...);
-            static void destroy_notify(gpointer user_data, GClosure *closure);
+         /**
+          * Class to abstract php callback for connect method, to call PHP function
+          */
+         static bool connect_callback(gpointer user_data, ...);
+         static void destroy_notify(gpointer user_data, GClosure *closure);
 
-            /**
-             * Disconnect signal by handle
-             *
-             * https://developer.gnome.org/gobject/unstable/gobject-Signals.html#g-signal-handler-disconnect
-             */
-            void handler_disconnect(Php::Parameters &parameters);
+         /**
+          * Disconnect signal by handle
+          *
+          * https://developer.gnome.org/gobject/unstable/gobject-Signals.html#g-signal-handler-disconnect
+          */
+         void handler_disconnect(Php::Parameters &parameters);
 
-            Php::Value is_connected(Php::Parameters& parameters);
+         Php::Value is_connected(Php::Parameters &parameters);
 
-            Php::Value get_property(Php::Parameters &parameters);
-            void set_property(Php::Parameters &parameters);
-            void signal_handler_block(Php::Parameters &parameters);
-            void signal_handler_unblock(Php::Parameters &parameters);
+         Php::Value get_property(Php::Parameters &parameters);
+         void set_property(Php::Parameters &parameters);
+         void signal_handler_block(Php::Parameters &parameters);
+         void signal_handler_unblock(Php::Parameters &parameters);
 
-            Php::Value get_data(Php::Parameters& parameters);
-            void set_data(Php::Parameters& parameters);
+         Php::Value get_data(Php::Parameters &parameters);
+         void set_data(Php::Parameters &parameters);
 
-            void __clone();
+         void __clone();
     };
 
 #endif

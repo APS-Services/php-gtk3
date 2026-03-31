@@ -21,35 +21,33 @@
          * Publics
          */
         public:
+         GtkTreeModel *model{};
 
-            GtkTreeModel *model;
+         /**
+          *  C++ constructor and destructor
+          */
+         GtkTreeModel_();
+         ~GtkTreeModel_();
 
-            /**
-             *  C++ constructor and destructor
-             */
-            GtkTreeModel_();
-            ~GtkTreeModel_();
+         /**
+          * Return original GtkTreeModel
+          */
+         GtkTreeModel *get_model();
 
-            /**
-             * Return original GtkTreeModel
-             */
-            GtkTreeModel *get_model();
+         /**
+          * Set the original GtkTreeModel
+          */
+         void set_model(GtkTreeModel *passed_model);
 
-            /**
-             * Set the original GtkTreeModel
-             */
-            void set_model(GtkTreeModel *passed_model);
+         /**
+          * PHP Construct
+          */
+         void __construct(Php::Parameters &parameters);
 
-            /**
-             * PHP Construct
-             */
-            void __construct(Php::Parameters &parameters);
-
-            
-            Php::Value get_iter(Php::Parameters &parameters);
-            Php::Value get_value(Php::Parameters &parameters);
-            Php::Value get_path(Php::Parameters &parameters);
-            Php::Value get_iter_from_string(Php::Parameters &parameters);
+         Php::Value get_iter(Php::Parameters &parameters);
+         Php::Value get_value(Php::Parameters &parameters);
+         Php::Value get_path(Php::Parameters &parameters);
+         Php::Value get_iter_from_string(Php::Parameters &parameters);
     };
 
 #endif

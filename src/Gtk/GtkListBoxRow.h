@@ -18,22 +18,21 @@
          * Publics
          */
         public:
+         GtkListBoxRow *row{};
 
-            GtkListBoxRow *row;
+         /**
+          * Set/Get original row
+          */
+         GtkListBoxRow *get_row();
+         void set_row(GtkListBoxRow *pased_row);
 
-            /**
-             * Set/Get original row
-             */
-            GtkListBoxRow *get_row();
-            void set_row(GtkListBoxRow *pased_row);
+         /**
+          *  C++ constructor and destructor
+          */
+         GtkListBoxRow_();
+         ~GtkListBoxRow_();
 
-            /**
-             *  C++ constructor and destructor
-             */
-            GtkListBoxRow_();
-            ~GtkListBoxRow_();
-
-            void __construct();
+         void __construct();
     };
 
 #endif
