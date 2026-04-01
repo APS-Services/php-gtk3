@@ -34,7 +34,7 @@ Php::Value WnckScreen_::get_active_window() {
     widget_->set_instance((gpointer *)ret);
     return Php::Object("WnckWindow", widget_);
   } else {
-    return NULL;
+    return Php::Value();
   }
 }
 

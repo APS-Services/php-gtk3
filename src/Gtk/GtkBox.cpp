@@ -137,7 +137,7 @@ void GtkBox_::reorder_child(Php::Parameters &parameters) {
   }
 
   phpgtk_check_parameter(parameters, 2, Php::Type::Numeric, TRUE, nullptr);
-  gboolean position = (gboolean)parameters[1];
+  gint position = (gint)parameters[1];
 
   gtk_box_reorder_child(GTK_BOX(instance), child, position);
 }

@@ -87,7 +87,7 @@ Php::Value Gtk_::source_remove(Php::Parameters &parameters) {
 }
 
 Php::Value Gtk_::is_destroyed(Php::Parameters &parameters) {
-  if (parameters.empty()) {
+  if (parameters.size() != 1) {
     throw Php::Exception("is_destroyed requires exactly 1 argument.");
   }
 
