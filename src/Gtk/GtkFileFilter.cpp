@@ -54,14 +54,13 @@ Php::Value GtkFileFilter_::get_needed() {
 
 Php::Value GtkFileFilter_::filter(Php::Parameters &parameters) {
   // GtkFileFilterInfo *filter_info;
-  // if(parameters.size() > 0) {
-  // 	Php::Value object_filter_info = parameters[0];
-  // 	GtkFileFilterInfo_ *phpgtk_filter_info = (GtkFileFilterInfo_
-  // *)object_filter_info.implementation(); 	filter_info =
-  // GTK_WIDGET(phpgtk_filter_info->get_instance());
+  // if (parameters.size() > 0) {
+  //   Php::Value object_filter_info = parameters[0];
+  //   GtkFileFilterInfo_ *phpgtk_filter_info = (GtkFileFilterInfo_ *)object_filter_info.implementation();
+  //   filter_info = GTK_WIDGET(phpgtk_filter_info->get_instance());
   // }
 
-  // gboolean ret = gtk_file_filter_filter (GTK_FILE_FILTER(instance), filter_info);
+  // gboolean ret = gtk_file_filter_filter(GTK_FILE_FILTER(instance), filter_info);
 
   // return ret;
   return 1;

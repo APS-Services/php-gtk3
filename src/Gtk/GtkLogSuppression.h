@@ -21,7 +21,8 @@ inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlag
 
   // Suppress the specific gtk_widget_get_scale_factor warning
   // Expected message format: "gtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)'
-  // failed" String matching is necessary as GTK doesn't provide error codes for log messages
+  // failed"
+  // String matching is necessary as GTK doesn't provide error codes for log messages
   if (g_strstr_len(message, -1, "gtk_widget_get_scale_factor") &&
       g_strstr_len(message, -1, "GTK_IS_WIDGET")) {
     // Silently ignore this specific warning

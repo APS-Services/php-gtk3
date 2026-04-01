@@ -3377,7 +3377,7 @@ PHPCPP_EXPORT void *get_module() {
   gtkmenubar.method<&GtkMenuBar_::set_pack_direction>("set_pack_direction");
   gtkmenubar.method<&GtkMenuBar_::get_pack_direction>("get_pack_direction");
   gtkmenubar.method<&GtkMenuBar_::set_child_pack_direction>("set_child_pack_direction");
-  gtkmenubar.method<&GtkMenuBar_::child_pack_direction>("child_pack_direction");
+  gtkmenubar.method<&GtkMenuBar_::get_child_pack_direction>("get_child_pack_direction");
 
   // GtkMenu
   Php::Class<GtkMenu_> gtkmenu("GtkMenu");

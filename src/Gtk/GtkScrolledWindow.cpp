@@ -54,9 +54,9 @@ void GtkScrolledWindow_::set_propagate_natural_height(Php::Parameters &parameter
 }
 
 void GtkScrolledWindow_::set_propagate_natural_width(Php::Parameters &parameters) {
-  gboolean natural_height = (gboolean)parameters[0];
+  gboolean natural_width = (gboolean)parameters[0];
 
-  gtk_scrolled_window_set_propagate_natural_width(GTK_SCROLLED_WINDOW(instance), natural_height);
+  gtk_scrolled_window_set_propagate_natural_width(GTK_SCROLLED_WINDOW(instance), natural_width);
 }
 
 void GtkScrolledWindow_::set_max_content_height(Php::Parameters &parameters) {
