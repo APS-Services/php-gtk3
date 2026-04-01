@@ -13,7 +13,7 @@ GtkLayout_::~GtkLayout_() = default;
 
 void GtkLayout_::__construct(Php::Parameters &parameters) {
   GtkAdjustment *hadjustment;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_hadjustment = parameters[0];
     GtkAdjustment_ *phpgtk_hadjustment = (GtkAdjustment_ *)object_hadjustment.implementation();
     hadjustment = GTK_ADJUSTMENT(phpgtk_hadjustment->get_instance());
@@ -31,7 +31,7 @@ void GtkLayout_::__construct(Php::Parameters &parameters) {
 
 void GtkLayout_::put(Php::Parameters &parameters) {
   GtkWidget *child_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child_widget = parameters[0];
     GtkWidget_ *phpgtk_child_widget = (GtkWidget_ *)object_child_widget.implementation();
     child_widget = GTK_WIDGET(phpgtk_child_widget->get_instance());
@@ -46,7 +46,7 @@ void GtkLayout_::put(Php::Parameters &parameters) {
 
 void GtkLayout_::move(Php::Parameters &parameters) {
   GtkWidget *child_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child_widget = parameters[0];
     GtkWidget_ *phpgtk_child_widget = (GtkWidget_ *)object_child_widget.implementation();
     child_widget = GTK_WIDGET(phpgtk_child_widget->get_instance());
@@ -83,21 +83,21 @@ Php::Value GtkLayout_::get_size(Php::Parameters &parameters) {
 }
 
 Php::Value GtkLayout_::get_hadjustment() {
-  Php::deprecated << "get_hadjustment is deprecated on Gtk 3.0" << std::endl;
+  Php::deprecated << "get_hadjustment is deprecated on Gtk 3.0" << '\n';
   return 0;
 }
 
 Php::Value GtkLayout_::get_vadjustment() {
-  Php::deprecated << "get_vadjustment is deprecated on Gtk 3.0" << std::endl;
+  Php::deprecated << "get_vadjustment is deprecated on Gtk 3.0" << '\n';
   return 0;
 }
 
 void GtkLayout_::set_hadjustment(Php::Parameters &parameters) {
-  Php::deprecated << "set_hadjustment is deprecated on Gtk 3.0" << std::endl;
+  Php::deprecated << "set_hadjustment is deprecated on Gtk 3.0" << '\n';
 }
 
 void GtkLayout_::set_vadjustment(Php::Parameters &parameters) {
-  Php::deprecated << "set_vadjustment is deprecated on Gtk 3.0" << std::endl;
+  Php::deprecated << "set_vadjustment is deprecated on Gtk 3.0" << '\n';
 }
 
 Php::Value GtkLayout_::get_bin_window() {

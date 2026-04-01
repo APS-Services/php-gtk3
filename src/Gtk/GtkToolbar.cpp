@@ -17,7 +17,7 @@ void GtkToolbar_::__construct() {
 
 void GtkToolbar_::insert(Php::Parameters &parameters) {
   GtkToolItem *item;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_item = parameters[0];
     GtkToolItem_ *phpgtk_item = (GtkToolItem_ *)object_item.implementation();
     item = GTK_TOOL_ITEM(phpgtk_item->get_instance());
@@ -30,7 +30,7 @@ void GtkToolbar_::insert(Php::Parameters &parameters) {
 
 Php::Value GtkToolbar_::get_item_index(Php::Parameters &parameters) {
   GtkToolItem *item;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_item = parameters[0];
     GtkToolItem_ *phpgtk_item = (GtkToolItem_ *)object_item.implementation();
     item = GTK_TOOL_ITEM(phpgtk_item->get_instance());
@@ -69,7 +69,7 @@ Php::Value GtkToolbar_::get_drop_index(Php::Parameters &parameters) {
 
 void GtkToolbar_::set_drop_highlight_item(Php::Parameters &parameters) {
   GtkToolItem *item;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_item = parameters[0];
     GtkToolItem_ *phpgtk_item = (GtkToolItem_ *)object_item.implementation();
     item = GTK_TOOL_ITEM(phpgtk_item->get_instance());

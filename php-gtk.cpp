@@ -68,7 +68,7 @@ char *phpgtk_wrong_type_message(int param, Php::Type type_passed, Php::Type type
   int len;
 
   // Get len of string
-  len = snprintf(NULL, 0, "Expected parameter %d to be an %s, %s given", param,
+  len = snprintf(nullptr, 0, "Expected parameter %d to be an %s, %s given", param,
                  phpgtk_type_to_string(type_expected).c_str(),
                  phpgtk_type_to_string(type_passed).c_str());
   buffer = (char *)malloc((len + 1) * sizeof(char));
@@ -143,7 +143,7 @@ std::string phpgtk_type_to_string(Php::Type type) {
 }
 
 Php::Value cobject_to_phpobject(gpointer *cobject) {
-  if (cobject == NULL) {
+  if (cobject == nullptr) {
     return NULL;
   }
 
@@ -179,7 +179,7 @@ void generic_callback(gpointer *self, ...) {
   va_end(ap);
 
   if (!test) {
-    std::string error("");
+    std::string error;
     throw Php::Exception(error + "cannot find callable method");
   }
 

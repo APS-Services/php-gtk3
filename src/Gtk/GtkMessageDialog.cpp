@@ -13,7 +13,7 @@ GtkMessageDialog_::~GtkMessageDialog_() = default;
 
 void GtkMessageDialog_::__construct(Php::Parameters &parameters) {
   Php::Value object_parent = parameters[0];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());
@@ -31,7 +31,7 @@ void GtkMessageDialog_::__construct(Php::Parameters &parameters) {
   std::string s_message_format = parameters[4];
   gchar *message_format = (gchar *)s_message_format.c_str();
 
-  std::string s_text = "";
+  std::string s_text;
   if (parameters.size() > 1) {
     std::string a_text = parameters[1];
     s_text = a_text;
@@ -45,7 +45,7 @@ Php::Value GtkMessageDialog_::new_with_markup(Php::Parameters &parameters) {
   GtkMessageDialog_ *messagedialog = new GtkMessageDialog_();
 
   Php::Value object_parent = parameters[0];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());
@@ -63,7 +63,7 @@ Php::Value GtkMessageDialog_::new_with_markup(Php::Parameters &parameters) {
   std::string s_message_format = parameters[4];
   gchar *message_format = (gchar *)s_message_format.c_str();
 
-  std::string s_text = "";
+  std::string s_text;
   if (parameters.size() > 1) {
     std::string a_text = parameters[1];
     s_text = a_text;
@@ -86,7 +86,7 @@ void GtkMessageDialog_::set_markup(Php::Parameters &parameters) {
 void GtkMessageDialog_::format_secondary_text(Php::Parameters &parameters) {
   std::string s_message_format = parameters[0];
 
-  std::string s_text = "";
+  std::string s_text;
   if (parameters.size() > 1) {
     std::string a_text = parameters[1];
     s_text = a_text;
@@ -99,7 +99,7 @@ void GtkMessageDialog_::format_secondary_text(Php::Parameters &parameters) {
 void GtkMessageDialog_::format_secondary_markup(Php::Parameters &parameters) {
   std::string s_message_format = parameters[0];
 
-  std::string s_text = "";
+  std::string s_text;
   if (parameters.size() > 1) {
     std::string a_text = parameters[1];
     s_text = a_text;

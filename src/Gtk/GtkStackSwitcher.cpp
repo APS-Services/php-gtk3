@@ -17,7 +17,7 @@ void GtkStackSwitcher_::__construct() {
 
 void GtkStackSwitcher_::set_stack(Php::Parameters &parameters) {
   GtkStack *stack;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_stack = parameters[0];
     GtkStack_ *phpgtk_stack = (GtkStack_ *)object_stack.implementation();
     stack = GTK_STACK(phpgtk_stack->get_instance());

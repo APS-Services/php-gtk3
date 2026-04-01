@@ -61,7 +61,7 @@ void GIcon_::__construct() {
  */
 Php::Value GIcon_::new_from_pixbuf(Php::Parameters &parameters) {
   // Validate parameters
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GIcon::new_from_pixbuf() requires 1 parameter: GdkPixbuf object");
   }
 
@@ -114,7 +114,7 @@ Php::Value GIcon_::new_from_pixbuf(Php::Parameters &parameters) {
  */
 Php::Value GIcon_::new_from_stock(Php::Parameters &parameters) {
   // Validate parameters
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GIcon::new_from_stock() requires 1 parameter: stock_id");
   }
 

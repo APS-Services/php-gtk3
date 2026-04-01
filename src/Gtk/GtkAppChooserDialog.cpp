@@ -35,7 +35,7 @@ GtkAppChooserDialog_::~GtkAppChooserDialog_() = default;
 
 void GtkAppChooserDialog_::__construc(Php::Parameters &parameters) {
   Php::Value object_parent = parameters[0];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());
@@ -51,7 +51,7 @@ void GtkAppChooserDialog_::__construc(Php::Parameters &parameters) {
 
   // Install custom log handler to suppress GTK 3 bug warnings with GLib 2.84+
   guint handler_id =
-      g_log_set_handler("GLib-GIO", G_LOG_LEVEL_CRITICAL, suppress_gfileinfo_warnings, NULL);
+      g_log_set_handler("GLib-GIO", G_LOG_LEVEL_CRITICAL, suppress_gfileinfo_warnings, nullptr);
 
   instance = (gpointer *)gtk_app_chooser_dialog_new(parent, flags, file);
 
@@ -64,7 +64,7 @@ void GtkAppChooserDialog_::__construc(Php::Parameters &parameters) {
 
 Php::Value GtkAppChooserDialog_::new_for_content_type(Php::Parameters &parameters) {
   Php::Value object_parent = parameters[0];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());

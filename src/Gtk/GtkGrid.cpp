@@ -17,7 +17,7 @@ void GtkGrid_::__construct() {
 
 void GtkGrid_::attach(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -36,7 +36,7 @@ void GtkGrid_::attach(Php::Parameters &parameters) {
 
 void GtkGrid_::attach_next_to(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -99,7 +99,7 @@ void GtkGrid_::remove_column(Php::Parameters &parameters) {
 
 void GtkGrid_::insert_next_to(Php::Parameters &parameters) {
   GtkWidget *sibling;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_sibling = parameters[0];
     GtkWidget_ *phpgtk_sibling = (GtkWidget_ *)object_sibling.implementation();
     sibling = GTK_WIDGET(phpgtk_sibling->get_instance());

@@ -18,7 +18,7 @@ void GdkEventMotion_::populate(GdkEventMotion event) {
   double *axes = (double *)event.axes;
 
   Php::Value arr_axes;
-  if (axes != NULL) {
+  if (axes != nullptr) {
     arr_axes[0] = (double)axes[0];
     arr_axes[1] = (double)axes[1];
   }

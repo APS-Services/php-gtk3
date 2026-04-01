@@ -5038,7 +5038,7 @@ Php::Value phpgtk_get_phpvalue(GValue *gvalue) {
   return -1;
 }
 
-GValue phpgtk_get_gvalue(Php::Value phpgtk_value, GType type_column) {
+GValue phpgtk_get_gvalue(const Php::Value &phpgtk_value, GType type_column) {
   // Populate the column var with correct type
   GValue gtk_value = {0};
   switch (type_column) {
@@ -5127,7 +5127,7 @@ GValue phpgtk_get_gvalue(Php::Value phpgtk_value, GType type_column) {
     case G_TYPE_OBJECT: {
       g_value_init(&gtk_value, G_TYPE_OBJECT);
 
-      Php::Value a_object = phpgtk_value;
+      const Php::Value &a_object = phpgtk_value;
       GObject_ *o_object = (GObject_ *)a_object.implementation();
       g_value_set_object(&gtk_value, o_object->get_instance());
 
@@ -5220,7 +5220,7 @@ void phpgtk_throw_wrong_type(int param, Php::Type type) {
   }
 
   // Get len of string
-  len = snprintf(NULL, 0, "expects at least %d parameters, %s given", param, str_type.c_str());
+  len = snprintf(nullptr, 0, "expects at least %d parameters, %s given", param, str_type.c_str());
   buffer = (char *)malloc((len + 1) * sizeof(char));
 
   // Save into buffer

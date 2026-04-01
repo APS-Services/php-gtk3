@@ -48,8 +48,8 @@ Php::Value GtkIconTheme_::has_icon(Php::Parameters &parameters) {
 }
 
 Php::Value GtkIconTheme_::list_icons(Php::Parameters &parameters) {
-  gchar *context = NULL;
-  if (parameters.size() > 0) {
+  gchar *context = nullptr;
+  if (!parameters.empty()) {
     std::string s_context = parameters[0];
     context = (gchar *)s_context.c_str();
   }

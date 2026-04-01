@@ -14,8 +14,8 @@ class GtkRequisition_ : public Php::Base {
    * Publics
    */
  public:
-  int width;
-  int height;
+  int width{};
+  int height{};
 
   /**
    *  C++ constructor and destructor

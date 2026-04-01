@@ -16,13 +16,13 @@ GtkVBox_::~GtkVBox_() = default;
  */
 void GtkVBox_::__construct(Php::Parameters &parameters) {
   Php::deprecated << "GtkVBox is deprecated on Gtk 3.20 and will be removed on non-beta release"
-                  << std::endl;
+                  << '\n';
 
   // Construct the parent
   Php::call("parent::__construct", GTK_ORIENTATION_VERTICAL, 0);
 
   // Verify if has homogeneous parameter
-  if (parameters.size() >= 1) {
+  if (!parameters.empty()) {
     Php::call("parent::set_homogeneous", parameters[0]);
   }
 

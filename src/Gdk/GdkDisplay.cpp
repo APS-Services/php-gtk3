@@ -59,7 +59,7 @@ Php::Value GdkDisplay_::get_default_screen() {
 }
 
 Php::Value GdkDisplay_::get_monitor(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("parameter monitor_num is required");
   }
 
@@ -70,7 +70,7 @@ Php::Value GdkDisplay_::get_monitor(Php::Parameters &parameters) {
   GdkMonitor *ret = gdk_display_get_monitor(GDK_DISPLAY(instance), monitor_num);
 
   if (ret == nullptr) {
-    return Php::Value();
+    return {};
   }
 
   // pack and return object
