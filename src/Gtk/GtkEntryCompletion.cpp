@@ -36,7 +36,7 @@ Php::Value GtkEntryCompletion_::get_entry() {
 }
 
 void GtkEntryCompletion_::set_model(Php::Parameters &parameters) {
-  GtkTreeModel *model = NULL;
+  GtkTreeModel *model = nullptr;
   Php::Value object_model = parameters[0];
   // Allow NULL to clear the model
   if (!object_model.isNull()) {

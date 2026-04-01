@@ -82,7 +82,7 @@ Php::Value GdkWindow_::get_origin() {
   gboolean result = gdk_window_get_origin(GDK_WINDOW(instance), &root_x, &root_y);
 
   if (!result) {
-    return Php::Value();
+    return {};
   }
 
   Php::Value arr;

@@ -102,7 +102,7 @@ Php::Value Gtk_::is_destroyed(Php::Parameters &parameters) {
 
   gboolean result = g_source_is_destroyed(source);
 
-  return result ? true : false;
+  return result != 0;
 }
 
 /**
@@ -111,7 +111,7 @@ Php::Value Gtk_::is_destroyed(Php::Parameters &parameters) {
 Php::Value Gtk_::show_uri_on_window(Php::Parameters &parameters) {
   // Init parent object
   Php::Value object_parent = parameters[0];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
 
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
@@ -136,7 +136,7 @@ Php::Value Gtk_::events_pending() {
 }
 
 Php::Value Gtk_::main_do_event(Php::Parameters &parameters) {
-  if (parameters.size() == 0) {
+  if (parameters.empty()) {
     throw Php::Exception("Gtk::main_do_event requires a GdkEvent as a parameter.");
   }
 
@@ -197,5 +197,5 @@ Php::Value Gtk_::get_minor_version() {
 }
 
 void Gtk_::init() {
-  gtk_init(0, NULL);
+  gtk_init(nullptr, nullptr);
 }

@@ -17,7 +17,7 @@ class GtkListBoxRow_ : public GtkBin_ {
    * Publics
    */
  public:
-  GtkListBoxRow *row;
+  GtkListBoxRow *row{};
 
   /**
    * Set/Get original row

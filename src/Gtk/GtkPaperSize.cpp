@@ -100,7 +100,7 @@ void GtkPaperSize_::free() {
 
 Php::Value GtkPaperSize_::is_equal(Php::Parameters &parameters) {
   GtkPaperSize *size2;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_size2 = parameters[0];
     GtkPaperSize_ *phpgtk_size2 = (GtkPaperSize_ *)object_size2.implementation();
     size2 = (phpgtk_size2->get_instance());

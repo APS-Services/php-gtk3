@@ -9,7 +9,7 @@ struct GtkMenu_::st_popup_callback {
   Php::Value callback_function;
   Php::Value user_data;
   Php::Value menu_object;  // Store the original menu PHP object
-  bool use_gtk_status_icon_position;
+  bool use_gtk_status_icon_position{};
 };
 
 /**
@@ -139,7 +139,7 @@ void GtkMenu_::set_screen(Php::Parameters &parameters) {
 
 void GtkMenu_::reorder_child(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -152,7 +152,7 @@ void GtkMenu_::reorder_child(Php::Parameters &parameters) {
 
 void GtkMenu_::attach(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -265,7 +265,7 @@ void GtkMenu_::popup(Php::Parameters &parameters) {
   guint32 activate_time = 0;
 
   // Optional parent_menu_shell (parameter 0)
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     if (!parameters[0].isObject()) {
       throw Php::Exception(
           "GtkMenu::popup parameter 0 (parent_menu_shell) expects a GtkWidget or null");
@@ -377,7 +377,7 @@ void GtkMenu_::popup(Php::Parameters &parameters) {
   // previously-attached data is destroyed. When callback_object is NULL,
   // the key is removed and the old data (if any) is freed.
   g_object_set_data_full(G_OBJECT(instance), "php-gtk-popup-callback", callback_object,
-                         callback_object ? popup_callback_destroy : NULL);
+                         callback_object ? popup_callback_destroy : nullptr);
 }
 
 void GtkMenu_::set_accel_group(Php::Parameters &parameters) {
@@ -489,7 +489,8 @@ void GtkMenu_::attach_to_widget(Php::Parameters &parameters) {
   // if(parameters.size() > 1) {
   // 	Php::Value object_detacher = parameters[1];
   // 	GtkMenuDetachFunc_ *phpgtk_detacher = (GtkMenuDetachFunc_
-  // *)object_detacher.implementation(); 	detacher = GTK_WIDGET(phpgtk_detacher->get_instance());
+  // *)object_detacher.implementation(); 	detacher =
+  // GTK_WIDGET(phpgtk_detacher->get_instance());
   // }
 
   // gtk_menu_attach_to_widget (GTK_MENU(instance), attach_widget, detacher);

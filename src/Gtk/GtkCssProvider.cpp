@@ -27,7 +27,7 @@ Php::Value GtkCssProvider_::load_from_data(Php::Parameters &parameters) {
 
   gssize length = s_data.length();
 
-  GError *error = NULL;
+  GError *error = nullptr;
 
   bool ret = gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(instance), data, length, &error);
 
@@ -40,7 +40,7 @@ Php::Value GtkCssProvider_::load_from_file(Php::Parameters &parameters) {
 
   GFile *file = g_file_new_for_path(filepath);
 
-  GError *error = NULL;
+  GError *error = nullptr;
 
   bool ret = gtk_css_provider_load_from_file(GTK_CSS_PROVIDER(instance), file, &error);
 
@@ -53,7 +53,7 @@ Php::Value GtkCssProvider_::load_from_path(Php::Parameters &parameters) {
   std::string s_path = parameters[0];
   gchar *path = (gchar *)s_path.c_str();
 
-  GError *error = NULL;
+  GError *error = nullptr;
 
   bool ret = gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(instance), path, &error);
 

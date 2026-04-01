@@ -85,7 +85,7 @@ Php::Value GtkBuilder_::add_from_file(Php::Parameters &parameters) {
   std::string s_filename = parameters[0];
   gchar *filename = (gchar *)s_filename.c_str();
 
-  GError *err = NULL;
+  GError *err = nullptr;
 
   int ret = gtk_builder_add_from_file(GTK_BUILDER(instance), filename, &err);
 
@@ -96,7 +96,7 @@ Php::Value GtkBuilder_::add_from_resource(Php::Parameters &parameters) {
   std::string s_resource_path = parameters[0];
   gchar *resource_path = (gchar *)s_resource_path.c_str();
 
-  GError *err = NULL;
+  GError *err = nullptr;
 
   int ret = gtk_builder_add_from_resource(GTK_BUILDER(instance), resource_path, &err);
 
@@ -107,7 +107,7 @@ Php::Value GtkBuilder_::add_from_string(Php::Parameters &parameters) {
   std::string s_buffer = parameters[0];
   gchar *buffer = (gchar *)s_buffer.c_str();
 
-  GError *err = NULL;
+  GError *err = nullptr;
 
   int ret = gtk_builder_add_from_string(GTK_BUILDER(instance), buffer, s_buffer.length(), &err);
 
@@ -214,7 +214,7 @@ void GtkBuilder_::connect_signals(Php::Parameters &parameters) {
 }
 
 void GtkBuilder_::connect_signals_full(Php::Parameters &parameters) {
-  gtk_builder_connect_signals_full(GTK_BUILDER(instance), connect_signals_full_callback, NULL);
+  gtk_builder_connect_signals_full(GTK_BUILDER(instance), connect_signals_full_callback, nullptr);
 
   // std::string s_func = parameters[0];
   // gchar *func = (gchar *)s_func.c_str();
@@ -279,7 +279,8 @@ void GtkBuilder_::connect_signals_full_callback(GtkBuilder *builder, GObject *in
 
   // Connect
   GClosure *closure;
-  closure = g_cclosure_new_swap(G_CALLBACK(connect_signals_full_callback1), callback_object, NULL);
+  closure =
+      g_cclosure_new_swap(G_CALLBACK(connect_signals_full_callback1), callback_object, nullptr);
   g_signal_connect_closure(instance, signal_name, closure, TRUE);
 }
 

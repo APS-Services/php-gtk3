@@ -15,7 +15,7 @@ void GtkToolButton_::__construct(Php::Parameters &parameters) {
   std::string s_label = parameters[0];
   gchar *label = (gchar *)s_label.c_str();
 
-  instance = (gpointer *)gtk_tool_button_new(NULL, NULL);
+  instance = (gpointer *)gtk_tool_button_new(nullptr, nullptr);
   gtk_tool_button_set_label(GTK_TOOL_BUTTON(instance), label);
 }
 
@@ -59,7 +59,7 @@ Php::Value GtkToolButton_::get_icon_name() {
 
 void GtkToolButton_::set_icon_widget(Php::Parameters &parameters) {
   GtkWidget *icon_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_icon_widget = parameters[0];
     GtkWidget_ *phpgtk_icon_widget = (GtkWidget_ *)object_icon_widget.implementation();
     icon_widget = GTK_WIDGET(phpgtk_icon_widget->get_instance());
@@ -80,7 +80,7 @@ Php::Value GtkToolButton_::get_icon_widget() {
 
 void GtkToolButton_::set_label_widget(Php::Parameters &parameters) {
   GtkWidget *label_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_label_widget = parameters[0];
     GtkWidget_ *phpgtk_label_widget = (GtkWidget_ *)object_label_widget.implementation();
     label_widget = GTK_WIDGET(phpgtk_label_widget->get_instance());

@@ -19,7 +19,7 @@ class GdkPixbuf_ : public Php::Base {
    * Publics
    */
  public:
-  GdkPixbuf *instance;
+  GdkPixbuf *instance{};
 
   /**
    *  C++ constructor and destructor

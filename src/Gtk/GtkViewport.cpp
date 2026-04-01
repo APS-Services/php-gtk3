@@ -71,5 +71,5 @@ void GtkViewport_::__construct(Php::Parameters &parameters) {
   // GtkAdjustment_ *phpgtk_vadjustment = (GtkAdjustment_ *)object_vadjustment.implementation();
   // vadjustment = GTK_ADJUSTMENT(phpgtk_vadjustment->get_instance());
 
-  instance = (gpointer *)gtk_viewport_new(NULL, NULL);
+  instance = (gpointer *)gtk_viewport_new(nullptr, nullptr);
 }

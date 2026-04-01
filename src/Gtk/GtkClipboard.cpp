@@ -118,7 +118,7 @@ void GtkClipboard_::set_text(Php::Parameters &parameters) {
 
 void GtkClipboard_::set_image(Php::Parameters &parameters) {
   GdkPixbuf *pixbuf;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_pixbuf = parameters[0];
     GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
     pixbuf = phpgtk_pixbuf->get_instance();
@@ -290,7 +290,7 @@ Php::Value GtkClipboard_::wait_is_text_available() {
 
 Php::Value GtkClipboard_::wait_is_image_available(Php::Parameters &parameters) {
   GtkTextBuffer *buffer;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_buffer = parameters[0];
     GtkTextBuffer_ *phpgtk_buffer = (GtkTextBuffer_ *)object_buffer.implementation();
     buffer = GTK_TEXT_BUFFER(phpgtk_buffer->get_instance());

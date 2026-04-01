@@ -12,8 +12,8 @@ GtkLabel_::GtkLabel_() = default;
 GtkLabel_::~GtkLabel_() = default;
 
 void GtkLabel_::__construct(Php::Parameters &parameters) {
-  std::string s_str = "";
-  if (parameters.size() > 0) {
+  std::string s_str;
+  if (!parameters.empty()) {
     s_str.assign((const char *)parameters[0]);
   }
 
@@ -120,7 +120,7 @@ Php::Value GtkLabel_::get_text() {
 
 void GtkLabel_::set_mnemonic_widget(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());

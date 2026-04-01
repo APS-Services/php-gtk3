@@ -17,7 +17,7 @@ void GtkTextView_::__construct() {
 
 Php::Value GtkTextView_::new_with_buffer(Php::Parameters &parameters) {
   GtkTextBuffer *buffer;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_buffer = parameters[0];
     GtkTextBuffer_ *phpgtk_buffer = (GtkTextBuffer_ *)object_buffer.implementation();
     buffer = GTK_TEXT_BUFFER(phpgtk_buffer->get_instance());
@@ -32,7 +32,7 @@ Php::Value GtkTextView_::new_with_buffer(Php::Parameters &parameters) {
 
 void GtkTextView_::set_buffer(Php::Parameters &parameters) {
   GtkTextBuffer *buffer;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_buffer = parameters[0];
     GtkTextBuffer_ *phpgtk_buffer = (GtkTextBuffer_ *)object_buffer.implementation();
     buffer = GTK_TEXT_BUFFER(phpgtk_buffer->get_instance());
@@ -51,7 +51,7 @@ Php::Value GtkTextView_::get_buffer() {
 
 void GtkTextView_::scroll_to_mark(Php::Parameters &parameters) {
   GtkTextMark *mark;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_mark = parameters[0];
     GtkTextMark_ *phpgtk_mark = (GtkTextMark_ *)object_mark.implementation();
     mark = GTK_TEXT_MARK(phpgtk_mark->get_instance());
@@ -88,7 +88,7 @@ void GtkTextView_::scroll_to_iter(Php::Parameters &parameters) {
 
 void GtkTextView_::scroll_mark_onscreen(Php::Parameters &parameters) {
   GtkTextMark *mark;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_mark = parameters[0];
     GtkTextMark_ *phpgtk_mark = (GtkTextMark_ *)object_mark.implementation();
     mark = GTK_TEXT_MARK(phpgtk_mark->get_instance());
@@ -99,7 +99,7 @@ void GtkTextView_::scroll_mark_onscreen(Php::Parameters &parameters) {
 
 Php::Value GtkTextView_::move_mark_onscreen(Php::Parameters &parameters) {
   GtkTextMark *mark;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_mark = parameters[0];
     GtkTextMark_ *phpgtk_mark = (GtkTextMark_ *)object_mark.implementation();
     mark = GTK_TEXT_MARK(phpgtk_mark->get_instance());
@@ -158,7 +158,9 @@ Php::Value GtkTextView_::get_iter_at_location(Php::Parameters &parameters) {
   gint y = (gint)parameters[1];
 
   gint ret = gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(instance), &target_iter, x, y);
-  if (!ret) return ret;
+  if (!ret) {
+    return ret;
+  }
 
   GtkTextIter_ *return_parsed = new GtkTextIter_();
   return_parsed->set_instance(target_iter);
@@ -170,8 +172,11 @@ Php::Value GtkTextView_::get_iter_at_position(Php::Parameters &parameters) {
   gint y = (gint)parameters[1];
   GtkTextIter target_iter;
 
-  bool ret = gtk_text_view_get_iter_at_position(GTK_TEXT_VIEW(instance), &target_iter, NULL, x, y);
-  if (!ret) return ret;
+  bool ret =
+      gtk_text_view_get_iter_at_position(GTK_TEXT_VIEW(instance), &target_iter, nullptr, x, y);
+  if (!ret) {
+    return ret;
+  }
 
   GtkTextIter_ *return_parsed = new GtkTextIter_();
   return_parsed->set_instance(target_iter);
@@ -325,7 +330,7 @@ Php::Value GtkTextView_::move_visually(Php::Parameters &parameters) {
 
 void GtkTextView_::add_child_in_window(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -343,7 +348,7 @@ void GtkTextView_::add_child_in_window(Php::Parameters &parameters) {
 
 void GtkTextView_::move_child(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());

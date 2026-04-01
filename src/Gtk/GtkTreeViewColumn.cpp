@@ -209,7 +209,9 @@ Php::Value GtkTreeViewColumn_::get_widget() {
 void GtkTreeViewColumn_::set_widget(Php::Parameters &parameters) {
   // Get the widget to packed
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkWidget")) throw Php::Exception("parameter expect GtkWidget instance");
+  if (!object.instanceOf("GtkWidget")) {
+    throw Php::Exception("parameter expect GtkWidget instance");
+  }
   GtkWidget_ *passedWidget = (GtkWidget_ *)object.implementation();
 
   // Pack the widget
@@ -309,7 +311,7 @@ void GtkTreeViewColumn_::set_cell_data_func(Php::Parameters &parameters) {
   // Call the virtual callback
   gtk_tree_view_column_set_cell_data_func(GTK_TREE_VIEW_COLUMN(instance), cell_renderer,
                                           set_cell_data_func_callback, (gpointer)callback_object,
-                                          NULL);
+                                          nullptr);
 }
 
 void GtkTreeViewColumn_::set_cell_data_func_callback(GtkTreeViewColumn *tree_column,
