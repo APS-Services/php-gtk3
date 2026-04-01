@@ -1805,7 +1805,7 @@ extern "C"
         // GtkAppChooserDialog
         Php::Class<GtkAppChooserDialog_> gtkappchooserdialog("GtkAppChooserDialog");
         gtkappchooserdialog.extends(gtkdialog);
-        gtkappchooserdialog.method<&GtkAppChooserDialog_::__construc>("__construc");
+        gtkappchooserdialog.method<&GtkAppChooserDialog_::__construct>("__construct");
         gtkappchooserdialog.method<&GtkAppChooserDialog_::new_for_content_type>("new_for_content_type");
         gtkappchooserdialog.method<&GtkAppChooserDialog_::get_widget>("get_widget");
         gtkappchooserdialog.method<&GtkAppChooserDialog_::set_heading>("set_heading");
