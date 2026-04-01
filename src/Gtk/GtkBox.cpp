@@ -114,14 +114,14 @@ void GtkBox_::set_homogeneous(Php::Parameters &parameters) {
 }
 
 Php::Value GtkBox_::get_spacing() {
-  bool ret = gtk_box_get_spacing(GTK_BOX(instance));
+  gint ret = gtk_box_get_spacing(GTK_BOX(instance));
 
-  return ret;
+  return (int)ret;
 }
 
 void GtkBox_::set_spacing(Php::Parameters &parameters) {
   phpgtk_check_parameter(parameters, 1, Php::Type::Numeric, TRUE, NULL);
-  gboolean spacing = (gboolean)parameters[0];
+  gint spacing = (gint)parameters[0];
 
   gtk_box_set_spacing(GTK_BOX(instance), spacing);
 }

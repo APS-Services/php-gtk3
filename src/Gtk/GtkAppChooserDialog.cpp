@@ -33,7 +33,7 @@ GtkAppChooserDialog_::GtkAppChooserDialog_() = default;
  */
 GtkAppChooserDialog_::~GtkAppChooserDialog_() = default;
 
-void GtkAppChooserDialog_::__construc(Php::Parameters &parameters) {
+void GtkAppChooserDialog_::__construct(Php::Parameters &parameters) {
   Php::Value object_parent = parameters[0];
   GtkWindow *parent = NULL;
   if (object_parent.instanceOf("GtkWindow")) {
