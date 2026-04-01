@@ -6,7 +6,7 @@ CLANG_FORMAT=${CLANG_FORMAT:-clang-format-17}
 JOBS=${JOBS:-$(nproc)}
 
 # Checks are defined in .clang-tidy at the repo root
-EXTRA_ARGS="-std=c++11"
+EXTRA_ARGS="-std=c++17"
 
 FIX=0
 NO_FORMAT=0
