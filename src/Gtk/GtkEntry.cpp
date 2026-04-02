@@ -311,7 +311,6 @@ void GtkEntry_::set_editable(Php::Parameters &parameters) {
 Php::Value GtkEntry_::get_selection_bounds() {
   gint start_pos;
   gint end_pos;
-  ;
 
   bool ret = gtk_editable_get_selection_bounds(GTK_EDITABLE(instance), &start_pos, &end_pos);
 

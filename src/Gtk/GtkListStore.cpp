@@ -415,7 +415,7 @@ Php::Value GtkListStore_::get_sort_column_id() {
 }
 
 Php::Value GtkListStore_::iter_n_children(Php::Parameters &parameters) {
-  if (parameters.size() > 1) {
+  if (!parameters.empty()) {
     // Php::call("var_dump", "iter_n_children NOT NULL");
     GtkTreeIter iter;
     Php::Value object_iter = parameters[0];
@@ -424,7 +424,7 @@ Php::Value GtkListStore_::iter_n_children(Php::Parameters &parameters) {
     gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
     return ret;
   }
-  gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL);
+  gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), nullptr);
 
   return ret;
 }

@@ -99,7 +99,7 @@ Php::Value GtkTreeModel_::get_value(Php::Parameters &parameters) {
         std::string ret = std::string(cstr);
         return ret;
       }
-      return Php::Value(nullptr);
+      return {nullptr};
     }
     case G_TYPE_OBJECT: {
       GObject *object = G_OBJECT(g_value_get_object(&value));
