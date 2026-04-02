@@ -2,6 +2,8 @@
 #ifndef _PHPGTK_GTKOSXAPPLICATION_H_
 #define _PHPGTK_GTKOSXAPPLICATION_H_
 
+#ifdef __APPLE__
+
 #include <phpcpp.h>
 #include <gtk/gtk.h>
 #include "../G/GObject.h"
@@ -45,4 +47,5 @@ class GtkosxApplication_ : public GObject_ {
   Php::Value get_bundle_info(Php::Parameters &parameters);
 };
 
-#endif
+#endif  // __APPLE__
+#endif  // _PHPGTK_GTKOSXAPPLICATION_H_

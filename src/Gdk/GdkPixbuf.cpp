@@ -125,7 +125,7 @@ Php::Value GdkPixbuf_::get_data(Php::Parameters &parameters) {
     // Assuming the data is a string
     return {(char *)value};
   }
-  return Php::Value();
+  return {};
 }
 
 Php::Value GdkPixbuf_::get_byte_length() {

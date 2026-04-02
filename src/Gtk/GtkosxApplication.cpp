@@ -1,5 +1,8 @@
 
 #include "GtkosxApplication.h"
+
+#ifdef __APPLE__
+
 #include "../../main.h"
 
 /**
@@ -154,3 +157,5 @@ Php::Value GtkosxApplication_::get_bundle_info(Php::Parameters &parameters) {
 
   return ret;
 }
+
+#endif  // __APPLE__

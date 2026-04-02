@@ -424,7 +424,7 @@ Php::Value GtkListStore_::iter_n_children(Php::Parameters &parameters) {
     gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
     return ret;
   }
-  gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL);
+  gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), nullptr);
 
   return ret;
 }
