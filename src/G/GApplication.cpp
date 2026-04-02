@@ -193,7 +193,16 @@ Php::Value GApplication_::run(Php::Parameters &parameters) {
   }
 
   Php::Value object_app = parameters[0];
+
+  if (!object_app.isObject() || !object_app.instanceOf("GtkApplication")) {
+    throw Php::Exception("GApplication_::run parameter 0 must be an instance of GtkApplication");
+  }
+
   GtkApplication_ *phpgtk_app = (GtkApplication_ *)object_app.implementation();
+  if (phpgtk_app == nullptr) {
+    throw Php::Exception("GApplication_::run received an invalid GtkApplication implementation");
+  }
+
   GtkApplication *app = GTK_APPLICATION(phpgtk_app->get_instance());
 
   int ret = g_application_run(G_APPLICATION(app), 0, nullptr);
