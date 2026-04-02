@@ -165,7 +165,7 @@ Php::Value GtkTextIter_::get_toggled_tags(Php::Parameters &parameters) {
 
 Php::Value GtkTextIter_::starts_tag(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = GTK_TEXT_TAG(phpgtk_tag->get_instance());
@@ -178,7 +178,7 @@ Php::Value GtkTextIter_::starts_tag(Php::Parameters &parameters) {
 
 Php::Value GtkTextIter_::ends_tag(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = GTK_TEXT_TAG(phpgtk_tag->get_instance());
@@ -191,7 +191,7 @@ Php::Value GtkTextIter_::ends_tag(Php::Parameters &parameters) {
 
 Php::Value GtkTextIter_::toggles_tag(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = GTK_TEXT_TAG(phpgtk_tag->get_instance());
@@ -204,7 +204,7 @@ Php::Value GtkTextIter_::toggles_tag(Php::Parameters &parameters) {
 
 Php::Value GtkTextIter_::has_tag(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = GTK_TEXT_TAG(phpgtk_tag->get_instance());
@@ -605,7 +605,7 @@ Php::Value GtkTextIter_::forward_to_tag_toggle(Php::Parameters &parameters) {
 
 Php::Value GtkTextIter_::backward_to_tag_toggle(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = phpgtk_tag->get_tag();

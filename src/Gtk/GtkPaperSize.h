@@ -15,7 +15,7 @@ class GtkPaperSize_ : public Php::Base {
    * Publics
    */
  public:
-  GtkPaperSize *instance;
+  GtkPaperSize *instance{};
 
   GtkPaperSize *get_instance();
   void set_instance(GtkPaperSize *pased_instance);

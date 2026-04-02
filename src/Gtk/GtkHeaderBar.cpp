@@ -55,7 +55,7 @@ Php::Value GtkHeaderBar_::get_has_subtitle() {
 
 void GtkHeaderBar_::set_custom_title(Php::Parameters &parameters) {
   GtkWidget *title_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_title_widget = parameters[0];
     GtkWidget_ *phpgtk_title_widget = (GtkWidget_ *)object_title_widget.implementation();
     title_widget = GTK_WIDGET(phpgtk_title_widget->get_instance());
@@ -75,7 +75,7 @@ Php::Value GtkHeaderBar_::get_custom_title() {
 
 void GtkHeaderBar_::pack_start(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -86,7 +86,7 @@ void GtkHeaderBar_::pack_start(Php::Parameters &parameters) {
 
 void GtkHeaderBar_::pack_end(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());

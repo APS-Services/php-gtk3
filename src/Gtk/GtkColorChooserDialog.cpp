@@ -21,7 +21,7 @@ void GtkColorChooserDialog_::__construct(Php::Parameters &parameters) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());
   } else {
-    parent = NULL;
+    parent = nullptr;
   }
 
   instance = (gpointer *)gtk_color_chooser_dialog_new(title, parent);
@@ -39,7 +39,7 @@ Php::Value GtkColorChooserDialog_::get_rgba() {
 
 void GtkColorChooserDialog_::set_rgba(Php::Parameters &parameters) {
   GdkRGBA color;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_color = parameters[0];
     GdkRGBA_ *phpgtk_color = (GdkRGBA_ *)object_color.implementation();
     color = phpgtk_color->get_instance();

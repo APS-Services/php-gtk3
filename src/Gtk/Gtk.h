@@ -23,7 +23,7 @@ class Gtk_ : public Php::Base {
   /**
    *
    */
-  GtkWidget *widget;
+  GtkWidget *widget{};
 
   struct st_timeout_add;
 

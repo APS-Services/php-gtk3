@@ -17,7 +17,7 @@ void GtkSourceView_::__construct() {
 
 Php::Value GtkSourceView_::new_with_buffer(Php::Parameters &parameters) {
   GtkSourceBuffer *buffer;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_buffer = parameters[0];
     GtkSourceBuffer_ *phpgtk_buffer = (GtkSourceBuffer_ *)object_buffer.implementation();
     buffer = GTK_SOURCE_BUFFER(phpgtk_buffer->get_instance());
@@ -140,7 +140,7 @@ Php::Value GtkSourceView_::get_insert_spaces_instead_of_tabs() {
 
 void GtkSourceView_::indent_lines(Php::Parameters &parameters) {
   GtkTextIter start;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_start = parameters[0];
     GtkTextIter_ *phpgtk_start = (GtkTextIter_ *)object_start.implementation();
     start = (phpgtk_start->get_instance());
@@ -158,7 +158,7 @@ void GtkSourceView_::indent_lines(Php::Parameters &parameters) {
 
 void GtkSourceView_::unindent_lines(Php::Parameters &parameters) {
   GtkTextIter start;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_start = parameters[0];
     GtkTextIter_ *phpgtk_start = (GtkTextIter_ *)object_start.implementation();
     start = (phpgtk_start->get_instance());
@@ -176,7 +176,7 @@ void GtkSourceView_::unindent_lines(Php::Parameters &parameters) {
 
 Php::Value GtkSourceView_::get_visual_column(Php::Parameters &parameters) {
   GtkTextIter iter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_iter = parameters[0];
     GtkTextIter_ *phpgtk_iter = (GtkTextIter_ *)object_iter.implementation();
     iter = (phpgtk_iter->get_instance());
@@ -266,14 +266,14 @@ void GtkSourceView_::set_draw_spaces(Php::Parameters &parameters) {
   // gtk_source_view_set_draw_spaces (GTK_SOURCE_VIEW(instance), flags);
 
   // Deprecated
-  Php::deprecated << "set_draw_spaces is deprecated on Gtk 3.24" << std::endl;
+  Php::deprecated << "set_draw_spaces is deprecated on Gtk 3.24" << '\n';
 }
 
 Php::Value GtkSourceView_::get_draw_spaces() {
   // GtkSourceDrawSpacesFlags ret = gtk_source_view_get_draw_spaces (GTK_SOURCE_VIEW(instance));
 
   // Deprecated
-  Php::deprecated << "get_draw_spaces is deprecated on Gtk 3.24" << std::endl;
+  Php::deprecated << "get_draw_spaces is deprecated on Gtk 3.24" << '\n';
 
   return 1;
 }

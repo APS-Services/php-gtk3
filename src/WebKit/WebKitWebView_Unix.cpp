@@ -48,7 +48,7 @@ void WebKitWebView_::__construct() {
 }
 
 void WebKitWebView_::load_uri(Php::Parameters &parameters) {
-  if (parameters.size() == 0) {
+  if (parameters.empty()) {
     throw Php::Exception("load_uri() expects at least 1 parameter, 0 given");
   }
 
@@ -113,7 +113,7 @@ Php::Value WebKitWebView_::is_loading() {
 }
 
 void WebKitWebView_::load_html(Php::Parameters &parameters) {
-  if (parameters.size() == 0) {
+  if (parameters.empty()) {
     throw Php::Exception("load_html() expects at least 1 parameter, 0 given");
   }
 
@@ -134,7 +134,7 @@ void WebKitWebView_::load_html(Php::Parameters &parameters) {
 }
 
 void WebKitWebView_::run_javascript(Php::Parameters &parameters) {
-  if (parameters.size() == 0) {
+  if (parameters.empty()) {
     throw Php::Exception("run_javascript() expects at least 1 parameter, 0 given");
   }
 
@@ -189,7 +189,7 @@ static void script_message_received_cb(WebKitUserContentManager *manager,
 }
 
 void WebKitWebView_::register_script_message_handler(Php::Parameters &parameters) {
-  if (parameters.size() == 0) {
+  if (parameters.empty()) {
     throw Php::Exception("register_script_message_handler() expects at least 1 parameter, 0 given");
   }
 

@@ -111,7 +111,7 @@ void GtkListStore_::set_valuesv(Php::Parameters &parameters) {
 
 Php::Value GtkListStore_::remove(Php::Parameters &parameters) {
   GtkTreeIter iter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_iter = parameters[0];
     GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
     iter = phpgtk_iter->get_instance();
@@ -241,7 +241,7 @@ void GtkListStore_::clear() {
 
 Php::Value GtkListStore_::iter_is_valid(Php::Parameters &parameters) {
   GtkTreeIter iter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_iter = parameters[0];
     GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
     iter = phpgtk_iter->get_instance();
@@ -262,7 +262,7 @@ void GtkListStore_::reorder(Php::Parameters &parameters) {
 
 void GtkListStore_::swap(Php::Parameters &parameters) {
   GtkTreeIter a;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_a = parameters[0];
     GtkTreeIter_ *phpgtk_a = (GtkTreeIter_ *)object_a.implementation();
     a = phpgtk_a->get_instance();
@@ -280,7 +280,7 @@ void GtkListStore_::swap(Php::Parameters &parameters) {
 
 void GtkListStore_::move_before(Php::Parameters &parameters) {
   GtkTreeIter iter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_iter = parameters[0];
     GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
     iter = phpgtk_iter->get_instance();
@@ -298,7 +298,7 @@ void GtkListStore_::move_before(Php::Parameters &parameters) {
 
 void GtkListStore_::move_after(Php::Parameters &parameters) {
   GtkTreeIter iter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_iter = parameters[0];
     GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
     iter = phpgtk_iter->get_instance();
@@ -329,7 +329,7 @@ void GtkListStore_::set_sort_func(Php::Parameters &parameters) {
   callback_object->self_widget = Php::Object("GtkListStore", this);
 
   gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model), sort_column_id, set_sort_func_callback,
-                                  (gpointer)callback_object, NULL);
+                                  (gpointer)callback_object, nullptr);
 }
 
 gint GtkListStore_::set_sort_func_callback(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
@@ -339,7 +339,7 @@ gint GtkListStore_::set_sort_func_callback(GtkTreeModel *model, GtkTreeIter *a, 
 
   // Check if callback name is valid
   if (callback_object->user_parameters.size() < 2 || callback_object->user_parameters[1].isNull()) {
-    std::cerr << "Invalid callback name" << std::endl;
+    std::cerr << "Invalid callback name" << '\n';
     return 0;
   }
   Php::Value callback_name = callback_object->user_parameters[1];
@@ -423,11 +423,10 @@ Php::Value GtkListStore_::iter_n_children(Php::Parameters &parameters) {
     iter = phpgtk_iter->get_instance();
     gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
     return ret;
-  } else {
-    gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL);
-
-    return ret;
   }
+  gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL);
+
+  return ret;
 }
 
 Php::Value GtkListStore_::get_iter_first(Php::Parameters &parameters) {

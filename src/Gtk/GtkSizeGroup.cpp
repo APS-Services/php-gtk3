@@ -33,7 +33,7 @@ Php::Value GtkSizeGroup_::get_mode() {
 
 void GtkSizeGroup_::add_widget(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());
@@ -44,7 +44,7 @@ void GtkSizeGroup_::add_widget(Php::Parameters &parameters) {
 
 void GtkSizeGroup_::remove_widget(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());

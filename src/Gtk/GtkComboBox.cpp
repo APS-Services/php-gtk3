@@ -46,7 +46,7 @@ Php::Value GtkComboBox_::new_with_model(Php::Parameters &parameters) {
 Php::Value GtkComboBox_::new_with_model_and_entry(Php::Parameters &parameters) {
   GtkTreeModel *model;
   Php::Value object_model;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     object_model = parameters[0];
     GtkTreeModel_ *phpgtk_model = (GtkTreeModel_ *)object_model.implementation();
     model = phpgtk_model->get_model();
@@ -143,7 +143,9 @@ void GtkComboBox_::set_active(Php::Parameters &parameters) {
 Php::Value GtkComboBox_::get_active_iter() {
   GtkTreeIter iter;
   bool ret = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(instance), &iter);
-  if (!ret) return (bool)ret;
+  if (!ret) {
+    return (bool)ret;
+  }
 
   GtkTreeIter_ *return_parsed = new GtkTreeIter_();
   return_parsed->set_instance(iter);
@@ -152,7 +154,7 @@ Php::Value GtkComboBox_::get_active_iter() {
 
 void GtkComboBox_::set_active_iter(Php::Parameters &parameters) {
   GtkTreeIter iter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_iter = parameters[0];
     GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
     iter = phpgtk_iter->get_instance();
@@ -200,9 +202,9 @@ Php::Value GtkComboBox_::get_model() {
 }
 
 void GtkComboBox_::set_model(Php::Parameters &parameters) {
-  GtkTreeModel *model = NULL;
+  GtkTreeModel *model = nullptr;
   Php::Value object_model;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     object_model = parameters[0];
     // Allow NULL to clear the model
     if (!object_model.isNull()) {

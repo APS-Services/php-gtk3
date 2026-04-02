@@ -34,7 +34,7 @@ Php::Value GtkFontButton_::set_font_name(Php::Parameters &parameters) {
 
   // return ret;
 
-  Php::deprecated << "GtkFontButton_::set_font_name is deprecated on Gtk 3.22" << std::endl;
+  Php::deprecated << "GtkFontButton_::set_font_name is deprecated on Gtk 3.22" << '\n';
   return 1;
 }
 
@@ -49,7 +49,7 @@ Php::Value GtkFontButton_::get_font_name() {
   // std::string ret = gtk_font_button_get_font_name (GTK_FONT_CHOOSER(instance));
 
   // return ret;
-  Php::deprecated << "GtkFontButton_::get_font_name is deprecated on Gtk 3.22" << std::endl;
+  Php::deprecated << "GtkFontButton_::get_font_name is deprecated on Gtk 3.22" << '\n';
   return 1;
 }
 
