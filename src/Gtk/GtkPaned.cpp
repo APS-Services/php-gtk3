@@ -28,7 +28,9 @@ void GtkPaned_::__construct(Php::Parameters &parameters) {
 void GtkPaned_::add1(Php::Parameters &parameters) {
   // Get the widget to packed
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkWidget")) throw Php::Exception("parameter expect GtkWidget instance");
+  if (!object.instanceOf("GtkWidget")) {
+    throw Php::Exception("parameter expect GtkWidget instance");
+  }
   GtkWidget_ *passedWidget = (GtkWidget_ *)object.implementation();
 
   // Pack the widget
@@ -41,7 +43,9 @@ void GtkPaned_::add1(Php::Parameters &parameters) {
 void GtkPaned_::add2(Php::Parameters &parameters) {
   // Get the widget to packed
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkWidget")) throw Php::Exception("parameter expect GtkWidget instance");
+  if (!object.instanceOf("GtkWidget")) {
+    throw Php::Exception("parameter expect GtkWidget instance");
+  }
   GtkWidget_ *passedWidget = (GtkWidget_ *)object.implementation();
 
   // Pack the widget
@@ -54,7 +58,9 @@ void GtkPaned_::add2(Php::Parameters &parameters) {
 void GtkPaned_::pack1(Php::Parameters &parameters) {
   // Get the widget to packed
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkWidget")) throw Php::Exception("parameter expect GtkWidget instance");
+  if (!object.instanceOf("GtkWidget")) {
+    throw Php::Exception("parameter expect GtkWidget instance");
+  }
   GtkWidget_ *passedWidget = (GtkWidget_ *)object.implementation();
 
   // Verify if has resize parameter
@@ -79,7 +85,9 @@ void GtkPaned_::pack1(Php::Parameters &parameters) {
 void GtkPaned_::pack2(Php::Parameters &parameters) {
   // Get the widget to packed
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkWidget")) throw Php::Exception("parameter expect GtkWidget instance");
+  if (!object.instanceOf("GtkWidget")) {
+    throw Php::Exception("parameter expect GtkWidget instance");
+  }
   GtkWidget_ *passedWidget = (GtkWidget_ *)object.implementation();
 
   // Verify if has resize parameter

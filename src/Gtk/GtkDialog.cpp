@@ -20,7 +20,7 @@ Php::Value GtkDialog_::new_with_buttons(Php::Parameters &parameters) {
   gchar *title = (gchar *)s_title.c_str();
 
   Php::Value object_parent = parameters[1];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());
@@ -80,7 +80,7 @@ void GtkDialog_::add_buttons(Php::Parameters &parameters) {
 
 void GtkDialog_::add_action_widget(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -107,7 +107,7 @@ void GtkDialog_::set_response_sensitive(Php::Parameters &parameters) {
 
 void GtkDialog_::get_response_for_widget(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());

@@ -19,7 +19,7 @@ class GtkTextTag_ : public GObject_ {
    * Publics
    */
  public:
-  GtkTextTag *tag;
+  GtkTextTag *tag{};
 
   GtkTextTag *get_tag();
   void set_tag(GtkTextTag *passed_tag);

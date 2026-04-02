@@ -17,7 +17,7 @@ void GtkOverlay_::__construct() {
 
 void GtkOverlay_::add_overlay(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());
@@ -28,7 +28,7 @@ void GtkOverlay_::add_overlay(Php::Parameters &parameters) {
 
 void GtkOverlay_::reorder_overlay(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -41,7 +41,7 @@ void GtkOverlay_::reorder_overlay(Php::Parameters &parameters) {
 
 Php::Value GtkOverlay_::get_overlay_pass_through(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());
@@ -54,7 +54,7 @@ Php::Value GtkOverlay_::get_overlay_pass_through(Php::Parameters &parameters) {
 
 void GtkOverlay_::set_overlay_pass_through(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());

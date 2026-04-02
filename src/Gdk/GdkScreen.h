@@ -18,7 +18,7 @@ class GdkScreen_ : public Php::Base {
    * Publics
    */
  public:
-  GdkScreen *instance;
+  GdkScreen *instance{};
 
   /**
    *  C++ constructor and destructor

@@ -4,18 +4,20 @@ set -euo pipefail
 CLANG_TIDY=${CLANG_TIDY:-clang-tidy-17}
 CLANG_FORMAT=${CLANG_FORMAT:-clang-format-17}
 JOBS=${JOBS:-$(nproc)}
-
+# JOBS=1
 # Checks are defined in .clang-tidy at the repo root
 EXTRA_ARGS="-std=c++17"
 
 FIX=0
 NO_FORMAT=0
 NO_TIDY=0
+FAIL_FAST=0
 for arg in "$@"; do
     case "$arg" in
-        --fix)       FIX=1 ;;
-        --no-format) NO_FORMAT=1 ;;
-        --no-tidy)   NO_TIDY=1 ;;
+        --fix)        FIX=1 ;;
+        --no-format)  NO_FORMAT=1 ;;
+        --no-tidy)    NO_TIDY=1 ;;
+        --fail-fast)  FAIL_FAST=1 ;;
     esac
 done
 
@@ -62,8 +64,11 @@ if [[ $NO_TIDY -eq 1 ]]; then
 else
     echo "=== clang-tidy (${JOBS} jobs) ==="
     active=0
+    TIDY_PIDS=()
     for f in "${CPP_FILES[@]}"; do
+        [[ $FAIL_FAST -eq 1 && -f "$ERR_DIR/stop" ]] && break
         (
+            [[ $FAIL_FAST -eq 1 && -f "$ERR_DIR/stop" ]] && exit 0
             echo "  $ACTION: ${f#"$SCRIPT_DIR"/}"
             TIDY_ARGS=(--extra-arg="$EXTRA_ARGS" "${INCLUDE_FLAGS[@]}")
             if [[ $FIX -eq 1 ]]; then
@@ -71,12 +76,18 @@ else
             fi
             if ! "$CLANG_TIDY" "$f" "${TIDY_ARGS[@]}" -- 2>&1; then
                 touch "$ERR_DIR/$(basename "$f").tidy"
+                [[ $FAIL_FAST -eq 1 ]] && touch "$ERR_DIR/stop"
             fi
         ) &
+        TIDY_PIDS+=($!)
         active=$((active + 1))
         if [[ $active -ge $JOBS ]]; then
             wait -n 2>/dev/null || wait
             active=$((active - 1))
+            if [[ $FAIL_FAST -eq 1 && -f "$ERR_DIR/stop" ]]; then
+                for pid in "${TIDY_PIDS[@]}"; do kill "$pid" 2>/dev/null || true; done
+                break
+            fi
         fi
     done
     wait

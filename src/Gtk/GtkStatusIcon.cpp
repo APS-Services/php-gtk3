@@ -128,7 +128,7 @@ Php::Value GtkStatusIcon_::get_gicon() {
   GIcon *ret = gtk_status_icon_get_gicon(GTK_STATUS_ICON(instance));
 
   if (ret == nullptr) {
-    return Php::Value(nullptr);
+    return {nullptr};
   }
 
   // Note: gtk_status_icon_get_gicon() returns a borrowed reference owned by the status icon.

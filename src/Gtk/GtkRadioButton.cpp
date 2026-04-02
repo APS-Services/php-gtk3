@@ -13,7 +13,7 @@ GtkRadioButton_::GtkRadioButton_() = default;
 GtkRadioButton_::~GtkRadioButton_() = default;
 
 void GtkRadioButton_::__construct(Php::Parameters &parameters) {
-  instance = (gpointer *)gtk_radio_button_new(NULL);
+  instance = (gpointer *)gtk_radio_button_new(nullptr);
 }
 
 Php::Value GtkRadioButton_::new_from_widget(Php::Parameters &parameters) {
@@ -21,7 +21,7 @@ Php::Value GtkRadioButton_::new_from_widget(Php::Parameters &parameters) {
   phpgtk_check_parameter(parameters, 1, Php::Type::Object, TRUE, "GtkWidget");
 
   GtkRadioButton *radio_group_member;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     radio_group_member = GTK_RADIO_BUTTON(phpgtk_child->get_instance());
@@ -38,7 +38,7 @@ Php::Value GtkRadioButton_::new_with_label(Php::Parameters &parameters) {
   std::string s_label = parameters[0];
   gchar *label = (gchar *)s_label.c_str();
 
-  GtkWidget *ret = gtk_radio_button_new_with_label(NULL, label);
+  GtkWidget *ret = gtk_radio_button_new_with_label(nullptr, label);
 
   GtkWidget_ *return_parsed = new GtkWidget_();
   return_parsed->set_instance((gpointer *)ret);
@@ -50,7 +50,7 @@ Php::Value GtkRadioButton_::new_with_label_from_widget(Php::Parameters &paramete
   phpgtk_check_parameter(parameters, 1, Php::Type::Object, TRUE, "GtkWidget");
 
   GtkRadioButton *radio_group_member;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     radio_group_member = GTK_RADIO_BUTTON(phpgtk_child->get_instance());
@@ -72,7 +72,7 @@ Php::Value GtkRadioButton_::new_with_mnemonic(Php::Parameters &parameters) {
   std::string s_label = parameters[0];
   gchar *label = (gchar *)s_label.c_str();
 
-  GtkWidget *ret = gtk_radio_button_new_with_mnemonic(NULL, label);
+  GtkWidget *ret = gtk_radio_button_new_with_mnemonic(nullptr, label);
 
   GtkWidget_ *return_parsed = new GtkWidget_();
   return_parsed->set_instance((gpointer *)ret);
@@ -84,7 +84,7 @@ Php::Value GtkRadioButton_::new_with_mnemonic_from_widget(Php::Parameters &param
   phpgtk_check_parameter(parameters, 1, Php::Type::Object, TRUE, "GtkWidget");
 
   GtkRadioButton *radio_group_member;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     radio_group_member = GTK_RADIO_BUTTON(phpgtk_child->get_instance());
@@ -103,7 +103,7 @@ Php::Value GtkRadioButton_::new_with_mnemonic_from_widget(Php::Parameters &param
 }
 
 void GtkRadioButton_::set_group(Php::Parameters &parameters) {
-  gtk_radio_button_set_group(GTK_RADIO_BUTTON(instance), NULL);
+  gtk_radio_button_set_group(GTK_RADIO_BUTTON(instance), nullptr);
 }
 
 Php::Value GtkRadioButton_::get_group() {
@@ -122,7 +122,7 @@ Php::Value GtkRadioButton_::get_group() {
 
 void GtkRadioButton_::join_group(Php::Parameters &parameters) {
   GtkRadioButton *group_source;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_group_source = parameters[0];
     GtkRadioButton_ *phpgtk_group_source = (GtkRadioButton_ *)object_group_source.implementation();
     group_source = GTK_RADIO_BUTTON(phpgtk_group_source->get_instance());

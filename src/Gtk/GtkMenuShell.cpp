@@ -13,7 +13,7 @@ GtkMenuShell_::~GtkMenuShell_() = default;
 
 void GtkMenuShell_::append(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -24,7 +24,7 @@ void GtkMenuShell_::append(Php::Parameters &parameters) {
 
 void GtkMenuShell_::prepend(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -35,7 +35,7 @@ void GtkMenuShell_::prepend(Php::Parameters &parameters) {
 
 void GtkMenuShell_::insert(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -52,7 +52,7 @@ void GtkMenuShell_::deactivate() {
 
 void GtkMenuShell_::select_item(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -73,7 +73,7 @@ void GtkMenuShell_::deselect() {
 
 void GtkMenuShell_::activate_item(Php::Parameters &parameters) {
   GtkWidget *menu_item;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_menu_item = parameters[0];
     GtkWidget_ *phpgtk_menu_item = (GtkWidget_ *)object_menu_item.implementation();
     menu_item = GTK_WIDGET(phpgtk_menu_item->get_instance());

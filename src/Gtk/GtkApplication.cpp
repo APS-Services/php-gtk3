@@ -17,7 +17,7 @@ void GtkApplication_::__construct(Php::Parameters &parameters) {
   gchar *application_id = (gchar *)s_application_id.c_str();
 
   // ----
-  phpgtk_check_parameter(parameters, 2, Php::Type::Numeric, TRUE, NULL);
+  phpgtk_check_parameter(parameters, 2, Php::Type::Numeric, TRUE, nullptr);
   int int_flags = (int)parameters[1];
   GApplicationFlags flags = (GApplicationFlags)int_flags;
 
@@ -26,7 +26,7 @@ void GtkApplication_::__construct(Php::Parameters &parameters) {
 
 void GtkApplication_::add_window(Php::Parameters &parameters) {
   GtkWindow *window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_window = parameters[0];
     GtkWindow_ *phpgtk_window = (GtkWindow_ *)object_window.implementation();
     window = GTK_WINDOW(phpgtk_window->get_instance());
@@ -37,7 +37,7 @@ void GtkApplication_::add_window(Php::Parameters &parameters) {
 
 void GtkApplication_::remove_window(Php::Parameters &parameters) {
   GtkWindow *window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_window = parameters[0];
     GtkWindow_ *phpgtk_window = (GtkWindow_ *)object_window.implementation();
     window = GTK_WINDOW(phpgtk_window->get_instance());
@@ -78,7 +78,7 @@ Php::Value GtkApplication_::get_active_window() {
 
 Php::Value GtkApplication_::inhibit(Php::Parameters &parameters) {
   GtkWindow *window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_window = parameters[0];
     GtkWindow_ *phpgtk_window = (GtkWindow_ *)object_window.implementation();
     window = GTK_WINDOW(phpgtk_window->get_instance());

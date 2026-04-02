@@ -126,7 +126,8 @@ Php::Value GtkWidget_::add_tick_callback(Php::Parameters &parameters) {
   // 	if(parameters.size() > 0) {
   // 		Php::Value object_callback = parameters[0];
   // 		GtkTickCallback_ *phpgtk_callback = (GtkTickCallback_
-  // *)object_callback.implementation(); 		callback = GTK_WIDGET(phpgtk_callback->get_instance());
+  // *)object_callback.implementation(); 		callback =
+  // GTK_WIDGET(phpgtk_callback->get_instance());
   // 	}
 
   // // 	gpointer user_data = (gpointer)parameters[1];
@@ -203,9 +204,10 @@ void GtkWidget_::size_allocate_with_baseline(Php::Parameters &parameters) {
 }
 
 void GtkWidget_::add_accelerator(Php::Parameters &parameters) {
-  if (parameters.size() < 5)
+  if (parameters.size() < 5) {
     throw Php::Exception(
         "Expected 5 parameters: accel_signal, accel_group, accel_key, accel_mods, accel_flags");
+  }
 
   std::string accel_signal_str = parameters[0];
   const gchar *accel_signal = accel_signal_str.c_str();
@@ -383,7 +385,7 @@ void GtkWidget_::set_sensitive(Php::Parameters &parameters) {
 
 void GtkWidget_::set_parent(Php::Parameters &parameters) {
   GtkWidget *parent;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_parent = parameters[0];
     GtkWidget_ *phpgtk_parent = (GtkWidget_ *)object_parent.implementation();
     parent = GTK_WIDGET(phpgtk_parent->get_instance());
@@ -394,7 +396,7 @@ void GtkWidget_::set_parent(Php::Parameters &parameters) {
 
 void GtkWidget_::set_parent_window(Php::Parameters &parameters) {
   GdkWindow *parent_window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_parent_window = parameters[0];
     GdkWindow_ *phpgtk_parent_window = (GdkWindow_ *)object_parent_window.implementation();
     parent_window = GDK_WINDOW(phpgtk_parent_window->get_instance());
@@ -534,7 +536,7 @@ Php::Value GtkWidget_::get_visual() {
 
 void GtkWidget_::set_visual(Php::Parameters &parameters) {
   GdkVisual *visual;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_visual = parameters[0];
     GdkVisual_ *phpgtk_visual = (GdkVisual_ *)object_visual.implementation();
     visual = GDK_VISUAL(phpgtk_visual->get_instance());
@@ -555,7 +557,7 @@ void GtkWidget_::get_pointer(Php::Parameters &parameters) {
 
 Php::Value GtkWidget_::is_ancestor(Php::Parameters &parameters) {
   GtkWidget *ancestor;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_ancestor = parameters[0];
     GtkWidget_ *phpgtk_ancestor = (GtkWidget_ *)object_ancestor.implementation();
     ancestor = GTK_WIDGET(phpgtk_ancestor->get_instance());
@@ -568,7 +570,7 @@ Php::Value GtkWidget_::is_ancestor(Php::Parameters &parameters) {
 
 Php::Value GtkWidget_::translate_coordinates(Php::Parameters &parameters) {
   GtkWidget *dest_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_dest_widget = parameters[0];
     GtkWidget_ *phpgtk_dest_widget = (GtkWidget_ *)object_dest_widget.implementation();
     dest_widget = GTK_WIDGET(phpgtk_dest_widget->get_instance());
@@ -1365,7 +1367,7 @@ Php::Value GtkWidget_::list_mnemonic_labels() {
 
 void GtkWidget_::add_mnemonic_label(Php::Parameters &parameters) {
   GtkWidget *label;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_label = parameters[0];
     GtkWidget_ *phpgtk_label = (GtkWidget_ *)object_label.implementation();
     label = GTK_WIDGET(phpgtk_label->get_instance());
@@ -1376,7 +1378,7 @@ void GtkWidget_::add_mnemonic_label(Php::Parameters &parameters) {
 
 void GtkWidget_::remove_mnemonic_label(Php::Parameters &parameters) {
   GtkWidget *label;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_label = parameters[0];
     GtkWidget_ *phpgtk_label = (GtkWidget_ *)object_label.implementation();
     label = GTK_WIDGET(phpgtk_label->get_instance());
@@ -1442,7 +1444,7 @@ Php::Value GtkWidget_::get_tooltip_window() {
 
 void GtkWidget_::set_tooltip_window(Php::Parameters &parameters) {
   GtkWindow *custom_window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_custom_window = parameters[0];
     GtkWindow_ *phpgtk_custom_window = (GtkWindow_ *)object_custom_window.implementation();
     custom_window = GTK_WINDOW(phpgtk_custom_window->get_instance());
@@ -1477,7 +1479,7 @@ Php::Value GtkWidget_::get_window() {
 
 void GtkWidget_::register_window(Php::Parameters &parameters) {
   GdkWindow *window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_window = parameters[0];
     GdkWindow_ *phpgtk_window = (GdkWindow_ *)object_window.implementation();
     window = GDK_WINDOW(phpgtk_window->get_instance());
@@ -1488,7 +1490,7 @@ void GtkWidget_::register_window(Php::Parameters &parameters) {
 
 void GtkWidget_::unregister_window(Php::Parameters &parameters) {
   GdkWindow *window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_window = parameters[0];
     GdkWindow_ *phpgtk_window = (GdkWindow_ *)object_window.implementation();
     window = GDK_WINDOW(phpgtk_window->get_instance());
@@ -1785,7 +1787,7 @@ Php::Value GtkWidget_::is_toplevel() {
 
 void GtkWidget_::set_window(Php::Parameters &parameters) {
   GdkWindow *window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_window = parameters[0];
     GdkWindow_ *phpgtk_window = (GdkWindow_ *)object_window.implementation();
     window = GDK_WINDOW(phpgtk_window->get_instance());

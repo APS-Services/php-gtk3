@@ -57,18 +57,18 @@ Php::Value GtkButton_::new_from_stock() {
   // GtkWidget_ *return_parsed = new GtkWidget_();
   // return_parsed->set_instance((gpointer *)ret);
   // return Php::Object("GtkWidget", return_parsed);
-  Php::deprecated << "new_from_stock is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "new_from_stock is deprecated on Gtk 3.10" << '\n';
   return 0;
 }
 
 void GtkButton_::pressed() {
   // gtk_button_pressed (GTK_BUTTON(instance));
-  Php::deprecated << "pressed is deprecated on Gtk 2.20" << std::endl;
+  Php::deprecated << "pressed is deprecated on Gtk 2.20" << '\n';
 }
 
 void GtkButton_::released() {
   // gtk_button_released (GTK_BUTTON(instance));
-  Php::deprecated << "released is deprecated on Gtk 2.20" << std::endl;
+  Php::deprecated << "released is deprecated on Gtk 2.20" << '\n';
 }
 
 void GtkButton_::clicked() {
@@ -77,12 +77,12 @@ void GtkButton_::clicked() {
 
 void GtkButton_::enter() {
   // gtk_button_enter (GTK_BUTTON(instance));
-  Php::deprecated << "enter is deprecated on Gtk 2.20" << std::endl;
+  Php::deprecated << "enter is deprecated on Gtk 2.20" << '\n';
 }
 
 void GtkButton_::leave() {
   // gtk_button_leave (GTK_BUTTON(instance));
-  Php::deprecated << "leave is deprecated on Gtk 2.20" << std::endl;
+  Php::deprecated << "leave is deprecated on Gtk 2.20" << '\n';
 }
 
 void GtkButton_::set_relief(Php::Parameters &parameters) {
@@ -115,7 +115,7 @@ Php::Value GtkButton_::get_use_stock() {
   // gboolean ret = gtk_button_get_use_stock (GTK_BUTTON(instance));
 
   // return ret;
-  Php::deprecated << "get_use_stock is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "get_use_stock is deprecated on Gtk 3.10" << '\n';
   return 0;
 }
 
@@ -124,7 +124,7 @@ void GtkButton_::set_use_stock(Php::Parameters &parameters) {
 
   // gtk_button_set_use_stock (GTK_BUTTON(instance), use_stock);
 
-  Php::deprecated << "set_use_stock is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "set_use_stock is deprecated on Gtk 3.10" << '\n';
 }
 
 Php::Value GtkButton_::get_use_underline() {
@@ -152,7 +152,7 @@ Php::Value GtkButton_::get_focus_on_click() {
 
   // return ret;
 
-  Php::deprecated << "get_focus_on_click is deprecated on Gtk 3.20" << std::endl;
+  Php::deprecated << "get_focus_on_click is deprecated on Gtk 3.20" << '\n';
   return 0;
 }
 
@@ -165,16 +165,16 @@ void GtkButton_::set_alignment(Php::Parameters &parameters) {
 
   // gtk_button_set_alignment (GTK_BUTTON(instance), xalign, yalign);
 
-  Php::deprecated << "set_alignment is deprecated on Gtk 3.14" << std::endl;
+  Php::deprecated << "set_alignment is deprecated on Gtk 3.14" << '\n';
 }
 
 void GtkButton_::get_alignment(Php::Parameters &parameters) {
-  Php::deprecated << "get_alignment is deprecated on Gtk 3.14" << std::endl;
+  Php::deprecated << "get_alignment is deprecated on Gtk 3.14" << '\n';
 }
 
 void GtkButton_::set_image(Php::Parameters &parameters) {
   GtkWidget *image;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_image = parameters[0];
     GtkWidget_ *phpgtk_image = (GtkWidget_ *)object_image.implementation();
     image = GTK_WIDGET(phpgtk_image->get_instance());
