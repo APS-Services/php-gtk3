@@ -15,7 +15,7 @@ GtkScrolledWindow_::~GtkScrolledWindow_() = default;
  *  PHP Constructor
  */
 void GtkScrolledWindow_::__construct(Php::Parameters &parameters) {
-  instance = (gpointer *)gtk_scrolled_window_new(NULL, NULL);
+  instance = (gpointer *)gtk_scrolled_window_new(nullptr, nullptr);
 }
 
 void GtkScrolledWindow_::set_overlay_scrolling(Php::Parameters &parameters) {

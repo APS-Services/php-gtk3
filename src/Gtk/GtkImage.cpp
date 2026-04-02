@@ -38,7 +38,7 @@ Php::Value GtkImage_::new_from_icon_set(Php::Parameters &parameters) {
   // return_parsed->set_instance((gpointer *)ret);
   // return Php::Object("GtkWidget", return_parsed);
 
-  Php::deprecated << "new_from_icon_set is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "new_from_icon_set is deprecated on Gtk 3.10" << '\n';
   return 0;
 }
 
@@ -77,7 +77,7 @@ void GtkImage_::get_stock(Php::Parameters &parameters) {
 
   // gtk_image_get_stock (GTK_IMAGE(instance), stock_id, size);
 
-  Php::deprecated << "get_stock is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "get_stock is deprecated on Gtk 3.10" << '\n';
 }
 
 Php::Value GtkImage_::get_animation() {
@@ -119,7 +119,7 @@ Php::Value GtkImage_::get_storage_type() {
 
 Php::Value GtkImage_::new_from_pixbuf(Php::Parameters &parameters) {
   GdkPixbuf *pixbuf;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_pixbuf = parameters[0];
     GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
     pixbuf = phpgtk_pixbuf->get_instance();
@@ -144,7 +144,7 @@ Php::Value GtkImage_::new_from_stock(Php::Parameters &parameters) {
   // return_parsed->set_instance((gpointer *)ret);
   // return Php::Object("GtkWidget", return_parsed);
 
-  Php::deprecated << "new_from_stock is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "new_from_stock is deprecated on Gtk 3.10" << '\n';
   return 0;
 }
 
@@ -235,12 +235,12 @@ void GtkImage_::set_from_icon_set(Php::Parameters &parameters) {
 
   // gtk_image_set_from_icon_set (GTK_IMAGE(instance), icon_set, size);
 
-  Php::deprecated << "set_from_icon_set is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "set_from_icon_set is deprecated on Gtk 3.10" << '\n';
 }
 
 void GtkImage_::set_from_pixbuf(Php::Parameters &parameters) {
   GdkPixbuf *pixbuf;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_pixbuf = parameters[0];
     GdkPixbuf_ *phpgtk_pixbuf = (GdkPixbuf_ *)object_pixbuf.implementation();
     pixbuf = phpgtk_pixbuf->get_instance();
@@ -257,7 +257,7 @@ void GtkImage_::set_from_stock(Php::Parameters &parameters) {
   // GtkIconSize size = (GtkIconSize)int_size;
 
   // gtk_image_set_from_stock (GTK_IMAGE(instance), stock_id, size);
-  Php::deprecated << "set_from_stock is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "set_from_stock is deprecated on Gtk 3.10" << '\n';
 }
 
 void GtkImage_::set_from_animation(Php::Parameters &parameters) {
@@ -265,7 +265,8 @@ void GtkImage_::set_from_animation(Php::Parameters &parameters) {
   // if(parameters.size() > 0) {
   // 	Php::Value object_animation = parameters[0];
   // 	GdkPixbufAnimation_ *phpgtk_animation = (GdkPixbufAnimation_
-  // *)object_animation.implementation(); 	animation = GTK_WIDGET(phpgtk_animation->get_instance());
+  // *)object_animation.implementation(); 	animation =
+  // GTK_WIDGET(phpgtk_animation->get_instance());
   // }
 
   // gtk_image_set_from_animation (GTK_IMAGE(instance), animation);

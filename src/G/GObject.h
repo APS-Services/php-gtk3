@@ -20,7 +20,7 @@ class GObject_ : public Php::Base {
    * Publics
    */
  public:
-  gpointer *instance;
+  gpointer *instance{};
 
   /**
    * Set/Get original gpoint

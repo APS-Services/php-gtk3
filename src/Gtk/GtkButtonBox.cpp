@@ -26,7 +26,7 @@ Php::Value GtkButtonBox_::get_layout() {
 
 Php::Value GtkButtonBox_::get_child_secondary(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -39,7 +39,7 @@ Php::Value GtkButtonBox_::get_child_secondary(Php::Parameters &parameters) {
 
 Php::Value GtkButtonBox_::get_child_non_homogeneous(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -59,7 +59,7 @@ void GtkButtonBox_::set_layout(Php::Parameters &parameters) {
 
 void GtkButtonBox_::set_child_secondary(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -72,7 +72,7 @@ void GtkButtonBox_::set_child_secondary(Php::Parameters &parameters) {
 
 void GtkButtonBox_::set_child_non_homogeneous(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());

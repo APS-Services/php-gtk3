@@ -16,7 +16,7 @@ void GtkRecentChooserDialog_::__construct(Php::Parameters &parameters) {
   gchar *title = (gchar *)s_title.c_str();
 
   Php::Value object_parent = parameters[1];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());
@@ -168,7 +168,8 @@ void GtkRecentChooserDialog_::set_sort_func(Php::Parameters &parameters) {
   // if(parameters.size() > 0) {
   // 	Php::Value object_sort_func = parameters[0];
   // 	GtkRecentSortFunc_ *phpgtk_sort_func = (GtkRecentSortFunc_
-  // *)object_sort_func.implementation(); 	sort_func = GTK_WIDGET(phpgtk_sort_func->get_instance());
+  // *)object_sort_func.implementation(); 	sort_func =
+  // GTK_WIDGET(phpgtk_sort_func->get_instance());
   // }
 
   // gpointer sort_data = (gpointer)parameters[1];
@@ -183,7 +184,7 @@ Php::Value GtkRecentChooserDialog_::set_current_uri(Php::Parameters &parameters)
   std::string s_uri = parameters[0];
   gchar *uri = (gchar *)s_uri.c_str();
 
-  GError *error = NULL;
+  GError *error = nullptr;
 
   bool ret = gtk_recent_chooser_set_current_uri(GTK_RECENT_CHOOSER(instance), uri, &error);
 
@@ -213,7 +214,7 @@ Php::Value GtkRecentChooserDialog_::select_uri(Php::Parameters &parameters) {
   std::string s_uri = parameters[0];
   gchar *uri = (gchar *)s_uri.c_str();
 
-  GError *error = NULL;
+  GError *error = nullptr;
 
   bool ret = gtk_recent_chooser_select_uri(GTK_RECENT_CHOOSER(instance), uri, &error);
 

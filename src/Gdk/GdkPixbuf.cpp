@@ -34,7 +34,7 @@ Php::Value GdkPixbuf_::new_from_file(Php::Parameters &parameters) {
   std::string filename = parameters[0];
 
   // Create pixbuff
-  GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file(filename.c_str(), NULL);
+  GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file(filename.c_str(), nullptr);
 
   // Create the PHP-GTK object and set GTK object
   GdkPixbuf_ *pixbuf_ = new GdkPixbuf_();
@@ -46,7 +46,9 @@ Php::Value GdkPixbuf_::new_from_file(Php::Parameters &parameters) {
 
 Php::Value GdkPixbuf_::new_from_gd(Php::Parameters &parameters) {
   Php::Value a = parameters[0];
-  if (!a.instanceOf("gd")) throw Php::Exception("Not a GD resource");
+  if (!a.instanceOf("gd")) {
+    throw Php::Exception("Not a GD resource");
+  }
   Php::call("var_dump", "OK1");
   Php::call("imagepng", a.implementation());
   Php::call("var_dump", "OK2");
@@ -55,7 +57,7 @@ Php::Value GdkPixbuf_::new_from_gd(Php::Parameters &parameters) {
   std::string filename = parameters[0];
 
   // Create pixbuff
-  GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file(filename.c_str(), NULL);
+  GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file(filename.c_str(), nullptr);
 
   // Create the PHP-GTK object and set GTK object
   GdkPixbuf_ *pixbuf_ = new GdkPixbuf_();
@@ -72,7 +74,7 @@ Php::Value GdkPixbuf_::new_from_file_at_size(Php::Parameters &parameters) {
   int height = parameters[2];
 
   // Create pixbuff
-  GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file_at_size(filename.c_str(), width, height, NULL);
+  GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file_at_size(filename.c_str(), width, height, nullptr);
 
   // Create the PHP-GTK object and set GTK object
   GdkPixbuf_ *pixbuf_ = new GdkPixbuf_();
@@ -91,7 +93,7 @@ Php::Value GdkPixbuf_::new_from_file_at_scale(Php::Parameters &parameters) {
 
   // Create pixbuff
   GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file_at_scale(filename.c_str(), width, height,
-                                                          preserve_aspect_ratio, NULL);
+                                                          preserve_aspect_ratio, nullptr);
 
   // Create the PHP-GTK object and set GTK object
   GdkPixbuf_ *pixbuf_ = new GdkPixbuf_();
@@ -119,17 +121,16 @@ Php::Value GdkPixbuf_::get_data(Php::Parameters &parameters) {
 
   gpointer value = g_object_get_data(G_OBJECT(instance), key);
 
-  if (value != NULL) {
+  if (value != nullptr) {
     // Assuming the data is a string
-    return Php::Value((char *)value);
-  } else {
-    return Php::Value();
+    return {(char *)value};
   }
+  return Php::Value();
 }
 
 Php::Value GdkPixbuf_::get_byte_length() {
   // Ensure the instance is not NULL
-  if (instance == NULL) {
+  if (instance == nullptr) {
     throw Php::Exception("GdkPixbuf instance is NULL");
   }
 
@@ -137,7 +138,7 @@ Php::Value GdkPixbuf_::get_byte_length() {
   gsize length = gdk_pixbuf_get_byte_length(instance);
 
   // Return the length as an unsigned integer
-  return Php::Value((int64_t)length);
+  return {(int64_t)length};
 }
 
 Php::Value GdkPixbuf_::get_file_info(Php::Parameters &parameters) {
@@ -205,7 +206,7 @@ Php::Value GdkPixbuf_::save(Php::Parameters &parameters) {
   std::string filename = parameters[0];
   std::string type = parameters[1];
 
-  bool ret = gdk_pixbuf_save(instance, filename.c_str(), type.c_str(), NULL, NULL);
+  bool ret = gdk_pixbuf_save(instance, filename.c_str(), type.c_str(), nullptr, NULL);
 
   return (bool)ret;
 }

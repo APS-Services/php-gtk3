@@ -22,7 +22,7 @@ void GtkStyleContext_::__construct() {
 
 void GtkStyleContext_::add_provider(Php::Parameters &parameters) {
   GtkCssProvider *provider;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_provider = parameters[0];
     GtkCssProvider_ *phpgtk_provider = (GtkCssProvider_ *)object_provider.implementation();
     provider = GTK_CSS_PROVIDER(phpgtk_provider->get_instance());
@@ -36,7 +36,7 @@ void GtkStyleContext_::add_provider(Php::Parameters &parameters) {
 
 void GtkStyleContext_::add_provider_for_screen(Php::Parameters &parameters) {
   GtkCssProvider *provider;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_provider = parameters[0];
     GtkCssProvider_ *phpgtk_provider = (GtkCssProvider_ *)object_provider.implementation();
     provider = GTK_CSS_PROVIDER(phpgtk_provider->get_instance());
@@ -149,7 +149,7 @@ Php::Value GtkStyleContext_::get_section(Php::Parameters &parameters) {
 
 Php::Value GtkStyleContext_::get_color(Php::Parameters &parameters) {
   // Validate state parameter
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::get_color: At least one parameter (state) is required");
   }
   if (!parameters[0].isNumeric()) {
@@ -182,7 +182,7 @@ Php::Value GtkStyleContext_::get_color(Php::Parameters &parameters) {
 
 Php::Value GtkStyleContext_::get_background_color(Php::Parameters &parameters) {
   // Validate state parameter
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception(
         "GtkStyleContext_::get_background_color: At least one parameter (state) is required");
   }
@@ -219,7 +219,7 @@ Php::Value GtkStyleContext_::get_background_color(Php::Parameters &parameters) {
 
 Php::Value GtkStyleContext_::get_border_color(Php::Parameters &parameters) {
   // Validate state parameter
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception(
         "GtkStyleContext_::get_border_color: At least one parameter (state) is required");
   }
@@ -282,7 +282,7 @@ void GtkStyleContext_::invalidate() {
 
 Php::Value GtkStyleContext_::state_is_running(Php::Parameters &parameters) {
   // Validate state parameter
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception(
         "GtkStyleContext_::state_is_running: At least one parameter (state) is required");
   }
@@ -315,7 +315,7 @@ Php::Value GtkStyleContext_::state_is_running(Php::Parameters &parameters) {
 }
 
 Php::Value GtkStyleContext_::lookup_color(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::lookup_color: Requires one parameter: color_name");
   }
 
@@ -341,7 +341,7 @@ Php::Value GtkStyleContext_::lookup_color(Php::Parameters &parameters) {
 }
 
 Php::Value GtkStyleContext_::lookup_icon_set(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::lookup_icon_set: Requires one parameter: stock_id");
   }
 
@@ -370,7 +370,7 @@ Php::Value GtkStyleContext_::lookup_icon_set(Php::Parameters &parameters) {
 
 void GtkStyleContext_::notify_state_change(Php::Parameters &parameters) {
   GdkWindow *window = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     Php::Value object_window = parameters[0];
     if (!object_window.isObject() || !object_window.instanceOf("GdkWindow")) {
       throw Php::Exception(
@@ -421,7 +421,7 @@ void GtkStyleContext_::pop_animatable_region() {
 
 void GtkStyleContext_::push_animatable_region(Php::Parameters &parameters) {
   gpointer region_id = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     region_id = (gpointer)(intptr_t)parameters[0].numericValue();
   }
 
@@ -432,7 +432,7 @@ void GtkStyleContext_::push_animatable_region(Php::Parameters &parameters) {
 
 void GtkStyleContext_::cancel_animations(Php::Parameters &parameters) {
   gpointer region_id = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     region_id = (gpointer)(intptr_t)parameters[0].numericValue();
   }
 
@@ -443,7 +443,7 @@ void GtkStyleContext_::cancel_animations(Php::Parameters &parameters) {
 
 void GtkStyleContext_::scroll_animations(Php::Parameters &parameters) {
   GdkWindow *window = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     Php::Value object_window = parameters[0];
     if (!object_window.isObject() || !object_window.instanceOf("GdkWindow")) {
       throw Php::Exception(
@@ -478,7 +478,7 @@ void GtkStyleContext_::scroll_animations(Php::Parameters &parameters) {
 
 void GtkStyleContext_::remove_provider(Php::Parameters &parameters) {
   GtkStyleProvider *provider = nullptr;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_provider = parameters[0];
     GtkCssProvider_ *phpgtk_provider = (GtkCssProvider_ *)object_provider.implementation();
     provider = GTK_STYLE_PROVIDER(phpgtk_provider->get_instance());
@@ -493,7 +493,7 @@ void GtkStyleContext_::remove_provider(Php::Parameters &parameters) {
 
 void GtkStyleContext_::remove_provider_for_screen(Php::Parameters &parameters) {
   GtkStyleProvider *provider = nullptr;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_provider = parameters[0];
     GtkCssProvider_ *phpgtk_provider = (GtkCssProvider_ *)object_provider.implementation();
     provider = GTK_STYLE_PROVIDER(phpgtk_provider->get_instance());
@@ -536,7 +536,7 @@ void GtkStyleContext_::reset_widgets() {
 
 void GtkStyleContext_::set_background(Php::Parameters &parameters) {
   GdkWindow *window = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     Php::Value object_window = parameters[0];
 
     // Ensure the provided argument is a GdkWindow instance
@@ -566,7 +566,7 @@ void GtkStyleContext_::save() {
 }
 
 void GtkStyleContext_::set_direction(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception(
         "GtkStyleContext_::set_direction expects 1 numeric parameter (GtkTextDirection)");
   }
@@ -584,7 +584,7 @@ void GtkStyleContext_::set_direction(Php::Parameters &parameters) {
 }
 
 void GtkStyleContext_::set_junction_sides(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception(
         "GtkStyleContext_::set_junction_sides: Requires one numeric parameter (GtkJunctionSides)");
   }
@@ -603,7 +603,7 @@ void GtkStyleContext_::set_junction_sides(Php::Parameters &parameters) {
 
 void GtkStyleContext_::set_parent(Php::Parameters &parameters) {
   GtkStyleContext *parent = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     Php::Value object_parent = parameters[0];
     if (!object_parent.isObject() || !object_parent.instanceOf("GtkStyleContext")) {
       throw Php::Exception("GtkStyleContext::set_parent expects GtkStyleContext or null");
@@ -619,7 +619,7 @@ void GtkStyleContext_::set_parent(Php::Parameters &parameters) {
 
 void GtkStyleContext_::set_path(Php::Parameters &parameters) {
   GtkWidgetPath *path = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     Php::Value object_path = parameters[0];
     if (!object_path.isObject() || !object_path.instanceOf("GtkWidgetPath")) {
       throw Php::Exception("GtkStyleContext::set_path expects GtkWidgetPath or null");
@@ -648,7 +648,7 @@ void GtkStyleContext_::remove_class(Php::Parameters &parameters) {
 }
 
 Php::Value GtkStyleContext_::has_class(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::has_class: Requires one parameter: class_name");
   }
 
@@ -707,7 +707,7 @@ void GtkStyleContext_::add_region(Php::Parameters &parameters) {
 }
 
 void GtkStyleContext_::remove_region(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::remove_region: Requires one parameter: region_name");
   }
 
@@ -725,7 +725,7 @@ void GtkStyleContext_::remove_region(Php::Parameters &parameters) {
 }
 
 Php::Value GtkStyleContext_::has_region(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::has_region: Requires one parameter: region_name");
   }
 
@@ -770,7 +770,7 @@ Php::Value GtkStyleContext_::list_regions() {
 
 void GtkStyleContext_::set_screen(Php::Parameters &parameters) {
   GdkScreen *screen = nullptr;
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     Php::Value object_screen = parameters[0];
     if (!object_screen.isObject() || !object_screen.instanceOf("GdkScreen")) {
       throw Php::Exception(
@@ -789,7 +789,7 @@ void GtkStyleContext_::set_frame_clock(Php::Parameters &parameters) {
 }
 
 void GtkStyleContext_::set_state(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::set_state expects 1 numeric parameter (GtkStateFlags)");
   }
 
@@ -805,7 +805,7 @@ void GtkStyleContext_::set_state(Php::Parameters &parameters) {
 }
 
 void GtkStyleContext_::set_scale(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("GtkStyleContext_::set_scale expects 1 numeric parameter (scale)");
   }
 
@@ -833,7 +833,7 @@ Php::Value GtkStyleContext_::to_string(Php::Parameters &parameters) {
   // Default to no special print flags if none are provided
   GtkStyleContextPrintFlags flags = GTK_STYLE_CONTEXT_PRINT_NONE;
 
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     if (!parameters[0].isNumeric()) {
       throw Php::Exception("GtkStyleContext_::to_string: First parameter (flags) must be numeric");
     }
@@ -1329,7 +1329,7 @@ Php::Value GtkStyleContext_::gtk_render_icon_pixbuf(Php::Parameters &parameters)
   // - If one argument is provided, treat it as `size` (backwards compatible)
   // - If two or more arguments are provided, treat the second as `size` and
   //   ignore the first (conceptual `source`) until a GtkIconSource wrapper exists
-  if (parameters.size() == 0) {
+  if (parameters.empty()) {
     throw Php::Exception(
         "GtkStyleContext_::gtk_render_icon_pixbuf: At least a size parameter is required");
   }
@@ -1372,7 +1372,7 @@ Php::Value GtkStyleContext_::gtk_render_icon_pixbuf(Php::Parameters &parameters)
 
 void GtkStyleContext_::gtk_render_icon_surface(Php::Parameters &parameters) {
   // Extract cairo context from GdkEvent wrapper (first parameter)
-  if (parameters.size() < 1 || !parameters[0].instanceOf("GdkEvent")) {
+  if (parameters.empty() || !parameters[0].instanceOf("GdkEvent")) {
     throw Php::Exception(
         "GtkStyleContext_::gtk_render_icon_surface: First parameter must be a GdkEvent (cairo "
         "context)");

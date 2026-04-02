@@ -159,7 +159,7 @@ Php::Value GtkTreeStore_::append(Php::Parameters &parameters) {
     parent = phpgtk_parent->get_instance();
     gtk_tree_store_append(GTK_TREE_STORE(model), &localIter, &parent);
   } else {
-    gtk_tree_store_append(GTK_TREE_STORE(model), &localIter, NULL);
+    gtk_tree_store_append(GTK_TREE_STORE(model), &localIter, nullptr);
   }
 
   // Get param

@@ -16,7 +16,7 @@ void GtkFileChooserDialog_::__construct(Php::Parameters &parameters) {
   gchar *title = (gchar *)s_title.c_str();
 
   Php::Value object_parent = parameters[1];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());
@@ -251,7 +251,7 @@ Php::Value GtkFileChooserDialog_::get_current_folder_uri() {
 
 void GtkFileChooserDialog_::set_preview_widget(Php::Parameters &parameters) {
   GtkWidget *preview_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_preview_widget = parameters[0];
     GtkWidget_ *phpgtk_preview_widget = (GtkWidget_ *)object_preview_widget.implementation();
     preview_widget = GTK_WIDGET(phpgtk_preview_widget->get_instance());
@@ -301,7 +301,7 @@ Php::Value GtkFileChooserDialog_::get_preview_uri() {
 
 void GtkFileChooserDialog_::set_extra_widget(Php::Parameters &parameters) {
   GtkWidget *extra_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_extra_widget = parameters[0];
     GtkWidget_ *phpgtk_extra_widget = (GtkWidget_ *)object_extra_widget.implementation();
     extra_widget = GTK_WIDGET(phpgtk_extra_widget->get_instance());
@@ -321,7 +321,7 @@ Php::Value GtkFileChooserDialog_::get_extra_widget() {
 
 void GtkFileChooserDialog_::add_filter(Php::Parameters &parameters) {
   GtkFileFilter *filter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_filter = parameters[0];
     GtkFileFilter_ *phpgtk_filter = (GtkFileFilter_ *)object_filter.implementation();
     filter = GTK_FILE_FILTER(phpgtk_filter->get_instance());
@@ -356,7 +356,7 @@ Php::Value GtkFileChooserDialog_::list_filters() {
 
 void GtkFileChooserDialog_::set_filter(Php::Parameters &parameters) {
   GtkFileFilter *filter;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_filter = parameters[0];
     GtkFileFilter_ *phpgtk_filter = (GtkFileFilter_ *)object_filter.implementation();
     filter = GTK_FILE_FILTER(phpgtk_filter->get_instance());

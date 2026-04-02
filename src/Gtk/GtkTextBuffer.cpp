@@ -12,7 +12,7 @@ GtkTextBuffer_::GtkTextBuffer_() = default;
 GtkTextBuffer_::~GtkTextBuffer_() = default;
 
 void GtkTextBuffer_::__construct() {
-  instance = (gpointer *)gtk_text_buffer_new(NULL);
+  instance = (gpointer *)gtk_text_buffer_new(nullptr);
 }
 
 Php::Value GtkTextBuffer_::get_line_count() {
@@ -44,7 +44,9 @@ void GtkTextBuffer_::insert(Php::Parameters &parameters) {
   gchar *text = (gchar *)s_text.c_str();
 
   gint len = -1;
-  if (parameters.size() >= 3) len = (gint)parameters[2];
+  if (parameters.size() >= 3) {
+    len = (gint)parameters[2];
+  }
 
   gtk_text_buffer_insert(GTK_TEXT_BUFFER(instance), &iter, text, len);
 }
@@ -54,7 +56,9 @@ void GtkTextBuffer_::insert_at_cursor(Php::Parameters &parameters) {
   gchar *text = (gchar *)s_text.c_str();
 
   gint len = -1;
-  if (parameters.size() >= 2) len = (gint)parameters[1];
+  if (parameters.size() >= 2) {
+    len = (gint)parameters[1];
+  }
 
   gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(instance), text, len);
 }
@@ -68,10 +72,14 @@ Php::Value GtkTextBuffer_::insert_interactive(Php::Parameters &parameters) {
   gchar *text = (gchar *)s_text.c_str();
 
   gint len = -1;
-  if (parameters.size() >= 3) len = (gint)parameters[2];
+  if (parameters.size() >= 3) {
+    len = (gint)parameters[2];
+  }
 
   gboolean default_editable = TRUE;
-  if (parameters.size() >= 4) default_editable = (gboolean)parameters[3];
+  if (parameters.size() >= 4) {
+    default_editable = (gboolean)parameters[3];
+  }
 
   bool ret = gtk_text_buffer_insert_interactive(GTK_TEXT_BUFFER(instance), &iter, text, len,
                                                 default_editable);
@@ -84,10 +92,14 @@ Php::Value GtkTextBuffer_::insert_interactive_at_cursor(Php::Parameters &paramet
   gchar *text = (gchar *)s_text.c_str();
 
   gint len = -1;
-  if (parameters.size() >= 2) len = (gint)parameters[1];
+  if (parameters.size() >= 2) {
+    len = (gint)parameters[1];
+  }
 
   gboolean default_editable = TRUE;
-  if (parameters.size() >= 3) default_editable = (gboolean)parameters[2];
+  if (parameters.size() >= 3) {
+    default_editable = (gboolean)parameters[2];
+  }
 
   bool ret = gtk_text_buffer_insert_interactive_at_cursor(GTK_TEXT_BUFFER(instance), text, len,
                                                           default_editable);
@@ -141,9 +153,11 @@ void GtkTextBuffer_::insert_with_tags(Php::Parameters &parameters) {
   gchar *text = (gchar *)s_text.c_str();
 
   gint len = -1;
-  if (parameters.size() >= 3) len = (gint)parameters[2];
+  if (parameters.size() >= 3) {
+    len = (gint)parameters[2];
+  }
 
-  GtkTextTag *first_tag = NULL;
+  GtkTextTag *first_tag = nullptr;
   if (parameters.size() > 3) {
     Php::Value object_first_tag = parameters[3];
     GtkTextTag_ *phpgtk_first_tag = (GtkTextTag_ *)object_first_tag.implementation();
@@ -162,9 +176,11 @@ void GtkTextBuffer_::insert_with_tags_by_name(Php::Parameters &parameters) {
   gchar *text = (gchar *)s_text.c_str();
 
   gint len = -1;
-  if (parameters.size() >= 3) len = (gint)parameters[2];
+  if (parameters.size() >= 3) {
+    len = (gint)parameters[2];
+  }
 
-  const gchar *first_tag_name = NULL;
+  const gchar *first_tag_name = nullptr;
   std::string s_first_tag_name;
   if (parameters.size() >= 4) {
     s_first_tag_name.assign((const char *)parameters[3]);
@@ -184,7 +200,9 @@ void GtkTextBuffer_::insert_markup(Php::Parameters &parameters) {
   gchar *markup = (gchar *)s_markup.c_str();
 
   gint len = -1;
-  if (parameters.size() >= 3) len = (gint)parameters[2];
+  if (parameters.size() >= 3) {
+    len = (gint)parameters[2];
+  }
 
   gtk_text_buffer_insert_markup(GTK_TEXT_BUFFER(instance), &iter, markup, len);
 }
@@ -238,7 +256,9 @@ void GtkTextBuffer_::set_text(Php::Parameters &parameters) {
   gchar *text = (gchar *)s_text.c_str();
 
   gint len = s_text.length();
-  if (parameters.size() >= 2) len = (gint)parameters[1];
+  if (parameters.size() >= 2) {
+    len = (gint)parameters[1];
+  }
 
   gtk_text_buffer_set_text(GTK_TEXT_BUFFER(instance), text, len);
 }
@@ -309,7 +329,7 @@ Php::Value GtkTextBuffer_::create_mark(Php::Parameters &parameters) {
 
 void GtkTextBuffer_::move_mark(Php::Parameters &parameters) {
   GtkTextMark *mark;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_mark = parameters[0];
     GtkTextMark_ *phpgtk_mark = (GtkTextMark_ *)object_mark.implementation();
     mark = GTK_TEXT_MARK(phpgtk_mark->get_instance());
@@ -335,7 +355,7 @@ void GtkTextBuffer_::move_mark_by_name(Php::Parameters &parameters) {
 
 void GtkTextBuffer_::add_mark(Php::Parameters &parameters) {
   GtkTextMark *mark;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_mark = parameters[0];
     GtkTextMark_ *phpgtk_mark = (GtkTextMark_ *)object_mark.implementation();
     mark = GTK_TEXT_MARK(phpgtk_mark->get_instance());
@@ -350,7 +370,7 @@ void GtkTextBuffer_::add_mark(Php::Parameters &parameters) {
 
 void GtkTextBuffer_::delete_mark(Php::Parameters &parameters) {
   GtkTextMark *mark;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_mark = parameters[0];
     GtkTextMark_ *phpgtk_mark = (GtkTextMark_ *)object_mark.implementation();
     mark = GTK_TEXT_MARK(phpgtk_mark->get_instance());
@@ -421,7 +441,7 @@ void GtkTextBuffer_::select_range(Php::Parameters &parameters) {
 
 void GtkTextBuffer_::apply_tag(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = phpgtk_tag->get_tag();
@@ -440,7 +460,7 @@ void GtkTextBuffer_::apply_tag(Php::Parameters &parameters) {
 
 void GtkTextBuffer_::remove_tag(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = phpgtk_tag->get_tag();
@@ -663,7 +683,9 @@ Php::Value GtkTextBuffer_::get_selection_bounds(Php::Parameters &parameters) {
   GtkTextIter end;
 
   bool ret = gtk_text_buffer_get_selection_bounds(GTK_TEXT_BUFFER(instance), &start, &end);
-  if (!ret) return ret;
+  if (!ret) {
+    return ret;
+  }
 
   Php::Value arr;
 

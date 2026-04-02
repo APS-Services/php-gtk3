@@ -199,7 +199,7 @@ Php::Value GtkAboutDialog_::get_logo() {
 
 void GtkAboutDialog_::set_logo(Php::Parameters &parameters) {
   GdkPixbuf *logo;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_logo = parameters[0];
     GdkPixbuf_ *phpgtk_logo = (GdkPixbuf_ *)object_logo.implementation();
     logo = phpgtk_logo->get_instance();

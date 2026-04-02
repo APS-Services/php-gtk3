@@ -21,7 +21,7 @@ class GdkRGBA_ : public Php::Base {
 
   Php::Value __get(const Php::Value &name);
 
-  GdkRGBA instance;
+  GdkRGBA instance{};
   GdkRGBA get_instance();
   void set_instance(GdkRGBA event);
 

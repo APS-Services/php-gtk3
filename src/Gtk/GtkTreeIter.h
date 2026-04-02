@@ -15,7 +15,7 @@ class GtkTreeIter_ : public Php::Base {
    * Publics
    */
  public:
-  GtkTreeIter instance;
+  GtkTreeIter instance{};
 
   /**
    *  C++ constructor and destructor

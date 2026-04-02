@@ -18,35 +18,35 @@ Php::Value Gdk_::test_simulate_button(Php::Parameters &parameters) {
   // ---
   phpgtk_check_parameter(parameters, 1, Php::Type::Object, TRUE, "GdkWindow");
   GdkWindow *window;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_window = parameters[0];
     GdkWindow_ *phpgtk_window = (GdkWindow_ *)object_window.implementation();
     window = GDK_WINDOW(phpgtk_window->get_instance());
   }
 
   // ---
-  check = phpgtk_check_parameter(parameters, 2, Php::Type::Numeric, FALSE, NULL);
+  check = phpgtk_check_parameter(parameters, 2, Php::Type::Numeric, FALSE, nullptr);
   gint x = 0;
   if (check) {
     x = (int)parameters[1];
   }
 
   // ---
-  check = phpgtk_check_parameter(parameters, 3, Php::Type::Numeric, FALSE, NULL);
+  check = phpgtk_check_parameter(parameters, 3, Php::Type::Numeric, FALSE, nullptr);
   gint y = 0;
   if (check) {
     y = (int)parameters[2];
   }
 
   // ---
-  check = phpgtk_check_parameter(parameters, 4, Php::Type::Numeric, FALSE, NULL);
+  check = phpgtk_check_parameter(parameters, 4, Php::Type::Numeric, FALSE, nullptr);
   gint button = 0;
   if (check) {
     button = (int)parameters[3];
   }
 
   // ---
-  check = phpgtk_check_parameter(parameters, 5, Php::Type::Numeric, FALSE, NULL);
+  check = phpgtk_check_parameter(parameters, 5, Php::Type::Numeric, FALSE, nullptr);
   GdkModifierType modifiers = GDK_BUTTON1_MASK;
   if (check) {
     int phpgtk_modifiers = (int)parameters[4];
@@ -54,7 +54,7 @@ Php::Value Gdk_::test_simulate_button(Php::Parameters &parameters) {
   }
 
   // ---
-  check = phpgtk_check_parameter(parameters, 6, Php::Type::Numeric, FALSE, NULL);
+  check = phpgtk_check_parameter(parameters, 6, Php::Type::Numeric, FALSE, nullptr);
   GdkEventType button_pressrelease = GDK_BUTTON_PRESS;
   if (check) {
     int phpgtk_button_pressrelease = (int)parameters[4];
@@ -82,7 +82,7 @@ void Gdk_::cairo_set_source_pixbuf(Php::Parameters &parameters) {
   // Parameter 1: cairo_t* - passed as GdkEvent object from draw signal
   // Note: Cairo context is a G_TYPE_BOXED that gets wrapped as GdkEvent by GObject callback,
   // even though it's actually a cairo_t*. We extract the raw pointer from GdkEvent::instance.
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("cairo_set_source_pixbuf: Missing cairo_context parameter");
   }
   if (parameters[0].type() != Php::Type::Object) {
@@ -157,7 +157,7 @@ void Gdk_::cairo_paint(Php::Parameters &parameters) {
   // Parameter 1: cairo_t* - passed as GdkEvent object from draw signal
   // Note: Cairo context is a G_TYPE_BOXED that gets wrapped as GdkEvent by GObject callback,
   // even though it's actually a cairo_t*. We extract the raw pointer from GdkEvent::instance.
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("cairo_paint: Missing cairo_context parameter");
   }
   if (parameters[0].type() != Php::Type::Object) {

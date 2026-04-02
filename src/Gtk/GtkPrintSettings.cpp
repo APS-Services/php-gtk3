@@ -240,7 +240,7 @@ Php::Value GtkPrintSettings_::get_paper_size() {
 
 void GtkPrintSettings_::set_paper_size(Php::Parameters &parameters) {
   GtkPaperSize *paper_size;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_paper_size = parameters[0];
     GtkPaperSize_ *phpgtk_paper_size = (GtkPaperSize_ *)object_paper_size.implementation();
     paper_size = (phpgtk_paper_size->get_instance());

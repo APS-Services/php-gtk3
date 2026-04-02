@@ -40,7 +40,7 @@ Php::Value GtkWidgetPath_::append_type(Php::Parameters &parameters) {
 
 Php::Value GtkWidgetPath_::append_with_siblings(Php::Parameters &parameters) {
   GtkWidgetPath *siblings;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_siblings = parameters[0];
     GtkWidgetPath_ *phpgtk_siblings = (GtkWidgetPath_ *)object_siblings.implementation();
     siblings = (phpgtk_siblings->get_instance());
@@ -55,7 +55,7 @@ Php::Value GtkWidgetPath_::append_with_siblings(Php::Parameters &parameters) {
 
 Php::Value GtkWidgetPath_::append_for_widget(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());

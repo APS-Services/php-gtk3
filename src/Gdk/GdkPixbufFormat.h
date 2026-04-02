@@ -15,7 +15,7 @@ class GdkPixbufFormat_ : public Php::Base {
    * Publics
    */
  public:
-  GdkPixbufFormat *instance;
+  GdkPixbufFormat *instance{};
 
   /**
    *  C++ constructor and destructor

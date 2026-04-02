@@ -19,7 +19,7 @@ class GtkTreeModel_ : public GObject_ {
    * Publics
    */
  public:
-  GtkTreeModel *model;
+  GtkTreeModel *model{};
 
   /**
    *  C++ constructor and destructor

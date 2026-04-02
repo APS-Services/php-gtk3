@@ -18,5 +18,5 @@ class GdkEventAny_ : public Php::Base {
   /**
    *  c++ destructor
    */
-  virtual ~GdkEventAny_() = default;
+  ~GdkEventAny_() override = default;
 };

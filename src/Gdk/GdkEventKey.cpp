@@ -25,7 +25,7 @@ void GdkEventKey_::populate(GdkEventKey event) {
   self["keyval"] = (int)event.keyval;
   self["length"] = (int)event.length;
 
-  if (event.string != NULL) {
+  if (event.string != nullptr) {
     self["string"] = event.string;
   }
 

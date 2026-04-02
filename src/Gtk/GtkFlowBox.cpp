@@ -17,7 +17,7 @@ void GtkFlowBox_::__construct() {
 
 void GtkFlowBox_::insert(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());
@@ -40,7 +40,7 @@ Php::Value GtkFlowBox_::get_child_at_index(Php::Parameters &parameters) {
 
 void GtkFlowBox_::set_hadjustment(Php::Parameters &parameters) {
   GtkAdjustment *adjustment;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_adjustment = parameters[0];
     GtkAdjustment_ *phpgtk_adjustment = (GtkAdjustment_ *)object_adjustment.implementation();
     adjustment = GTK_ADJUSTMENT(phpgtk_adjustment->get_instance());
@@ -51,7 +51,7 @@ void GtkFlowBox_::set_hadjustment(Php::Parameters &parameters) {
 
 void GtkFlowBox_::set_vadjustment(Php::Parameters &parameters) {
   GtkAdjustment *adjustment;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_adjustment = parameters[0];
     GtkAdjustment_ *phpgtk_adjustment = (GtkAdjustment_ *)object_adjustment.implementation();
     adjustment = GTK_ADJUSTMENT(phpgtk_adjustment->get_instance());
@@ -157,7 +157,7 @@ Php::Value GtkFlowBox_::get_selected_children() {
 
 void GtkFlowBox_::select_child(Php::Parameters &parameters) {
   GtkFlowBoxChild *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkFlowBoxChild_ *phpgtk_child = (GtkFlowBoxChild_ *)object_child.implementation();
     child = GTK_FLOW_BOX_CHILD(phpgtk_child->get_instance());
@@ -168,7 +168,7 @@ void GtkFlowBox_::select_child(Php::Parameters &parameters) {
 
 void GtkFlowBox_::unselect_child(Php::Parameters &parameters) {
   GtkFlowBoxChild *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkFlowBoxChild_ *phpgtk_child = (GtkFlowBoxChild_ *)object_child.implementation();
     child = GTK_FLOW_BOX_CHILD(phpgtk_child->get_instance());
@@ -223,7 +223,8 @@ void GtkFlowBox_::set_sort_func(Php::Parameters &parameters) {
   // if(parameters.size() > 0) {
   // 	Php::Value object_sort_func = parameters[0];
   // 	GtkFlowBoxSortFunc_ *phpgtk_sort_func = (GtkFlowBoxSortFunc_
-  // *)object_sort_func.implementation(); 	sort_func = GTK_WIDGET(phpgtk_sort_func->get_instance());
+  // *)object_sort_func.implementation(); 	sort_func =
+  // GTK_WIDGET(phpgtk_sort_func->get_instance());
   // }
 
   // gpointer user_data = (gpointer)parameters[1];

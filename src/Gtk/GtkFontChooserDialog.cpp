@@ -16,7 +16,7 @@ void GtkFontChooserDialog_::__construct(Php::Parameters &parameters) {
   gchar *title = (gchar *)s_title.c_str();
 
   Php::Value object_parent = parameters[1];
-  GtkWindow *parent = NULL;
+  GtkWindow *parent = nullptr;
   if (object_parent.instanceOf("GtkWindow")) {
     GtkWindow_ *phpgtk_parent = (GtkWindow_ *)object_parent.implementation();
     parent = GTK_WINDOW(phpgtk_parent->get_instance());

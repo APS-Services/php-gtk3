@@ -12,8 +12,8 @@ GtkFrame_::GtkFrame_() = default;
 GtkFrame_::~GtkFrame_() = default;
 
 void GtkFrame_::__construct(Php::Parameters &parameters) {
-  std::string s_str = "";
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  std::string s_str;
+  if (!parameters.empty() && !parameters[0].isNull()) {
     s_str.assign((const char *)parameters[0]);
   }
 
@@ -29,7 +29,7 @@ void GtkFrame_::set_label(Php::Parameters &parameters) {
 
 void GtkFrame_::set_label_widget(Php::Parameters &parameters) {
   GtkWidget *label_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_label_widget = parameters[0];
     GtkWidget_ *phpgtk_label_widget = (GtkWidget_ *)object_label_widget.implementation();
     label_widget = GTK_WIDGET(phpgtk_label_widget->get_instance());

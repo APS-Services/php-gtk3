@@ -17,7 +17,7 @@ void GtkTextTagTable_::__construct() {
 
 Php::Value GtkTextTagTable_::add(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = (phpgtk_tag->get_tag());
@@ -30,7 +30,7 @@ Php::Value GtkTextTagTable_::add(Php::Parameters &parameters) {
 
 void GtkTextTagTable_::remove(Php::Parameters &parameters) {
   GtkTextTag *tag;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_tag = parameters[0];
     GtkTextTag_ *phpgtk_tag = (GtkTextTag_ *)object_tag.implementation();
     tag = (phpgtk_tag->get_tag());

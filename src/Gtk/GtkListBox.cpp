@@ -17,7 +17,7 @@ void GtkListBox_::__construct() {
 
 void GtkListBox_::prepend(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -28,7 +28,7 @@ void GtkListBox_::prepend(Php::Parameters &parameters) {
 
 void GtkListBox_::insert(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -41,7 +41,7 @@ void GtkListBox_::insert(Php::Parameters &parameters) {
 
 void GtkListBox_::select_row(Php::Parameters &parameters) {
   GtkListBoxRow *row;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_row = parameters[0];
     GtkListBoxRow_ *phpgtk_row = (GtkListBoxRow_ *)object_row.implementation();
     row = phpgtk_row->get_row();
@@ -52,7 +52,7 @@ void GtkListBox_::select_row(Php::Parameters &parameters) {
 
 void GtkListBox_::unselect_row(Php::Parameters &parameters) {
   GtkListBoxRow *row;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_row = parameters[0];
     GtkListBoxRow_ *phpgtk_row = (GtkListBoxRow_ *)object_row.implementation();
     row = phpgtk_row->get_row();
@@ -130,7 +130,7 @@ Php::Value GtkListBox_::get_adjustment() {
 
 void GtkListBox_::set_adjustment(Php::Parameters &parameters) {
   GtkAdjustment *adjustment;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_adjustment = parameters[0];
     GtkAdjustment_ *phpgtk_adjustment = (GtkAdjustment_ *)object_adjustment.implementation();
     adjustment = GTK_ADJUSTMENT(phpgtk_adjustment->get_instance());
@@ -141,7 +141,7 @@ void GtkListBox_::set_adjustment(Php::Parameters &parameters) {
 
 void GtkListBox_::set_placeholder(Php::Parameters &parameters) {
   GtkWidget *placeholder;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_placeholder = parameters[0];
     GtkWidget_ *phpgtk_placeholder = (GtkWidget_ *)object_placeholder.implementation();
     placeholder = GTK_WIDGET(phpgtk_placeholder->get_instance());
@@ -226,7 +226,7 @@ void GtkListBox_::set_sort_func(Php::Parameters &parameters) {
 
 void GtkListBox_::drag_highlight_row(Php::Parameters &parameters) {
   GtkListBoxRow *row;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_row = parameters[0];
     GtkListBoxRow_ *phpgtk_row = (GtkListBoxRow_ *)object_row.implementation();
     row = phpgtk_row->get_row();
