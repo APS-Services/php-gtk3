@@ -227,6 +227,10 @@ void GtkTreeView_::scroll_to_cell(Php::Parameters &parameters) {
   GtkTreePath *path = gtk_tree_path_new_from_string(param_path.c_str());
 
   gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(instance), path, nullptr, FALSE, 0, 0);
+
+  if (path != nullptr) {
+    gtk_tree_path_free(path);
+  }
 }
 
 // Basic implementaion
