@@ -415,7 +415,7 @@ Php::Value GtkListStore_::get_sort_column_id() {
 }
 
 Php::Value GtkListStore_::iter_n_children(Php::Parameters &parameters) {
-  if (parameters.size() > 1) {
+  if (!parameters.empty()) {
     // Php::call("var_dump", "iter_n_children NOT NULL");
     GtkTreeIter iter;
     Php::Value object_iter = parameters[0];
