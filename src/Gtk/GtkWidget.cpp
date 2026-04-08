@@ -817,7 +817,10 @@ void GtkWidget_::override_background_color(Php::Parameters &parameters)
 	GdkRGBA color;
 	if(parameters[1].isString()) {
 		std::string s_color = parameters[1];
-		gdk_rgba_parse(&color, s_color.c_str());
+		bool ret = gdk_rgba_parse(&color, s_color.c_str());
+		if(!ret) {
+			throw Php::Exception("Failed to parse color string: " + s_color);
+		}
 	}
 	else {
 		Php::Value object_color = parameters[1];
@@ -838,7 +841,10 @@ void GtkWidget_::override_color(Php::Parameters &parameters)
 	GdkRGBA color;
 	if(parameters[1].isString()) {
 		std::string s_color = parameters[1];
-		gdk_rgba_parse(&color, s_color.c_str());
+		bool ret = gdk_rgba_parse(&color, s_color.c_str());
+		if(!ret) {
+			throw Php::Exception("Failed to parse color string: " + s_color);
+		}
 	}
 	else {
 		Php::Value object_color = parameters[1];
