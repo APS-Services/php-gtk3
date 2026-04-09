@@ -811,6 +811,10 @@ Php::Value GtkWidget_::get_composite_name()
 
 void GtkWidget_::override_background_color(Php::Parameters &parameters)
 {
+	if(parameters.size() < 2) {
+		throw Php::Exception("override_background_color requires 2 parameters: state and color");
+	}
+
  	int int_state = (int)parameters[0];
 	GtkStateFlags state = (GtkStateFlags)int_state;
 
@@ -835,6 +839,10 @@ void GtkWidget_::override_background_color(Php::Parameters &parameters)
 
 void GtkWidget_::override_color(Php::Parameters &parameters)
 {
+	if(parameters.size() < 2) {
+		throw Php::Exception("override_color requires 2 parameters: state and color");
+	}
+
  	int int_state = (int)parameters[0];
 	GtkStateFlags state = (GtkStateFlags)int_state;
 
