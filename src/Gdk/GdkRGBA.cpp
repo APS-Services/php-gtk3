@@ -49,6 +49,13 @@ Php::Value GdkRGBA_::parse(Php::Parameters &parameters)
 Php::Value GdkRGBA_::to_string(Php::Parameters &parameters)
 {
     char *ret = gdk_rgba_to_string(&instance);
-    
-    return ret;
+
+    if (ret == nullptr) {
+        return nullptr;
+    }
+
+    std::string result(ret);
+    g_free(ret);
+
+    return result;
 }
