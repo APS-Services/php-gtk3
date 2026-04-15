@@ -127,7 +127,7 @@ _GObject
     │   │   ├── #GtkEntry
     │   │   │   ├── GtkSearchEntry
     │   │   │   ╰── GtkSpinButton
-    │   │   ├── GtkGLArea
+    │   │   ├── #GtkGLArea
     │   │   ├── GtkRange
     │   │   │   ├── GtkScale
     │   │   │   │   ├── GtkHScale

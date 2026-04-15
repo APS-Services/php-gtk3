@@ -30,6 +30,44 @@ This is [VSCode extension](https://marketplace.visualstudio.com/items?itemName=R
 
 ## Features
 
+### OpenGL Support (GtkGLArea)
+
+PHP-GTK3 includes built-in OpenGL rendering support through the **GtkGLArea** widget:
+
+- **Cross-platform**: Works on both Linux and Windows
+- **Hardware-accelerated**: Uses native OpenGL drivers
+- **Full GTK integration**: Seamlessly integrates with other GTK widgets
+
+```php
+<?php
+Gtk::init();
+
+$window = new GtkWindow();
+$glarea = new GtkGLArea();
+
+// Set OpenGL version (e.g., OpenGL 3.3)
+$glarea->set_required_version(3, 3);
+$glarea->set_has_depth_buffer(true);
+
+// Render callback
+$glarea->connect('render', function($widget) {
+    $widget->make_current();
+    // Use OpenGL functions here (via FFI or PHP OpenGL extension)
+    return true;
+});
+
+$window->add($glarea);
+$window->show_all();
+Gtk::main();
+```
+
+See [OpenGL Documentation](docs/opengl.md) for full details and examples.
+
+**Platform implementations:**
+
+- Linux: libepoxy (OpenGL dispatch library)
+- Windows: libepoxy (included with GTK3)
+
 ### WebView Support (Cross-Platform)
 
 PHP-GTK3 includes optional WebView widget support for displaying web content within GTK windows:
