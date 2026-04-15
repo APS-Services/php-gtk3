@@ -213,6 +213,12 @@
    C:\msys2\mingw64\include\pango-1.0
    ```
 
+   **For OpenGL support (GtkGLArea), also add:**
+
+   ```
+   C:\msys2\mingw64\include\epoxy
+   ```
+
    **For WebView2 support, add:**
 
    ```
@@ -283,6 +289,12 @@
    libpango-1.0.dll.a
    libcairo.dll.a
    libcairo-gobject.dll.a
+   ```
+
+   **For OpenGL support (GtkGLArea), also add:**
+
+   ```
+   libepoxy.dll.a
    ```
 
    **For WebView2 support, also add:**
