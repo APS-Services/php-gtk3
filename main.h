@@ -149,7 +149,9 @@
 	#include "src/Gtk/GtkAlignment.h"
 	#include "src/Gtk/GtkStatusIcon.h"
 	#include "src/Gtk/GtkDrawingArea.h"
+#if GTK_CHECK_VERSION(3, 16, 0)
 	#include "src/Gtk/GtkGLArea.h"
+#endif
 
 	// GtkSourceView
 	#include "src/GtkSourceView/GtkSourceView.h"

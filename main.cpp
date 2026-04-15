@@ -4360,7 +4360,8 @@ PHPCPP_EXPORT void *get_module() {
   gtkdrawingarea.extends(gtkwidget);
   gtkdrawingarea.method<&GtkDrawingArea_::__construct>("__construct");
 
-  // GtkGLArea
+#if GTK_CHECK_VERSION(3, 16, 0)
+  // GtkGLArea (requires GTK 3.16+)
   Php::Class<GtkGLArea_> gtkglarea("GtkGLArea");
   gtkglarea.extends(gtkwidget);
   gtkglarea.method<&GtkGLArea_::__construct>("__construct");
@@ -4379,6 +4380,7 @@ PHPCPP_EXPORT void *get_module() {
   gtkglarea.method<&GtkGLArea_::set_required_version>("set_required_version");
   gtkglarea.method<&GtkGLArea_::get_required_version>("get_required_version");
   gtkglarea.method<&GtkGLArea_::get_error>("get_error");
+#endif
 
   // Pango
   Php::Class<Php::Base> pango("Pango");
@@ -4777,7 +4779,9 @@ PHPCPP_EXPORT void *get_module() {
   extension.add(std::move(gtkprintsettings));
   extension.add(std::move(gtkseparator));
   extension.add(std::move(gtkdrawingarea));
+#if GTK_CHECK_VERSION(3, 16, 0)
   extension.add(std::move(gtkglarea));
+#endif
 
   // extension.add(std::move(gtkpagesetupunixdialog));
   extension.add(std::move(gtkpagesetup));

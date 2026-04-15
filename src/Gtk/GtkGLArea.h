@@ -5,10 +5,11 @@
 #include <phpcpp.h>
 #include <gtk/gtk.h>
 
-#ifndef _WIN32
-// Unix/Linux: epoxy headers (OpenGL dispatch library)
+// Check if GtkGLArea is available (GTK 3.16+)
+#if GTK_CHECK_VERSION(3, 16, 0)
+
+// OpenGL dispatch library (epoxy) - needed on all platforms
 #include <epoxy/gl.h>
-#endif
 
 #include "GtkWidget.h"
 
@@ -75,4 +76,6 @@ class GtkGLArea_ : public GtkWidget_ {
 #endif
 };
 
-#endif
+#endif // GTK_CHECK_VERSION(3, 16, 0)
+
+#endif // _PHPGTK_GTKGLAREA_H_

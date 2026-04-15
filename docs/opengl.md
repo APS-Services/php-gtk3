@@ -4,14 +4,30 @@
 
 PHP-GTK3 includes OpenGL rendering support through the **GtkGLArea** widget. This widget provides a native OpenGL rendering context that can be used to create 2D and 3D graphics applications.
 
+**Requirements:**
+- GTK 3.16 or later (GtkGLArea was introduced in GTK 3.16)
+
 **Cross-Platform Support:**
 
 - **Linux**: Uses GtkGLArea with libepoxy (OpenGL dispatch library)
 - **Windows**: Uses GtkGLArea with libepoxy (provided by GTK3 installation)
 
-The GtkGLArea widget is fully integrated into PHP-GTK3 and works consistently across both platforms.
+The GtkGLArea widget is fully integrated into PHP-GTK3 and works consistently across both platforms when GTK 3.16+ is available.
 
 ## Requirements
+
+### GTK Version
+
+GtkGLArea requires GTK 3.16 or later. The class will only be available if your GTK3 installation meets this requirement.
+
+To check your GTK version:
+```bash
+# Linux
+pkg-config --modversion gtk+-3.0
+
+# Windows (in MSYS2 shell)
+pacman -Q mingw-w64-x86_64-gtk3
+```
 
 ### Linux Dependencies
 
@@ -205,6 +221,37 @@ GtkGLArea emits several important signals:
 6. **Return true from render**: Always return `true` from the render callback to indicate successful rendering.
 
 ## Troubleshooting
+
+### GtkGLArea class not found / Class doesn't exist
+
+If you get an error that the GtkGLArea class doesn't exist or isn't showing up in the class inspector:
+
+1. **Check your GTK version**: GtkGLArea requires GTK 3.16 or later
+   ```bash
+   # Linux
+   pkg-config --modversion gtk+-3.0
+
+   # Windows (MSYS2)
+   pacman -Q mingw-w64-x86_64-gtk3
+   ```
+
+2. **Verify GTK3 was built with OpenGL support**: Some GTK3 builds (especially older Windows builds) may not include GtkGLArea support. You need a GTK3 build that includes:
+   - libepoxy (OpenGL dispatch library)
+   - GtkGLArea widget (requires GTK 3.16+)
+
+3. **Windows specific**: Ensure you're using a recent MSYS2 mingw64 GTK3 package:
+   ```bash
+   # In MSYS2 shell
+   pacman -Syu
+   pacman -S mingw-w64-x86_64-gtk3
+   ```
+
+4. **Rebuild the extension**: After updating GTK3, rebuild PHP-GTK3:
+   ```bash
+   make clean
+   make -j 4
+   sudo make install
+   ```
 
 ### "Failed to create GL context" error
 

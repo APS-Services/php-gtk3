@@ -2,7 +2,7 @@
 // This file is included in GtkGLArea.cpp when building on Unix/Linux
 // Uses libepoxy for OpenGL dispatch
 
-#ifndef _WIN32
+#if !defined(_WIN32) && GTK_CHECK_VERSION(3, 16, 0)
 
 #include "GtkGLArea.h"
 
@@ -144,4 +144,4 @@ Php::Value GtkGLArea_::get_error() {
   return nullptr;
 }
 
-#endif // _WIN32
+#endif // !defined(_WIN32) && GTK_CHECK_VERSION(3, 16, 0)
