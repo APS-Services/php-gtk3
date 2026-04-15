@@ -4360,6 +4360,26 @@ PHPCPP_EXPORT void *get_module() {
   gtkdrawingarea.extends(gtkwidget);
   gtkdrawingarea.method<&GtkDrawingArea_::__construct>("__construct");
 
+  // GtkGLArea
+  Php::Class<GtkGLArea_> gtkglarea("GtkGLArea");
+  gtkglarea.extends(gtkwidget);
+  gtkglarea.method<&GtkGLArea_::__construct>("__construct");
+  gtkglarea.method<&GtkGLArea_::make_current>("make_current");
+  gtkglarea.method<&GtkGLArea_::queue_render>("queue_render");
+  gtkglarea.method<&GtkGLArea_::attach_buffers>("attach_buffers");
+  gtkglarea.method<&GtkGLArea_::get_context>("get_context");
+  gtkglarea.method<&GtkGLArea_::set_has_alpha>("set_has_alpha");
+  gtkglarea.method<&GtkGLArea_::get_has_alpha>("get_has_alpha");
+  gtkglarea.method<&GtkGLArea_::set_has_depth_buffer>("set_has_depth_buffer");
+  gtkglarea.method<&GtkGLArea_::get_has_depth_buffer>("get_has_depth_buffer");
+  gtkglarea.method<&GtkGLArea_::set_has_stencil_buffer>("set_has_stencil_buffer");
+  gtkglarea.method<&GtkGLArea_::get_has_stencil_buffer>("get_has_stencil_buffer");
+  gtkglarea.method<&GtkGLArea_::set_auto_render>("set_auto_render");
+  gtkglarea.method<&GtkGLArea_::get_auto_render>("get_auto_render");
+  gtkglarea.method<&GtkGLArea_::set_required_version>("set_required_version");
+  gtkglarea.method<&GtkGLArea_::get_required_version>("get_required_version");
+  gtkglarea.method<&GtkGLArea_::get_error>("get_error");
+
   // Pango
   Php::Class<Php::Base> pango("Pango");
   pango.constant("SCALE", (int)PANGO_SCALE);
@@ -4757,6 +4777,7 @@ PHPCPP_EXPORT void *get_module() {
   extension.add(std::move(gtkprintsettings));
   extension.add(std::move(gtkseparator));
   extension.add(std::move(gtkdrawingarea));
+  extension.add(std::move(gtkglarea));
 
   // extension.add(std::move(gtkpagesetupunixdialog));
   extension.add(std::move(gtkpagesetup));

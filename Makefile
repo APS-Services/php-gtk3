@@ -159,9 +159,9 @@ ifdef WITH_MAC_INTEGRATION
 	COMPILER_FLAGS += -DWITH_MAC_INTEGRATION
 endif
 
-# 
+#
 # With gladeui integration
-# 
+#
 ifdef WITH_GLADEUI
 
 	GLADEUIFLAGS = gladeui-2.0
@@ -172,12 +172,29 @@ ifdef WITH_GLADEUI
 endif
 
 #
+# OpenGL support via epoxy
+# GtkGLArea requires epoxy for OpenGL dispatch
+# On Unix/Linux: Use pkg-config
+# On Windows: epoxy comes with GTK3 installation (libepoxy-0.dll)
+#
+ifeq ($(OS),Windows_NT)
+	# Windows: epoxy headers should be in the GTK3 include path already
+	# libepoxy-0.dll is deployed with GTK3
+	EPOXYFLAGS =
+	EPOXYLIBS =
+else
+	# Unix/Linux: Use pkg-config to find epoxy
+	EPOXYFLAGS = epoxy
+	EPOXYLIBS = epoxy
+endif
+
+#
 # All flags
 #
 
 PHPFLAGS            =   $(shell $(PHP_CONFIG) --includes)
-GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 ${GLADEUIFLAGS} gtksourceview-3.0 ${MAC_INTEGRATIONFLAGS} ${LIBWNCKFLAGS} ${WEBKITFLAGS}`
-GTKLIBS             =   `pkg-config --libs gtk+-3.0 ${GLADEUILIBS} gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS} ${WEBKITLIBS}`
+GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 ${GLADEUIFLAGS} gtksourceview-3.0 ${MAC_INTEGRATIONFLAGS} ${LIBWNCKFLAGS} ${WEBKITFLAGS} ${EPOXYFLAGS}`
+GTKLIBS             =   `pkg-config --libs gtk+-3.0 ${GLADEUILIBS} gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS} ${WEBKITLIBS} ${EPOXYLIBS}`
 
 COMPILER_FLAGS      +=   -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
@@ -216,8 +233,9 @@ ifdef WITH_WEBKIT
 endif
 
 # Build final source list
-# Exclude platform-specific implementation files that are included directly in WebKitWebView.cpp
-PLATFORM_SPECIFIC_IMPLS = src/WebKit/WebKitWebView_Unix.cpp src/WebKit/WebKitWebView_Windows.cpp
+# Exclude platform-specific implementation files that are included directly in dispatcher .cpp files
+PLATFORM_SPECIFIC_IMPLS = src/WebKit/WebKitWebView_Unix.cpp src/WebKit/WebKitWebView_Windows.cpp \
+                          src/Gtk/GtkGLArea_Unix.cpp src/Gtk/GtkGLArea_Windows.cpp
 
 ifdef WITH_MAC_INTEGRATION
 	SOURCES = $(filter-out $(PLATFORM_SPECIFIC_IMPLS), $(wildcard $(CORE_SOURCES)))

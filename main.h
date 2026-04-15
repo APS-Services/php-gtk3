@@ -149,6 +149,7 @@
 	#include "src/Gtk/GtkAlignment.h"
 	#include "src/Gtk/GtkStatusIcon.h"
 	#include "src/Gtk/GtkDrawingArea.h"
+	#include "src/Gtk/GtkGLArea.h"
 
 	// GtkSourceView
 	#include "src/GtkSourceView/GtkSourceView.h"
