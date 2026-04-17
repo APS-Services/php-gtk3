@@ -5,16 +5,20 @@
 #include <gtk/gtk.h>
 
 /**
- * Custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+ * Custom log handler to suppress GTK 3 bugs and warnings
  *
- * When loading icons or performing certain operations, GTK internally calls
- * gtk_widget_get_scale_factor on non-widget objects (like GtkStatusIcon),
- * causing a critical warning. This is a known GTK 3 issue and the warning
- * is harmless but can break applications in environments where critical
- * warnings are configured as fatal.
+ * This handler suppresses known GTK 3 issues:
+ * 1. gtk_widget_get_scale_factor: When loading icons or performing certain operations,
+ *    GTK internally calls gtk_widget_get_scale_factor on non-widget objects (like GtkStatusIcon),
+ *    causing a critical warning.
+ * 2. size_allocate loop: GtkScrolledWindow or child widgets may call gtk_widget_queue_resize()
+ *    during size_allocate, creating a resize loop. This is a known GTK 3 issue that occurs
+ *    in certain layout scenarios and is generally harmless.
+ *
+ * These warnings can break applications in environments where warnings are configured as fatal.
  */
-inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlags log_level,
-                                          const gchar *message, gpointer user_data) {
+inline void suppress_gtk_warnings(const gchar *log_domain, GLogLevelFlags log_level,
+                                  const gchar *message, gpointer user_data) {
   (void)log_domain;
   (void)log_level;
   (void)user_data;
@@ -24,6 +28,16 @@ inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlag
   // failed" String matching is necessary as GTK doesn't provide error codes for log messages
   if (g_strstr_len(message, -1, "gtk_widget_get_scale_factor") &&
       g_strstr_len(message, -1, "GTK_IS_WIDGET")) {
+    // Silently ignore this specific warning
+    return;
+  }
+
+  // Suppress the size_allocate loop warning
+  // Expected message format: "GtkScrolledWindow 0x... or a child called gtk_widget_queue_resize()
+  // during size_allocate()." This occurs when widgets trigger resize during size allocation,
+  // creating a loop
+  if (g_strstr_len(message, -1, "gtk_widget_queue_resize()") &&
+      g_strstr_len(message, -1, "size_allocate")) {
     // Silently ignore this specific warning
     return;
   }
@@ -41,26 +55,32 @@ inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlag
  * Usage:
  *   {
  *       GtkLogSuppressor suppressor;
- *       // Call GTK functions that might trigger the warning
+ *       // Call GTK functions that might trigger the warnings
  *       gtk_status_icon_set_from_pixbuf(...);
  *   } // Automatic cleanup when suppressor goes out of scope
  */
 class GtkLogSuppressor {
  private:
   GLogLevelFlags old_fatal_mask;
-  guint handler_id;
+  guint critical_handler_id;
+  guint warning_handler_id;
 
  public:
   GtkLogSuppressor() {
-    // Disable fatal behavior and install custom log handler
+    // Disable fatal behavior and install custom log handlers
     old_fatal_mask = g_log_set_always_fatal((GLogLevelFlags)0);
-    handler_id =
-        g_log_set_handler("Gtk", G_LOG_LEVEL_CRITICAL, suppress_scale_factor_warning, NULL);
+
+    // Handle both critical and warning levels
+    critical_handler_id =
+        g_log_set_handler("Gtk", G_LOG_LEVEL_CRITICAL, suppress_gtk_warnings, NULL);
+    warning_handler_id =
+        g_log_set_handler("Gtk", G_LOG_LEVEL_WARNING, suppress_gtk_warnings, NULL);
   }
 
   ~GtkLogSuppressor() {
     // Restore original state
-    g_log_remove_handler("Gtk", handler_id);
+    g_log_remove_handler("Gtk", critical_handler_id);
+    g_log_remove_handler("Gtk", warning_handler_id);
     g_log_set_always_fatal(old_fatal_mask);
   }
 

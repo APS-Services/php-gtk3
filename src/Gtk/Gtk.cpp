@@ -1,5 +1,6 @@
 
 #include "Gtk.h"
+#include "GtkLogSuppression.h"
 
 // https://developer.gnome.org/gtk3/stable/gtkbase.html
 
@@ -198,4 +199,9 @@ Php::Value Gtk_::get_minor_version() {
 
 void Gtk_::init() {
   gtk_init(nullptr, nullptr);
+
+  // Install global log handlers to suppress known GTK 3 warnings
+  // These handlers stay active for the lifetime of the process
+  g_log_set_handler("Gtk", G_LOG_LEVEL_CRITICAL, suppress_gtk_warnings, NULL);
+  g_log_set_handler("Gtk", G_LOG_LEVEL_WARNING, suppress_gtk_warnings, NULL);
 }
