@@ -38,7 +38,8 @@ void GObject_::__clone() {
   int len;
 
   // Get len of string
-  len = snprintf(NULL, 0, "Trying to clone an uncloneable object of class %s", gtype_name.c_str());
+  len =
+      snprintf(nullptr, 0, "Trying to clone an uncloneable object of class %s", gtype_name.c_str());
   buffer = (char *)malloc((len + 1) * sizeof(char));
 
   // Save into buffer
@@ -132,7 +133,7 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
   // closure = g_cclosure_new_swap (G_CALLBACK (connect_callback), callback_object,
   // (GClosureNotify)destroy_notify);
 
-  closure = g_cclosure_new_swap(G_CALLBACK(connect_callback), callback_object, NULL);
+  closure = g_cclosure_new_swap(G_CALLBACK(connect_callback), callback_object, nullptr);
   int ret = g_signal_connect_closure(instance, callback_event, closure, after);
 
   // Return handler id
@@ -373,21 +374,19 @@ void GObject_::set_property(Php::Parameters &parameters) {
     Php::Value a_object = parameters[1];
     GtkTreeModel_ *o_object = (GtkTreeModel_ *)a_object.implementation();
 
-    g_object_set(G_OBJECT(instance), "model", o_object->get_model(), (char *)NULL);
+    g_object_set(G_OBJECT(instance), "model", o_object->get_model(), (char *)nullptr);
   } else {
     // get the property spec
     GParamSpec *prop = g_object_class_find_property(G_OBJECT_GET_CLASS(instance), property_name);
     if (!prop) {
-      std::string error("");
+      std::string error;
       throw Php::Exception(error + "there is no property " + property_name + " on object " +
                            g_type_name(G_OBJECT_TYPE(instance)));
-    } else {
-      // parse the param by the gtype
-      GValue value = phpgtk_get_gvalue(parameters[1], G_TYPE_FUNDAMENTAL(prop->value_type));
+    }  // parse the param by the gtype
+    GValue value = phpgtk_get_gvalue(parameters[1], G_TYPE_FUNDAMENTAL(prop->value_type));
 
-      // set property
-      g_object_set_property(G_OBJECT(instance), property_name, &value);
-    }
+    // set property
+    g_object_set_property(G_OBJECT(instance), property_name, &value);
   }
 }
 

@@ -21,7 +21,7 @@ class GtkComboBox_ : public GtkBin_ {
    * Publics
    */
  public:
-  bool liststore_type;
+  bool liststore_type{};
 
   /**
    *  C++ constructor and destructor

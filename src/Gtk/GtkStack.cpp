@@ -17,7 +17,7 @@ void GtkStack_::__construct() {
 
 void GtkStack_::add_named(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -31,7 +31,7 @@ void GtkStack_::add_named(Php::Parameters &parameters) {
 
 void GtkStack_::add_titled(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -57,7 +57,7 @@ Php::Value GtkStack_::get_child_by_name(Php::Parameters &parameters) {
 
 void GtkStack_::set_visible_child(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());

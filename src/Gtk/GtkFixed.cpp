@@ -17,7 +17,7 @@ void GtkFixed_::__construct() {
 
 void GtkFixed_::put(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());
@@ -32,7 +32,7 @@ void GtkFixed_::put(Php::Parameters &parameters) {
 
 void GtkFixed_::move(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());

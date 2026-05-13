@@ -22,7 +22,7 @@ void GtkHBox_::__construct(Php::Parameters &parameters) {
   Php::call("parent::__construct", GTK_ORIENTATION_HORIZONTAL, 0);
 
   // Verify if has homogeneous parameter
-  if (parameters.size() >= 1) {
+  if (!parameters.empty()) {
     Php::call("parent::set_homogeneous", parameters[0]);
   }
 

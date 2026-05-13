@@ -98,15 +98,14 @@ Php::Value GtkTreeModel_::get_value(Php::Parameters &parameters) {
       if (cstr != nullptr) {
         std::string ret = std::string(cstr);
         return ret;
-      } else {
-        return Php::Value(nullptr);
       }
+      return {nullptr};
     }
     case G_TYPE_OBJECT: {
       GObject *object = G_OBJECT(g_value_get_object(&value));
       // Check if the object is NULL
       if (!object) {
-        return Php::Value(nullptr);
+        return {nullptr};
       }
 
       // Proceed with non-NULL object
@@ -144,9 +143,8 @@ Php::Value GtkTreeModel_::get_iter_from_string(Php::Parameters &parameters) {
 
   if (!ret) {
     return ret;
-  } else {
-    GtkTreeIter_ *return_parsed = new GtkTreeIter_();
-    return_parsed->set_instance(iter);
-    return Php::Object("GtkTreeIter", return_parsed);
   }
+  GtkTreeIter_ *return_parsed = new GtkTreeIter_();
+  return_parsed->set_instance(iter);
+  return Php::Object("GtkTreeIter", return_parsed);
 }

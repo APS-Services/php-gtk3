@@ -17,7 +17,7 @@ void GtkNotebook_::__construct() {
 
 Php::Value GtkNotebook_::append_page(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -37,7 +37,7 @@ Php::Value GtkNotebook_::append_page(Php::Parameters &parameters) {
 
 Php::Value GtkNotebook_::prepend_page(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -57,7 +57,7 @@ Php::Value GtkNotebook_::prepend_page(Php::Parameters &parameters) {
 
 Php::Value GtkNotebook_::insert_page(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -85,7 +85,7 @@ void GtkNotebook_::remove_page(Php::Parameters &parameters) {
 
 void GtkNotebook_::detach_tab(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -96,7 +96,7 @@ void GtkNotebook_::detach_tab(Php::Parameters &parameters) {
 
 Php::Value GtkNotebook_::page_num(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -117,7 +117,7 @@ void GtkNotebook_::prev_page() {
 
 void GtkNotebook_::reorder_child(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -169,7 +169,7 @@ Php::Value GtkNotebook_::get_current_page() {
 
 Php::Value GtkNotebook_::get_menu_label(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -203,7 +203,7 @@ Php::Value GtkNotebook_::get_n_pages() {
 
 Php::Value GtkNotebook_::get_tab_label(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -219,7 +219,7 @@ Php::Value GtkNotebook_::get_tab_label(Php::Parameters &parameters) {
 
 void GtkNotebook_::set_menu_label(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -237,7 +237,7 @@ void GtkNotebook_::set_menu_label(Php::Parameters &parameters) {
 
 void GtkNotebook_::set_menu_label_text(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -251,7 +251,7 @@ void GtkNotebook_::set_menu_label_text(Php::Parameters &parameters) {
 
 void GtkNotebook_::set_tab_label(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -269,7 +269,7 @@ void GtkNotebook_::set_tab_label(Php::Parameters &parameters) {
 
 void GtkNotebook_::set_tab_label_text(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -283,7 +283,7 @@ void GtkNotebook_::set_tab_label_text(Php::Parameters &parameters) {
 
 void GtkNotebook_::set_tab_reorderable(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -296,7 +296,7 @@ void GtkNotebook_::set_tab_reorderable(Php::Parameters &parameters) {
 
 void GtkNotebook_::set_tab_detachable(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -309,7 +309,7 @@ void GtkNotebook_::set_tab_detachable(Php::Parameters &parameters) {
 
 Php::Value GtkNotebook_::get_menu_label_text(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -340,7 +340,7 @@ Php::Value GtkNotebook_::get_show_tabs() {
 
 Php::Value GtkNotebook_::get_tab_label_text(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -359,7 +359,7 @@ Php::Value GtkNotebook_::get_tab_pos() {
 
 Php::Value GtkNotebook_::get_tab_reorderable(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -372,7 +372,7 @@ Php::Value GtkNotebook_::get_tab_reorderable(Php::Parameters &parameters) {
 
 Php::Value GtkNotebook_::get_tab_detachable(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -404,7 +404,7 @@ Php::Value GtkNotebook_::get_group_name() {
 
 void GtkNotebook_::set_action_widget(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());

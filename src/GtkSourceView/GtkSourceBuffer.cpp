@@ -12,12 +12,12 @@ GtkSourceBuffer_::GtkSourceBuffer_() = default;
 GtkSourceBuffer_::~GtkSourceBuffer_() = default;
 
 void GtkSourceBuffer_::__construct() {
-  instance = (gpointer *)gtk_source_buffer_new(NULL);
+  instance = (gpointer *)gtk_source_buffer_new(nullptr);
 }
 
 void GtkSourceBuffer_::set_language(Php::Parameters &parameters) {
   GtkSourceLanguage *language;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_language = parameters[0];
     GtkSourceLanguage_ *phpgtk_language = (GtkSourceLanguage_ *)object_language.implementation();
     language = GTK_SOURCE_LANGUAGE(phpgtk_language->get_instance());
@@ -27,7 +27,7 @@ void GtkSourceBuffer_::set_language(Php::Parameters &parameters) {
 }
 
 Php::Value GtkSourceBuffer_::new_with_language(Php::Parameters &parameters) {
-  if (parameters.size() < 1) {
+  if (parameters.empty()) {
     throw Php::Exception("Parameter language is required");
   }
 
@@ -39,7 +39,7 @@ Php::Value GtkSourceBuffer_::new_with_language(Php::Parameters &parameters) {
   // create the GtkSourceBuffer
   GtkSourceBuffer *ret = gtk_source_buffer_new_with_language(language);
   if (ret == nullptr) {
-    return Php::Value();
+    return {};
   }
 
   // pack and return object

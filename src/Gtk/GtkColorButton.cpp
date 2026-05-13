@@ -22,13 +22,13 @@ Php::Value GtkColorButton_::new_with_color() {
   // return_parsed->set_instance((gpointer *)ret);
   // return Php::Object("GtkWidget", return_parsed);
 
-  Php::deprecated << "GtkColorButton_::new_with_color is deprecated on Gtk 3.4" << std::endl;
+  Php::deprecated << "GtkColorButton_::new_with_color is deprecated on Gtk 3.4" << '\n';
   return 1;
 }
 
 Php::Value GtkColorButton_::new_with_rgba(Php::Parameters &parameters) {
   GdkRGBA rgba;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_rgba = parameters[0];
     GdkRGBA_ *phpgtk_rgba = (GdkRGBA_ *)object_rgba.implementation();
     rgba = phpgtk_rgba->get_instance();
@@ -53,7 +53,7 @@ void GtkColorButton_::set_color(Php::Parameters &parameters) {
 
   // gtk_color_button_set_color (GTK_COLOR_BUTTON(instance), color);
 
-  Php::deprecated << "GtkColorButton_::set_color is deprecated on Gtk 3.0" << std::endl;
+  Php::deprecated << "GtkColorButton_::set_color is deprecated on Gtk 3.0" << '\n';
 }
 
 void GtkColorButton_::get_color(Php::Parameters &parameters) {
@@ -66,7 +66,7 @@ void GtkColorButton_::get_color(Php::Parameters &parameters) {
 
   // gtk_color_button_get_color (GTK_COLOR_BUTTON(instance), color);
 
-  Php::deprecated << "GtkColorButton_::get_color is deprecated on Gtk 3.4" << std::endl;
+  Php::deprecated << "GtkColorButton_::get_color is deprecated on Gtk 3.4" << '\n';
 }
 
 void GtkColorButton_::set_alpha(Php::Parameters &parameters) {
@@ -74,7 +74,7 @@ void GtkColorButton_::set_alpha(Php::Parameters &parameters) {
 
   // gtk_color_button_set_alpha (GTK_COLOR_BUTTON(instance), alpha);
 
-  Php::deprecated << "GtkColorButton_::set_alpha is deprecated on Gtk 3.4" << std::endl;
+  Php::deprecated << "GtkColorButton_::set_alpha is deprecated on Gtk 3.4" << '\n';
 }
 
 void GtkColorButton_::get_alpha(Php::Parameters &parameters) {
@@ -82,12 +82,12 @@ void GtkColorButton_::get_alpha(Php::Parameters &parameters) {
 
   // gtk_color_button_set_alpha (GTK_COLOR_BUTTON(instance), alpha);
 
-  Php::deprecated << "GtkColorButton_::get_alpha is deprecated on Gtk 3.4" << std::endl;
+  Php::deprecated << "GtkColorButton_::get_alpha is deprecated on Gtk 3.4" << '\n';
 }
 
 void GtkColorButton_::set_rgba(Php::Parameters &parameters) {
   GdkRGBA color;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_color = parameters[0];
     GdkRGBA_ *phpgtk_color = (GdkRGBA_ *)object_color.implementation();
     color = phpgtk_color->get_instance();

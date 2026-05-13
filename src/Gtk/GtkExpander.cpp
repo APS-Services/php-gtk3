@@ -94,7 +94,7 @@ Php::Value GtkExpander_::get_use_markup() {
 
 void GtkExpander_::set_label_widget(Php::Parameters &parameters) {
   GtkWidget *label_widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_label_widget = parameters[0];
     GtkWidget_ *phpgtk_label_widget = (GtkWidget_ *)object_label_widget.implementation();
     label_widget = GTK_WIDGET(phpgtk_label_widget->get_instance());

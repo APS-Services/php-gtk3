@@ -45,8 +45,9 @@ Php::Value GtkEntry_::get_buffer() {
 void GtkEntry_::set_buffer(Php::Parameters &parameters) {
   // Get the widget to packed
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkEntryBuffer"))
+  if (!object.instanceOf("GtkEntryBuffer")) {
     throw Php::Exception("parameter expect GtkEntryBuffer instance");
+  }
   GtkEntryBuffer_ *passedBuffer = (GtkEntryBuffer_ *)object.implementation();
 
   gtk_entry_set_buffer(GTK_ENTRY(instance), passedBuffer->get_buffer());
@@ -90,7 +91,7 @@ Php::Value GtkEntry_::get_visibility() {
 
 void GtkEntry_::set_completion(Php::Parameters &parameters) {
   GtkEntryCompletion *completion;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_completion = parameters[0];
     GtkEntryCompletion_ *phpgtk_completion =
         (GtkEntryCompletion_ *)object_completion.implementation();
@@ -308,8 +309,8 @@ void GtkEntry_::set_editable(Php::Parameters &parameters) {
 }
 
 Php::Value GtkEntry_::get_selection_bounds() {
-  gint start_pos, end_pos;
-  ;
+  gint start_pos;
+  gint end_pos;
 
   bool ret = gtk_editable_get_selection_bounds(GTK_EDITABLE(instance), &start_pos, &end_pos);
 

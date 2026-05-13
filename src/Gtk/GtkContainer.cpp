@@ -13,7 +13,7 @@ GtkContainer_::~GtkContainer_() = default;
 
 void GtkContainer_::add(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());
@@ -24,7 +24,7 @@ void GtkContainer_::add(Php::Parameters &parameters) {
 
 void GtkContainer_::remove(Php::Parameters &parameters) {
   GtkWidget *widget;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_widget = parameters[0];
     GtkWidget_ *phpgtk_widget = (GtkWidget_ *)object_widget.implementation();
     widget = GTK_WIDGET(phpgtk_widget->get_instance());
@@ -52,7 +52,7 @@ void GtkContainer_::add_with_properties(Php::Parameters &parameters) {
 Php::Value GtkContainer_::get_resize_mode() {
   // GtkResizeMode ret = gtk_container_get_resize_mode (GTK_CONTAINER(instance));
 
-  Php::deprecated << "get_resize_mode is deprecated on Gtk 3.12" << std::endl;
+  Php::deprecated << "get_resize_mode is deprecated on Gtk 3.12" << '\n';
 
   // return ret;
   return 0;
@@ -64,7 +64,7 @@ void GtkContainer_::set_resize_mode(Php::Parameters &parameters) {
 
   // gtk_container_set_resize_mode (GTK_CONTAINER(instance), resize_mode);
 
-  Php::deprecated << "set_resize_mode is deprecated on Gtk 3.12" << std::endl;
+  Php::deprecated << "set_resize_mode is deprecated on Gtk 3.12" << '\n';
 }
 
 void GtkContainer_::check_resize() {
@@ -102,7 +102,7 @@ Php::Value GtkContainer_::get_children() {
 
 Php::Value GtkContainer_::get_path_for_child(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -120,7 +120,7 @@ void GtkContainer_::set_reallocate_redraws(Php::Parameters &parameters) {
 
   // gtk_container_set_reallocate_redraws (GTK_CONTAINER(instance), needs_redraws);
 
-  Php::deprecated << "set_resize_mode is deprecated on Gtk 3.14" << std::endl;
+  Php::deprecated << "set_resize_mode is deprecated on Gtk 3.14" << '\n';
 }
 
 Php::Value GtkContainer_::get_focus_child() {
@@ -135,7 +135,7 @@ Php::Value GtkContainer_::get_focus_child() {
 
 void GtkContainer_::set_focus_child(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -154,7 +154,7 @@ Php::Value GtkContainer_::get_focus_vadjustment() {
 
 void GtkContainer_::set_focus_vadjustment(Php::Parameters &parameters) {
   GtkAdjustment *adjustment;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_adjustment = parameters[0];
     GtkAdjustment_ *phpgtk_adjustment = (GtkAdjustment_ *)object_adjustment.implementation();
     adjustment = GTK_ADJUSTMENT(phpgtk_adjustment->get_instance());
@@ -173,7 +173,7 @@ Php::Value GtkContainer_::get_focus_hadjustment() {
 
 void GtkContainer_::set_focus_hadjustment(Php::Parameters &parameters) {
   GtkAdjustment *adjustment;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_adjustment = parameters[0];
     GtkAdjustment_ *phpgtk_adjustment = (GtkAdjustment_ *)object_adjustment.implementation();
     adjustment = GTK_ADJUSTMENT(phpgtk_adjustment->get_instance());
@@ -185,7 +185,7 @@ void GtkContainer_::set_focus_hadjustment(Php::Parameters &parameters) {
 void GtkContainer_::resize_children() {
   // gtk_container_resize_children (GTK_CONTAINER(instance));
 
-  Php::deprecated << "set_resize_mode is deprecated on Gtk 3.10" << std::endl;
+  Php::deprecated << "set_resize_mode is deprecated on Gtk 3.10" << '\n';
 }
 
 Php::Value GtkContainer_::child_type() {
@@ -292,7 +292,7 @@ void GtkContainer_::child_set_valist(Php::Parameters &parameters) {
 
 void GtkContainer_::child_notify(Php::Parameters &parameters) {
   GtkWidget *child;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_child = parameters[0];
     GtkWidget_ *phpgtk_child = (GtkWidget_ *)object_child.implementation();
     child = GTK_WIDGET(phpgtk_child->get_instance());
@@ -358,13 +358,13 @@ void GtkContainer_::propagate_draw(Php::Parameters &parameters) {
 }
 
 Php::Value GtkContainer_::get_focus_chain(Php::Parameters &parameters) {
-  Php::deprecated << "get_focus_chain is deprecated on Gtk 3.24" << std::endl;
+  Php::deprecated << "get_focus_chain is deprecated on Gtk 3.24" << '\n';
 
   throw Php::Exception("GtkContainer_::get_focus_chain not implemented");
 }
 
 void GtkContainer_::set_focus_chain(Php::Parameters &parameters) {
-  Php::deprecated << "set_focus_chain is deprecated on Gtk 3.24" << std::endl;
+  Php::deprecated << "set_focus_chain is deprecated on Gtk 3.24" << '\n';
 
   throw Php::Exception("GtkContainer_::set_focus_chain not implemented");
 }
@@ -373,7 +373,7 @@ void GtkContainer_::unset_focus_chain() {
   // gtk_container_unset_focus_chain (GTK_CONTAINER(instance));
 
   // Deprecated
-  Php::deprecated << "unset_focus_chain is deprecated on Gtk 3.24" << std::endl;
+  Php::deprecated << "unset_focus_chain is deprecated on Gtk 3.24" << '\n';
 }
 
 Php::Value GtkContainer_::class_find_child_property(Php::Parameters &parameters) {

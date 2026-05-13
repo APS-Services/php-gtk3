@@ -73,7 +73,7 @@ void GtkMenuItem_::set_use_underline(Php::Parameters &parameters) {
 
 void GtkMenuItem_::set_submenu(Php::Parameters &parameters) {
   GtkWidget *submenu;
-  if (parameters.size() > 0) {
+  if (!parameters.empty()) {
     Php::Value object_submenu = parameters[0];
     GtkWidget_ *phpgtk_submenu = (GtkWidget_ *)object_submenu.implementation();
     submenu = GTK_WIDGET(phpgtk_submenu->get_instance());

@@ -1,5 +1,8 @@
 
 #include "GtkosxApplication.h"
+
+#ifdef __APPLE__
+
 #include "../../main.h"
 
 /**
@@ -20,7 +23,9 @@ void GtkosxApplication_::__construct(Php::Parameters &parameters) {
 void GtkosxApplication_::set_dock_icon_pixbuf(Php::Parameters &parameters) {
   // Get the window to set transient
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GdkPixbuf")) throw Php::Exception("parameter expect GdkPixbuf instance");
+  if (!object.instanceOf("GdkPixbuf")) {
+    throw Php::Exception("parameter expect GdkPixbuf instance");
+  }
   GdkPixbuf_ *passedPixbuf = (GdkPixbuf_ *)object.implementation();
 
   gtkosx_application_set_dock_icon_pixbuf(GTKOSX_APPLICATION(instance),
@@ -47,8 +52,9 @@ Php::Value GtkosxApplication_::use_quartz_accelerators() {
 void GtkosxApplication_::set_menu_bar(Php::Parameters &parameters) {
   // Get the window to set transient
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkMenuShell"))
+  if (!object.instanceOf("GtkMenuShell")) {
     throw Php::Exception("parameter expect GtkMenuShell instance");
+  }
   GtkMenuShell_ *passedMenuShell = (GtkMenuShell_ *)object.implementation();
 
   gtkosx_application_set_menu_bar(GTKOSX_APPLICATION(instance),
@@ -62,7 +68,9 @@ void GtkosxApplication_::sync_menubar() {
 void GtkosxApplication_::insert_app_menu_item(Php::Parameters &parameters) {
   // Get the window to set transient
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkWidget")) throw Php::Exception("parameter expect GtkWidget instance");
+  if (!object.instanceOf("GtkWidget")) {
+    throw Php::Exception("parameter expect GtkWidget instance");
+  }
   GtkWidget_ *passedWidget = (GtkWidget_ *)object.implementation();
 
   int index = parameters[1];
@@ -74,8 +82,9 @@ void GtkosxApplication_::insert_app_menu_item(Php::Parameters &parameters) {
 void GtkosxApplication_::set_window_menu(Php::Parameters &parameters) {
   // Get the window to set transient
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkMenuItem"))
+  if (!object.instanceOf("GtkMenuItem")) {
     throw Php::Exception("parameter expect GtkMenuItem instance");
+  }
   GtkMenuItem_ *passedMenuItem = (GtkMenuItem_ *)object.implementation();
 
   gtkosx_application_set_window_menu(GTKOSX_APPLICATION(instance),
@@ -85,8 +94,9 @@ void GtkosxApplication_::set_window_menu(Php::Parameters &parameters) {
 void GtkosxApplication_::set_help_menu(Php::Parameters &parameters) {
   // Get the window to set transient
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkMenuItem"))
+  if (!object.instanceOf("GtkMenuItem")) {
     throw Php::Exception("parameter expect GtkMenuItem instance");
+  }
   GtkMenuItem_ *passedMenuItem = (GtkMenuItem_ *)object.implementation();
 
   gtkosx_application_set_help_menu(GTKOSX_APPLICATION(instance),
@@ -96,8 +106,9 @@ void GtkosxApplication_::set_help_menu(Php::Parameters &parameters) {
 void GtkosxApplication_::set_dock_menu(Php::Parameters &parameters) {
   // Get the window to set transient
   Php::Value object = parameters[0];
-  if (!object.instanceOf("GtkMenuShell"))
+  if (!object.instanceOf("GtkMenuShell")) {
     throw Php::Exception("parameter expect GtkMenuShell instance");
+  }
   GtkMenuShell_ *passedMenuShell = (GtkMenuShell_ *)object.implementation();
 
   gtkosx_application_set_dock_menu(GTKOSX_APPLICATION(instance),
@@ -146,3 +157,5 @@ Php::Value GtkosxApplication_::get_bundle_info(Php::Parameters &parameters) {
 
   return ret;
 }
+
+#endif  // __APPLE__

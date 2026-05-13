@@ -192,8 +192,8 @@
 #endif
 
 	// Self methods
-	GValue phpgtk_get_gvalue(Php::Value phpgtk_value, GType type_column);
-	Php::Value phpgtk_get_phpvalue(GValue *gvalue);
+        GValue phpgtk_get_gvalue(const Php::Value &phpgtk_value, GType type_column);
+        Php::Value phpgtk_get_phpvalue(GValue *gvalue);
 	void phpgtk_throw_wrong_type(int param, Php::Type type);
 
 #endif

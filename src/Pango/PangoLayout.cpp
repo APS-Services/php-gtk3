@@ -74,7 +74,7 @@ Php::Value PangoLayout_::get_line(Php::Parameters &parameters) {
     /**
      * TRUE if this is the first line of the paragraph (by documentation)
      */
-    if (ret->is_paragraph_start == true) {
+    if (static_cast<bool>(ret->is_paragraph_start)) {
       ret_arr["is_paragraph_start"] = Php::Type::True;
     } else {
       ret_arr["is_paragraph_start"] = (int)ret->is_paragraph_start;

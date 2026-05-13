@@ -21,7 +21,7 @@ class GtkEntryCompletion_ : public GObject_ {
    * Publics
    */
  public:
-  bool liststore_type;
+  bool liststore_type{};
 
   /**
    *  C++ constructor and destructor

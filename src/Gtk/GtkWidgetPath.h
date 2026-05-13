@@ -17,7 +17,7 @@ class GtkWidgetPath_ : public Php::Base {
    * Publics
    */
  public:
-  GtkWidgetPath *instance;
+  GtkWidgetPath *instance{};
   GtkWidgetPath *get_instance();
   void set_instance(GtkWidgetPath *pased_instance);
 

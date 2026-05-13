@@ -19,7 +19,7 @@ class GtkTextIter_ : public Php::Base {
    * Publics
    */
  public:
-  GtkTextIter instance;
+  GtkTextIter instance{};
 
   /**
    * Set/Get original GtkTextIter

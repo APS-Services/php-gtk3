@@ -40,7 +40,7 @@ Php::Value GtkSourceLanguageManager_::get_language_ids() {
 
   const gchar *const *languages =
       gtk_source_language_manager_get_language_ids(GTK_SOURCE_LANGUAGE_MANAGER(instance));
-  for (int i = 0; languages[i] != NULL; i++) {
+  for (int i = 0; languages[i] != nullptr; i++) {
     ret_arr[i] = languages[i];
   }
 
@@ -52,7 +52,7 @@ Php::Value GtkSourceLanguageManager_::get_search_path() {
 
   const gchar *const *paths =
       gtk_source_language_manager_get_search_path(GTK_SOURCE_LANGUAGE_MANAGER(instance));
-  for (int i = 0; paths[i] != NULL; i++) {
+  for (int i = 0; paths[i] != nullptr; i++) {
     ret_arr[i] = paths[i];
   }
 
@@ -72,21 +72,23 @@ void GtkSourceLanguageManager_::set_search_path(Php::Parameters &parameters) {
   }
 
   // finalize last post with null
-  dirs[arr.size()] = NULL;
+  dirs[arr.size()] = nullptr;
 
   gtk_source_language_manager_set_search_path(GTK_SOURCE_LANGUAGE_MANAGER(instance), dirs);
 
   // free pointers
-  for (int i = 0; i < arr.size(); i++) g_free(dirs[i]);
+  for (int i = 0; i < arr.size(); i++) {
+    g_free(dirs[i]);
+  }
 }
 
 Php::Value GtkSourceLanguageManager_::guess_language(Php::Parameters &parameters) {
   // inicialize the C params
-  gchar *filename = NULL;
-  gchar *content_type = NULL;
+  gchar *filename = nullptr;
+  gchar *content_type = nullptr;
 
   // if has filename
-  if (parameters.size() > 0 && !parameters[0].isNull()) {
+  if (!parameters.empty() && !parameters[0].isNull()) {
     std::string s_filename = parameters[0];
     filename = (gchar *)s_filename.c_str();
   }
@@ -102,8 +104,8 @@ Php::Value GtkSourceLanguageManager_::guess_language(Php::Parameters &parameters
       GTK_SOURCE_LANGUAGE_MANAGER(instance), filename, content_type);
 
   // return null if not find
-  if (ret == NULL) {
-    return Php::Value();
+  if (ret == nullptr) {
+    return {};
   }
 
   // cast the object and return

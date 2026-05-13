@@ -15,7 +15,7 @@ class GdkMonitor_ : public Php::Base {
    * Publics
    */
  public:
-  GdkMonitor *instance;
+  GdkMonitor *instance{};
 
   /**
    *  C++ constructor and destructor

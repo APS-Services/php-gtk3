@@ -17,7 +17,7 @@ class GtkEntryBuffer_ : public GObject_ {
    * Publics
    */
  public:
-  GtkEntryBuffer *buffer;
+  GtkEntryBuffer *buffer{};
 
   /**
    *  C++ constructor and destructor
