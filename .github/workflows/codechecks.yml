@@ -30,8 +30,18 @@ jobs:
       # php-gtk3 source includes any php-src/Zend header directly, only
       # <phpcpp.h>. So a header-only shallow clone is enough; no PHP-CPP
       # build/link is required to generate an accurate compile database.
+      #
+      # phpcpp.h itself uses #include <phpcpp/xxx.h>, which only resolves
+      # once installed (PHP-CPP's own `make install` copies phpcpp.h next to
+      # include/*.h renamed into a phpcpp/ subdirectory) - a raw clone's
+      # include/ directory doesn't match that layout, so replicate it here
+      # without needing PHP-CPP's own build/configure.
       - name: Fetch PHP-CPP public headers
-        run: git clone --depth 1 https://github.com/fast-debug/PHP-CPP.git /tmp/PHP-CPP
+        run: |
+          git clone --depth 1 https://github.com/fast-debug/PHP-CPP.git /tmp/phpcpp-src
+          mkdir -p /tmp/PHP-CPP/phpcpp
+          cp /tmp/phpcpp-src/phpcpp.h /tmp/PHP-CPP/
+          cp /tmp/phpcpp-src/include/*.h /tmp/PHP-CPP/phpcpp/
 
       # Compiles every object file (but does not link the final .so, so no
       # libphpcpp is needed) purely to capture accurate per-file compiler
