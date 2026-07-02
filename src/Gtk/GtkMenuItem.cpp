@@ -19,7 +19,12 @@ void GtkMenuItem_::__construct()
 
 Php::Value GtkMenuItem_::new_with_label(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkMenuItem::new_with_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gpointer *ret = (gpointer *)gtk_menu_item_new_with_label (label);
@@ -36,7 +41,7 @@ Php::Value GtkMenuItem_::new_with_label(Php::Parameters &parameters)
 
 Php::Value GtkMenuItem_::new_with_mnemonic(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gpointer *ret = (gpointer *)gtk_menu_item_new_with_mnemonic (label);
@@ -59,7 +64,12 @@ Php::Value GtkMenuItem_::get_label()
 
 void GtkMenuItem_::set_label(Php::Parameters &parameters)
 {
-	std::string s_label = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkMenuItem::set_label: First parameter (label) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_label = parameters[0].stringValue();
 	gchar *label = (gchar *)s_label.c_str();
 
 	gtk_menu_item_set_label (GTK_MENU_ITEM(instance), label);
@@ -107,7 +117,7 @@ Php::Value GtkMenuItem_::get_submenu()
 
 void GtkMenuItem_::set_accel_path(Php::Parameters &parameters)
 {
-	std::string s_accel_path = parameters[0];
+	std::string s_accel_path = parameters[0].stringValue();
 	gchar *accel_path = (gchar *)s_accel_path.c_str();
 
 	gtk_menu_item_set_accel_path (GTK_MENU_ITEM(instance), accel_path);

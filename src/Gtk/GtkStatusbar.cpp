@@ -19,7 +19,7 @@ void GtkStatusbar_::__construct()
 
 Php::Value GtkStatusbar_::get_context_id(Php::Parameters &parameters)
 {
-	std::string s_context_description = parameters[0];
+	std::string s_context_description = parameters[0].stringValue();
 	gchar *context_description = (gchar *)s_context_description.c_str();
 
 	int ret = gtk_statusbar_get_context_id (GTK_STATUSBAR(instance), context_description);
@@ -31,7 +31,7 @@ Php::Value GtkStatusbar_::push(Php::Parameters &parameters)
 {
 	guint context_id = (int)parameters[0];
 
-	std::string s_text = parameters[1];
+	std::string s_text = parameters[1].stringValue();
 	gchar *text = (gchar *)s_text.c_str();
 
 	int ret = gtk_statusbar_push (GTK_STATUSBAR(instance), context_id, text);

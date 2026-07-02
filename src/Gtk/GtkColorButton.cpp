@@ -139,7 +139,12 @@ Php::Value GtkColorButton_::get_use_alpha()
 
 void GtkColorButton_::set_title(Php::Parameters &parameters)
 {
-	std::string s_title = parameters[0];
+	if (!parameters[0].isString()) {
+		Php::warning << "GtkColorButton::set_title: First parameter (title) should be a string, " 
+		            << phpgtk_type_to_string(parameters[0].type()) 
+		            << " given (auto-converting)" << std::flush;
+	}
+	std::string s_title = parameters[0].stringValue();
 	gchar *title = (gchar *)s_title.c_str();
 
 	gtk_color_button_set_title (GTK_COLOR_BUTTON(instance), title);

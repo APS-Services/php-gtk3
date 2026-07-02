@@ -7,6 +7,8 @@
 
 	#include "GtkToggleButton.h"
 
+	#include "../../php-gtk.h"
+
     /**
      * GtkCheckButton_
      * 

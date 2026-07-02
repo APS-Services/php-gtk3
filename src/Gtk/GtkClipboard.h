@@ -8,6 +8,8 @@
 	#include "../G/GObject.h"
 	#include "../Gdk/GdkPixbuf.h"
 	#include "GtkTextBuffer.h"
+	
+	#include "../../php-gtk.h"
 
     /**
      * GtkClipboard_

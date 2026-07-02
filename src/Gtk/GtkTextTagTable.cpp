@@ -46,7 +46,7 @@ void GtkTextTagTable_::remove(Php::Parameters &parameters)
 
 Php::Value GtkTextTagTable_::lookup(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	GtkTextTag *ret = gtk_text_tag_table_lookup (GTK_TEXT_TAG_TABLE(instance), name);

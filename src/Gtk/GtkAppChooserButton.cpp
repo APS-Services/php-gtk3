@@ -13,7 +13,7 @@ GtkAppChooserButton_::~GtkAppChooserButton_() = default;
 
 void GtkAppChooserButton_::__construct(Php::Parameters &parameters)
 {
-	std::string s_content_type = parameters[0];
+	std::string s_content_type = parameters[0].stringValue();
 	gchar *content_type = (gchar *)s_content_type.c_str();
 
 	instance = (gpointer *)gtk_app_chooser_button_new (content_type);
@@ -21,10 +21,10 @@ void GtkAppChooserButton_::__construct(Php::Parameters &parameters)
 
 void GtkAppChooserButton_::append_custom_item(Php::Parameters &parameters)
 {
-	// std::string s_name = parameters[0];
+	// std::string s_name = parameters[0].stringValue();
 	// gchar *name = (gchar *)s_name.c_str();
 
-	// std::string s_label = parameters[1];
+	// std::string s_label = parameters[1].stringValue();
 	// gchar *label = (gchar *)s_label.c_str();
 
 
@@ -42,7 +42,7 @@ void GtkAppChooserButton_::append_separator()
 
 void GtkAppChooserButton_::set_active_custom_item(Php::Parameters &parameters)
 {
-	std::string s_name = parameters[0];
+	std::string s_name = parameters[0].stringValue();
 	gchar *name = (gchar *)s_name.c_str();
 
 	gtk_app_chooser_button_set_active_custom_item (GTK_APP_CHOOSER_BUTTON(instance), name);
@@ -88,7 +88,7 @@ Php::Value GtkAppChooserButton_::get_heading()
 
 void GtkAppChooserButton_::set_heading(Php::Parameters &parameters)
 {
-	std::string s_heading = parameters[0];
+	std::string s_heading = parameters[0].stringValue();
 	gchar *heading = (gchar *)s_heading.c_str();
 
 	gtk_app_chooser_button_set_heading (GTK_APP_CHOOSER_BUTTON(instance), heading);

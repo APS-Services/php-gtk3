@@ -6,6 +6,8 @@
     #include <gtk/gtk.h>
 
     #include "../G/GObject.h"
+    
+    #include "../../php-gtk.h"
 
     /**
      * GtkEntryBuffer_
