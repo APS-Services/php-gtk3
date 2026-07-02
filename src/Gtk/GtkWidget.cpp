@@ -1,5 +1,6 @@
 
 #include "GtkWidget.h"
+#include "GtkLogSuppression.h"
 #include "GtkWindow.h"
 #include "../Gdk/GdkRGBA.h"
 
@@ -54,10 +55,15 @@ void GtkWidget_::unparent() {
 }
 
 void GtkWidget_::show() {
+  // Suppress the harmless "gtk_distribute_natural_allocation: assertion
+  // 'extra_space >= 0' failed" GTK 3 warning that can be emitted from GTK's
+  // internal size-negotiation code during the initial allocation pass.
+  GtkLogSuppressor suppressor;
   gtk_widget_show(GTK_WIDGET(instance));
 }
 
 void GtkWidget_::show_now() {
+  GtkLogSuppressor suppressor;
   gtk_widget_show_now(GTK_WIDGET(instance));
 }
 
@@ -66,6 +72,7 @@ void GtkWidget_::hide() {
 }
 
 void GtkWidget_::show_all() {
+  GtkLogSuppressor suppressor;
   gtk_widget_show_all(GTK_WIDGET(instance));
 }
 

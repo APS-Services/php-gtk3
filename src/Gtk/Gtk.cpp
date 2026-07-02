@@ -1,5 +1,6 @@
 
 #include "Gtk.h"
+#include "GtkLogSuppression.h"
 
 // https://developer.gnome.org/gtk3/stable/gtkbase.html
 
@@ -20,6 +21,11 @@ Gtk_::Gtk_() = default;
  *
  */
 void Gtk_::main() {
+  // Suppress the harmless "gtk_distribute_natural_allocation: assertion
+  // 'extra_space >= 0' failed" GTK 3 warning that can be emitted from GTK's
+  // internal size-negotiation code during allocation passes triggered from
+  // within the main loop.
+  GtkLogSuppressor suppressor;
   gtk_main();
 }
 
@@ -166,6 +172,7 @@ Php::Value Gtk_::main_do_event(Php::Parameters &parameters) {
 }
 
 Php::Value Gtk_::main_iteration() {
+  GtkLogSuppressor suppressor;
   return gtk_main_iteration();
 }
 
