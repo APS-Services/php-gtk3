@@ -557,6 +557,7 @@ PHPCPP_EXPORT void *get_module() {
   gdk.constant("KEY_Delete", GDK_KEY_Delete);
   gdk.constant("KEY_Home", GDK_KEY_Home);
   gdk.constant("KEY_End", GDK_KEY_End);
+  gdk.constant("KEY_Begin", GDK_KEY_Begin);
   gdk.constant("KEY_Page_Up", GDK_KEY_Page_Up);
   gdk.constant("KEY_Page_Down", GDK_KEY_Page_Down);
   gdk.constant("KEY_Up", GDK_KEY_Up);
@@ -654,6 +655,7 @@ PHPCPP_EXPORT void *get_module() {
   gdk.constant("KEY_comma", GDK_KEY_comma);
   gdk.constant("KEY_minus", GDK_KEY_minus);
   gdk.constant("KEY_period", GDK_KEY_period);
+  gdk.constant("KEY_decimalpoint", GDK_KEY_decimalpoint);
   gdk.constant("KEY_slash", GDK_KEY_slash);
   gdk.constant("KEY_colon", GDK_KEY_colon);
   gdk.constant("KEY_semicolon", GDK_KEY_semicolon);
@@ -704,6 +706,7 @@ PHPCPP_EXPORT void *get_module() {
   gdk.constant("KEY_KP_Multiply", GDK_KEY_KP_Multiply);
   gdk.constant("KEY_KP_Divide", GDK_KEY_KP_Divide);
   gdk.constant("KEY_KP_Decimal", GDK_KEY_KP_Decimal);
+  gdk.constant("KEY_KP_Separator", GDK_KEY_KP_Separator);
   gdk.constant("KEY_KP_Enter", GDK_KEY_KP_Enter);
   gdk.constant("KEY_KP_Home", GDK_KEY_KP_Home);
   gdk.constant("KEY_KP_End", GDK_KEY_KP_End);

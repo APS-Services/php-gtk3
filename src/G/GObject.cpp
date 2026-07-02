@@ -296,7 +296,8 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
     const gchar *signal_name =
         callback_object->signal_name ? callback_object->signal_name : "";
     try {
-      Php::call("gtk3HandleCallbackException", callback_error, std::string(signal_name));
+      Php::call("call_user_func", std::string("Gtk3Helper::reportCallbackException"),
+                callback_error, std::string(signal_name));
     } catch (...) {
       // Never let error reporting itself throw across the C boundary.
       try {
