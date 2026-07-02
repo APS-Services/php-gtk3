@@ -265,18 +265,49 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
     internal_parameters[internal_parameters.size() + i - 1] = callback_object->parameters[i];
   }
 
-  // Call php function with parameters
-  // Wrap in try-catch to properly handle exceptions from PHP callbacks
-  // This ensures exceptions work correctly even with Xdebug exception breakpoints enabled
+  // Call php function with parameters.
+  //
+  // A PHP throwable may escape the handler. It must NOT be allowed to unwind
+  // across GLib's C signal-emission frames (gtk_dialog_run / gtk_main): a C++
+  // exception thrown through C code is silently lost and terminates the process.
+  // We therefore catch it here, at the C++/PHP boundary, and report it instead
+  // of letting it propagate.
+  //
+  // Important: catch Php::Throwable, not just Php::Exception. A PHP *Error*
+  // (e.g. "Undefined constant") is surfaced by PHP-CPP as Php::Error, a sibling
+  // of Php::Exception under Php::Throwable; a Php::Exception-only catch misses
+  // it and the process aborts silently.
+  std::string callback_error;
+  bool callback_failed = false;
   try {
     Php::Value ret =
         Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
     return ret;
-  } catch (Php::Exception &exception) {
-    // Re-throw to let PHP-CPP handle the exception properly
-    // This allows PHP try-catch blocks to catch it and Xdebug to track it correctly
-    throw;
+  } catch (Php::Throwable &throwable) {
+    // Capture the message now, but report only *after* this catch scope exits:
+    // PHP-CPP's ~Rethrowable clears the pending Zend exception on destruction
+    // (we do not rethrow), so calling back into PHP is safe only once the catch
+    // block has ended.
+    callback_error = throwable.what();
+    callback_failed = true;
   }
+
+  if (callback_failed) {
+    const gchar *signal_name =
+        callback_object->signal_name ? callback_object->signal_name : "";
+    try {
+      Php::call("gtk3HandleCallbackException", callback_error, std::string(signal_name));
+    } catch (...) {
+      // Never let error reporting itself throw across the C boundary.
+      try {
+        Php::call("error_log", std::string("Uncaught exception in GTK '") + signal_name +
+                                   "' handler: " + callback_error);
+      } catch (...) {
+      }
+    }
+  }
+
+  return false;
 
   // Return to st_callback
   // struct st_callback *callback_object = (struct st_callback *) user_data;

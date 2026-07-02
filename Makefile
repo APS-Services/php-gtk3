@@ -179,7 +179,15 @@ PHPFLAGS            =   $(shell $(PHP_CONFIG) --includes)
 GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 ${GLADEUIFLAGS} gtksourceview-3.0 ${MAC_INTEGRATIONFLAGS} ${LIBWNCKFLAGS} ${WEBKITFLAGS}`
 GTKLIBS             =   `pkg-config --libs gtk+-3.0 ${GLADEUILIBS} gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS} ${WEBKITLIBS}`
 
-COMPILER_FLAGS      +=   -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
+#
+# Version info (git hash + build date), exposed via phpinfo()
+#
+
+GIT_HASH            =   $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
+BUILD_DATE          =   $(shell date -u +%Y-%m-%d)
+VERSION_FLAGS        =   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\"$(BUILD_DATE)\"
+
+COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
 ifdef PHPCPP_STATIC
 LINKER_DEPENDENCIES =   ${PHPCPP_STATIC} ${GTKLIBS} ${WEBVIEW2_LDFLAGS}

@@ -24,9 +24,21 @@ extern "C" {
  *  @return void*   a pointer to an address that is understood by PHP
  */
 PHPCPP_EXPORT void *get_module() {
+#ifndef PHPGTK_GIT_HASH
+#define PHPGTK_GIT_HASH "unknown"
+#endif
+#ifndef PHPGTK_BUILD_DATE
+#define PHPGTK_BUILD_DATE "unknown"
+#endif
+
+  // version string shown by phpinfo(); PHPGTK_GIT_HASH and PHPGTK_BUILD_DATE
+  // are injected by the Makefile at compile time
+  static const std::string version_string =
+      std::string("1.0 (built ") + PHPGTK_BUILD_DATE + ", git " + PHPGTK_GIT_HASH + ")";
+
   // static(!) Php::Extension object that should stay in memory
   // for the entire duration of the process (that's why it's static)
-  static Php::Extension extension("php-gtk3", "1.0");
+  static Php::Extension extension("php-gtk3", version_string.c_str());
 
   // Initialize GTK
   // gtk_init (0, NULL);
