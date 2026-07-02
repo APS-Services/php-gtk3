@@ -189,11 +189,17 @@ VERSION_FLAGS        =   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\
 
 COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
+
+# Use the static library directly by full path to avoid picking up the wrong
+# system-installed libphpcpp (which may have been compiled for a different PHP version).
+# Pass PHPCPP_STATIC=/path/to/libphpcpp.a.x.x.x from the build script.
 ifdef PHPCPP_STATIC
-LINKER_DEPENDENCIES =   ${PHPCPP_STATIC} ${GTKLIBS} ${WEBVIEW2_LDFLAGS}
+    PHPCPP_DEP      =   $(PHPCPP_STATIC)
 else
-LINKER_DEPENDENCIES =   -lphpcpp ${GTKLIBS} ${WEBVIEW2_LDFLAGS}
+    PHPCPP_DEP      =   -lphpcpp
 endif
+
+LINKER_DEPENDENCIES =   $(PHPCPP_DEP) ${GTKLIBS} ${WEBVIEW2_LDFLAGS}
 
 #
 #   Command to remove files, copy files and create directories.
@@ -242,6 +248,8 @@ OBJECTS         = $(SOURCES:%.cpp=%.o)
 
 all:                    ${OBJECTS} ${EXTENSION}
 
+objects:                ${OBJECTS}
+
 ${EXTENSION}:           ${OBJECTS}
 						${LINKER} ${LINKER_FLAGS} -o $@ ${OBJECTS} ${LINKER_DEPENDENCIES}
 
@@ -253,7 +261,7 @@ install:
 						${CP} ${INI} ${INI_DIR}
 
 compile_commands:
-						bear -- $(MAKE) all
+						bear -- $(MAKE) objects
 
 clean:
 						${RM} ${EXTENSION}
