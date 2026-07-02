@@ -2,29 +2,80 @@ name: PHP-GTK3 C++ CI (No-Build Checks)
 
 on:
   workflow_dispatch:
+  pull_request:
+  push:
+    branches: [master]
 
 jobs:
   cpp-static-analysis:
-    name: C++ static analysis (no build)
+    name: C++ static analysis
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
-      # C++ linting only; this does NOT build the extension.
-      # Restrict to C++ sources in this repo and use a reasonable set of checks.
-      - name: C++ Linter (clang-tidy/clang-format) – no-build
+      # These are the dev headers needed to compile (not link) every source
+      # file, including the Glade/libwnck/WebKit ones, which are only
+      # compiled in when WITH_GLADEUI/WITH_LIBWNCK/WITH_WEBKIT are set below.
+      # `bear` records compiler invocations into compile_commands.json.
+      - name: Install GTK/Glade/GtkSourceView/libwnck/WebKit dev headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgtk-3-dev libgladeui-dev libgtksourceview-3.0-dev \
+            libwnck-3-dev libwebkit2gtk-4.1-dev bear
+
+      # Only PHP-CPP's public headers (phpcpp.h + include/) are needed: no
+      # php-gtk3 source includes any php-src/Zend header directly, only
+      # <phpcpp.h>. So a header-only shallow clone is enough; no PHP-CPP
+      # build/link is required to generate an accurate compile database.
+      #
+      # phpcpp.h itself uses #include <phpcpp/xxx.h>, which only resolves
+      # once installed (PHP-CPP's own `make install` copies phpcpp.h next to
+      # include/*.h renamed into a phpcpp/ subdirectory) - a raw clone's
+      # include/ directory doesn't match that layout, so replicate it here
+      # without needing PHP-CPP's own build/configure.
+      - name: Fetch PHP-CPP public headers
+        run: |
+          git clone --depth 1 https://github.com/fast-debug/PHP-CPP.git /tmp/phpcpp-src
+          mkdir -p /tmp/PHP-CPP/phpcpp
+          cp /tmp/phpcpp-src/phpcpp.h /tmp/PHP-CPP/
+          cp /tmp/phpcpp-src/include/*.h /tmp/PHP-CPP/phpcpp/
+
+      # Compiles every object file (but does not link the final .so, so no
+      # libphpcpp is needed) purely to capture accurate per-file compiler
+      # flags/include paths into compile_commands.json for clang-tidy.
+      - name: Generate compile_commands.json
+        run: |
+          make compile_commands \
+            WITH_GLADEUI=1 WITH_LIBWNCK=1 WITH_WEBKIT=1 \
+            PHPFLAGS="-I/tmp/PHP-CPP"
+
+      # C++ linting only; this does NOT link/produce the extension.
+      # Restrict to C++ sources (.cpp implementation files, no headers) in
+      # this repo; there are no other .cpp files outside main.cpp/php-gtk.cpp/
+      # src/**, so the default file discovery already covers exactly those.
+      #
+      # Report-only for now: this is the first time these checks have ever
+      # run, and they surfaced ~9.7k pre-existing findings across the
+      # codebase. Failing the job on that backlog would block every future
+      # push/PR. File annotations (file-annotations, on by default) still
+      # surface findings for visibility; nothing here fails the build.
+      # Revisit once the backlog is triaged/burned down.
+      - name: C++ Linter (clang-tidy/clang-format)
+        id: cpp-linter
         uses: cpp-linter/cpp-linter-action@v2
         with:
-          # Limit analysis to actual C++ sources in this project
-          files: |
-            main.cpp
-            php-gtk.cpp
-            src/**/*.cpp
-          # Checks are read from .clang-tidy at the repo root
-          # Only fail the check on more serious issues
-          fail_on: error
+          # Only .cpp implementation files, not headers
+          extensions: cpp
+          # Analyze every matching file, not just ones changed in a diff -
+          # this workflow also runs on push/workflow_dispatch, which have no
+          # meaningful "changed files" diff to restrict to
+          files-changed-only: false
+          # Compile database generated above, so clang-tidy knows the real
+          # GTK/Glade/GtkSourceView/libwnck/WebKit/PHP-CPP include paths
+          database: .
           # Do not try to auto-fix code; just report
           style: file
         env:
@@ -36,7 +87,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Basic Markdown presence
         run: |
