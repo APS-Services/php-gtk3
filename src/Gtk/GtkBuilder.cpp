@@ -259,7 +259,11 @@ void GtkBuilder_::connect_signals_full_callback(GtkBuilder *builder, GObject *in
   // callback_object->parameters = parameters;
 
   // Retriave and store signal query parameters , to be used on callback
-  GSignalQuery signal_info;
+  //
+  // Zero-initialised: g_signal_query() only sets signal_id when the lookup
+  // fails, and neither branch below runs for a non-GObject instance. The error
+  // path reads signal_name, which would otherwise stay indeterminate.
+  GSignalQuery signal_info = {};
 
   if (G_IS_OBJECT(instance)) {
     g_signal_query(g_signal_lookup(signal_name, G_OBJECT_TYPE(instance)), &signal_info);
@@ -372,9 +376,18 @@ void GtkBuilder_::connect_signals_full_callback1(gpointer user_data, ...) {
         break;
       }
 
-      default:
-        std::string error("[GObject_::connect_callback] Internal error: unsupported type ");
-        throw Php::Exception(error + g_type_name(callback_object->param_types[i]));
+      default: {
+        // Must not throw: this runs inside GLib's C signal-emission frames
+        // (see the catch below). Report the marshalling gap and pass null for
+        // this parameter. g_type_name() returns NULL for an unregistered type.
+        const gchar *type_name = g_type_name(callback_object->param_types[i]);
+        g_critical(
+            "php-gtk3: [GtkBuilder_::connect_signals_full_callback1] unsupported "
+            "parameter type %s",
+            (type_name != nullptr) ? type_name : "(unknown)");
+        internal_parameters[i + 1] = Php::Value();
+        break;
+      }
     }
   }
 
@@ -386,13 +399,25 @@ void GtkBuilder_::connect_signals_full_callback1(gpointer user_data, ...) {
     internal_parameters[internal_parameters.size() + i - 1] = callback_object->parameters[i];
   }
 
-  // Call php function with parameters
-  // Wrap in try-catch to properly handle exceptions from PHP callbacks
+  // Call php function with parameters.
+  //
+  // As in GObject_::connect_callback: a throwable must not unwind across
+  // GLib's C frames, so it is captured here and reported only after the catch
+  // scope has exited and released the pending Zend exception.
+  std::string callback_error;
+  long int callback_error_code = 0;
+  bool callback_failed = false;
   try {
     Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
-  } catch (Php::Exception &exception) {
-    // Re-throw to let PHP-CPP handle the exception properly
-    throw;
+  } catch (Php::Throwable &throwable) {
+    callback_error = throwable.what();
+    callback_error_code = throwable.code();
+    callback_failed = true;
+  }
+
+  if (callback_failed) {
+    phpgtk_report_callback_exception(callback_error, callback_error_code,
+                                     callback_object->signal_name);
   }
 }
 
