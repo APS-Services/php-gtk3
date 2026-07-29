@@ -107,7 +107,10 @@ LINKER              =   g++
 # With libwnck
 #
 
-ifdef WITH_LIBWNCK
+# Note: all WITH_x switches are compared against "1" ('ifeq'), not merely
+# tested for being set ('ifdef') - the build scripts pass WITH_WEBKIT=0 to
+# disable the feature, which 'ifdef' would treat as enabled.
+ifeq ($(WITH_LIBWNCK),1)
 	LIBWNCKFLAGS = libwnck-3.0
 	LIBWNCKLIBS = libwnck-3.0
 	LIBWNCKPATH = $(wildcard src/libwnck/*.cpp)
@@ -122,7 +125,7 @@ endif
 # On Windows: Uses Microsoft Edge WebView2 SDK
 #
 
-ifdef WITH_WEBKIT
+ifeq ($(WITH_WEBKIT),1)
 	# Detect platform
 	ifeq ($(OS),Windows_NT)
 		# Windows: Use WebView2 (no pkg-config needed)
@@ -151,7 +154,7 @@ endif
 # With gtk3 mac integration
 #
 
-ifdef WITH_MAC_INTEGRATION
+ifeq ($(WITH_MAC_INTEGRATION),1)
 	MAC_INTEGRATIONFLAGS = gtk-mac-integration-gtk3
 	MAC_INTEGRATIONLIBS = gtk-mac-integration-gtk3
 	MAC_INTEGRATIONPATH = $(wildcard src/libwnck/*.cpp)
@@ -162,7 +165,7 @@ endif
 # 
 # With gladeui integration
 # 
-ifdef WITH_GLADEUI
+ifeq ($(WITH_GLADEUI),1)
 
 	GLADEUIFLAGS = gladeui-2.0
 	GLADEUILIBS = gladeui-2.0
@@ -180,13 +183,28 @@ GTKFLAGS            =   `pkg-config --cflags gtk+-3.0 ${GLADEUIFLAGS} gtksourcev
 GTKLIBS             =   `pkg-config --libs gtk+-3.0 ${GLADEUILIBS} gtksourceview-3.0 ${MAC_INTEGRATIONLIBS} ${LIBWNCKLIBS} ${WEBKITLIBS}`
 
 #
-# Version info (git hash + build date), exposed via phpinfo()
+# Version info (git hash + build date), exposed via the PHPGTK_BUILD_INFO
+# constant. Used by version.cpp, which is force-rebuilt on every make (see the
+# version.o rule below) so the values stay current on incremental builds.
+#
+# ':=' so git/date run once per make invocation, not once per compiled file.
 #
 
-GIT_HASH            =   $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
-BUILD_DATE          =   $(shell date -u +%Y-%m-%d)
-VERSION_FLAGS        =   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\"$(BUILD_DATE)\"
+GIT_HASH            :=   $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
+BUILD_DATE          :=   $(shell date -u +%Y-%m-%d)
 
+# Report the linked PHP-CPP release in the build info: the version is only
+# recorded in the library filename (libphpcpp.a.2.4.13 -> "2.4.13").
+ifdef PHPCPP_STATIC
+    PHPCPP_LIB      :=  $(patsubst libphpcpp.a.%,%,$(notdir $(PHPCPP_STATIC)))
+else
+    PHPCPP_LIB      :=  system
+endif
+
+VERSION_FLAGS       :=   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\"$(BUILD_DATE)\" -DPHPGTK_PHPCPP_LIB=\"$(PHPCPP_LIB)\"
+
+# NOTE: COMPILER_FLAGS must keep ending with '-o' - the object rule appends
+# '$@ source.cpp' directly after it. Never append flags below this line.
 COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
 
@@ -225,7 +243,7 @@ CORE_SOURCES = *.cpp src/G/*.cpp src/Gdk/*.cpp src/Gtk/*.cpp src/Glade/*.cpp \
                src/GtkSourceView/*.cpp src/Pango/*.cpp src/libwnck/*.cpp
 
 # Conditionally add WebKit sources
-ifdef WITH_WEBKIT
+ifeq ($(WITH_WEBKIT),1)
 	CORE_SOURCES := $(CORE_SOURCES) src/WebKit/*.cpp
 endif
 
@@ -233,7 +251,7 @@ endif
 # Exclude platform-specific implementation files that are included directly in WebKitWebView.cpp
 PLATFORM_SPECIFIC_IMPLS = src/WebKit/WebKitWebView_Unix.cpp src/WebKit/WebKitWebView_Windows.cpp
 
-ifdef WITH_MAC_INTEGRATION
+ifeq ($(WITH_MAC_INTEGRATION),1)
 	SOURCES = $(filter-out $(PLATFORM_SPECIFIC_IMPLS), $(wildcard $(CORE_SOURCES)))
 else
 	SOURCES = $(filter-out src/Gtk/GtkosxApplication.cpp $(PLATFORM_SPECIFIC_IMPLS), $(wildcard src/*.cpp $(CORE_SOURCES)))
@@ -255,6 +273,14 @@ ${EXTENSION}:           ${OBJECTS}
 
 ${OBJECTS}:
 						${COMPILER} ${PHPFLAGS} ${GTKFLAGS} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp}
+
+# Object files are only rebuilt when missing (the rule above has no source
+# prerequisites), which would leave the git hash / build date baked into
+# version.o stale after a new commit. FORCE makes that one - deliberately
+# tiny - translation unit recompile on every make.
+version.o:              FORCE
+
+FORCE:
 
 install:
 						${CP} ${EXTENSION} ${EXTENSION_DIR}

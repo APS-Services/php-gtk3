@@ -54,6 +54,27 @@ class Gtk_ : public Php::Base {
   static Php::Value show_uri_on_window(Php::Parameters &parameters);
   static gint timeout_add_callback(gpointer data);
 
+  /**
+   * Install a handler that is called when a PHP signal/callback handler throws.
+   *
+   * Such a throwable cannot be allowed to propagate (it would unwind across
+   * GLib's C frames), so it is reported here instead of reaching a PHP
+   * try/catch around Gtk::main().
+   *
+   *   Gtk::set_exception_handler(
+   *       function (string $message, string $origin, int $code) { ... });
+   *
+   * $origin is the signal name for signal handlers; for other callbacks it is
+   * the installing method (e.g. "Gtk::timeout_add").
+   *
+   * Pass null to remove the handler. Without one, failures are reported with
+   * g_critical() on stderr.
+   *
+   * Only the message and code survive - PHP-CPP does not expose the original
+   * Throwable object, so class, file, line and trace are not available.
+   */
+  static void set_exception_handler(Php::Parameters &parameters);
+
   static Php::Value events_pending();
   static Php::Value main_do_event(Php::Parameters &parameters);
   static Php::Value main_iteration();

@@ -7,6 +7,25 @@ struct GtkListStore_::st_request_callback {
 };
 
 /**
+ * Fetch the GtkTreeIter behind a PHP parameter, validating that it really is a
+ * GtkTreeIter object first - the C-style cast below is unchecked, so a null or
+ * wrong-typed parameter would otherwise crash PHP. Throwing here is safe:
+ * these methods run in PHP space, not inside a GLib callback.
+ */
+static GtkTreeIter phpgtk_require_tree_iter(const Php::Value &value, const char *method) {
+  if (!value.isObject() || !value.instanceOf("GtkTreeIter")) {
+    throw Php::Exception(std::string(method) + "() expects a GtkTreeIter");
+  }
+
+  GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)value.implementation();
+  if (phpgtk_iter == nullptr) {
+    throw Php::Exception(std::string(method) + "(): invalid GtkTreeIter");
+  }
+
+  return phpgtk_iter->get_instance();
+}
+
+/**
  * Constructor
  */
 GtkListStore_::GtkListStore_() = default;
@@ -75,10 +94,7 @@ void GtkListStore_::set_valist(Php::Parameters &parameters) {
 }
 
 void GtkListStore_::set_value(Php::Parameters &parameters) {
-  GtkTreeIter iter;
-  Php::Value object_iter = parameters[0];
-  GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
-  iter = phpgtk_iter->get_instance();
+  GtkTreeIter iter = phpgtk_require_tree_iter(parameters[0], "GtkListStore::set_value");
 
   gint column = (int)parameters[1];
 
@@ -110,12 +126,13 @@ void GtkListStore_::set_valuesv(Php::Parameters &parameters) {
 }
 
 Php::Value GtkListStore_::remove(Php::Parameters &parameters) {
-  GtkTreeIter iter;
-  if (!parameters.empty()) {
-    Php::Value object_iter = parameters[0];
-    GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
-    iter = phpgtk_iter->get_instance();
+  // The iter is required: without this check an omitted parameter passed an
+  // uninitialized GtkTreeIter to GTK.
+  if (parameters.empty()) {
+    throw Php::Exception("GtkListStore::remove() expects a GtkTreeIter");
   }
+
+  GtkTreeIter iter = phpgtk_require_tree_iter(parameters[0], "GtkListStore::remove");
 
   bool ret = gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 
@@ -137,12 +154,14 @@ Php::Value GtkListStore_::insert(Php::Parameters &parameters) {
 Php::Value GtkListStore_::insert_before(Php::Parameters &parameters) {
   GtkTreeIter iter;
 
+  // A null/omitted sibling is allowed - GTK then appends the row.
+  bool have_sibling = !parameters.empty() && !parameters[0].isNull();
   GtkTreeIter sibling;
-  Php::Value object_sibling = parameters[0];
-  GtkTreeIter_ *phpgtk_sibling = (GtkTreeIter_ *)object_sibling.implementation();
-  sibling = phpgtk_sibling->get_instance();
+  if (have_sibling) {
+    sibling = phpgtk_require_tree_iter(parameters[0], "GtkListStore::insert_before");
+  }
 
-  gtk_list_store_insert_before(GTK_LIST_STORE(model), &iter, &sibling);
+  gtk_list_store_insert_before(GTK_LIST_STORE(model), &iter, have_sibling ? &sibling : nullptr);
 
   GtkTreeIter_ *return_parsed = new GtkTreeIter_();
   return_parsed->set_instance(iter);
@@ -152,12 +171,14 @@ Php::Value GtkListStore_::insert_before(Php::Parameters &parameters) {
 Php::Value GtkListStore_::insert_after(Php::Parameters &parameters) {
   GtkTreeIter iter;
 
+  // A null/omitted sibling is allowed - GTK then prepends the row.
+  bool have_sibling = !parameters.empty() && !parameters[0].isNull();
   GtkTreeIter sibling;
-  Php::Value object_sibling = parameters[0];
-  GtkTreeIter_ *phpgtk_sibling = (GtkTreeIter_ *)object_sibling.implementation();
-  sibling = phpgtk_sibling->get_instance();
+  if (have_sibling) {
+    sibling = phpgtk_require_tree_iter(parameters[0], "GtkListStore::insert_after");
+  }
 
-  gtk_list_store_insert_after(GTK_LIST_STORE(model), &iter, &sibling);
+  gtk_list_store_insert_after(GTK_LIST_STORE(model), &iter, have_sibling ? &sibling : nullptr);
 
   GtkTreeIter_ *return_parsed = new GtkTreeIter_();
   return_parsed->set_instance(iter);
@@ -240,12 +261,13 @@ void GtkListStore_::clear() {
 }
 
 Php::Value GtkListStore_::iter_is_valid(Php::Parameters &parameters) {
-  GtkTreeIter iter;
-  if (!parameters.empty()) {
-    Php::Value object_iter = parameters[0];
-    GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
-    iter = phpgtk_iter->get_instance();
+  // No iter is not a valid iter. Previously an omitted parameter passed an
+  // uninitialized GtkTreeIter to GTK.
+  if (parameters.empty() || parameters[0].isNull()) {
+    return false;
   }
+
+  GtkTreeIter iter = phpgtk_require_tree_iter(parameters[0], "GtkListStore::iter_is_valid");
 
   bool ret = gtk_list_store_iter_is_valid(GTK_LIST_STORE(model), &iter);
 
@@ -261,57 +283,54 @@ void GtkListStore_::reorder(Php::Parameters &parameters) {
 }
 
 void GtkListStore_::swap(Php::Parameters &parameters) {
-  GtkTreeIter a;
-  if (!parameters.empty()) {
-    Php::Value object_a = parameters[0];
-    GtkTreeIter_ *phpgtk_a = (GtkTreeIter_ *)object_a.implementation();
-    a = phpgtk_a->get_instance();
+  // Both iters are required: without this check omitted parameters passed
+  // uninitialized GtkTreeIters to GTK.
+  if (parameters.size() < 2) {
+    throw Php::Exception("GtkListStore::swap() expects two GtkTreeIter parameters");
   }
 
-  GtkTreeIter b;
-  if (parameters.size() > 1) {
-    Php::Value object_b = parameters[1];
-    GtkTreeIter_ *phpgtk_b = (GtkTreeIter_ *)object_b.implementation();
-    b = phpgtk_b->get_instance();
-  }
+  GtkTreeIter iter_a = phpgtk_require_tree_iter(parameters[0], "GtkListStore::swap");
+  GtkTreeIter iter_b = phpgtk_require_tree_iter(parameters[1], "GtkListStore::swap");
 
-  gtk_list_store_swap(GTK_LIST_STORE(model), &a, &b);
+  gtk_list_store_swap(GTK_LIST_STORE(model), &iter_a, &iter_b);
 }
 
 void GtkListStore_::move_before(Php::Parameters &parameters) {
-  GtkTreeIter iter;
-  if (!parameters.empty()) {
-    Php::Value object_iter = parameters[0];
-    GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
-    iter = phpgtk_iter->get_instance();
+  // The row iter is required: without this check an omitted parameter passed
+  // an uninitialized GtkTreeIter to GTK.
+  if (parameters.empty()) {
+    throw Php::Exception("GtkListStore::move_before() expects a GtkTreeIter");
   }
 
+  GtkTreeIter iter = phpgtk_require_tree_iter(parameters[0], "GtkListStore::move_before");
+
+  // A null/omitted position is allowed - GTK then moves the row to the end.
+  bool have_position = parameters.size() > 1 && !parameters[1].isNull();
   GtkTreeIter position;
-  if (parameters.size() > 1) {
-    Php::Value object_position = parameters[1];
-    GtkTreeIter_ *phpgtk_position = (GtkTreeIter_ *)object_position.implementation();
-    position = phpgtk_position->get_instance();
+  if (have_position) {
+    position = phpgtk_require_tree_iter(parameters[1], "GtkListStore::move_before");
   }
 
-  gtk_list_store_move_before(GTK_LIST_STORE(model), &iter, &position);
+  gtk_list_store_move_before(GTK_LIST_STORE(model), &iter, have_position ? &position : nullptr);
 }
 
 void GtkListStore_::move_after(Php::Parameters &parameters) {
-  GtkTreeIter iter;
-  if (!parameters.empty()) {
-    Php::Value object_iter = parameters[0];
-    GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
-    iter = phpgtk_iter->get_instance();
+  // The row iter is required: without this check an omitted parameter passed
+  // an uninitialized GtkTreeIter to GTK.
+  if (parameters.empty()) {
+    throw Php::Exception("GtkListStore::move_after() expects a GtkTreeIter");
   }
 
+  GtkTreeIter iter = phpgtk_require_tree_iter(parameters[0], "GtkListStore::move_after");
+
+  // A null/omitted position is allowed - GTK then moves the row to the start.
+  bool have_position = parameters.size() > 1 && !parameters[1].isNull();
   GtkTreeIter position;
-  if (parameters.size() > 1) {
-    Php::Value object_position = parameters[1];
-    GtkTreeIter_ *phpgtk_position = (GtkTreeIter_ *)object_position.implementation();
-    position = phpgtk_position->get_instance();
+  if (have_position) {
+    position = phpgtk_require_tree_iter(parameters[1], "GtkListStore::move_after");
   }
 
-  gtk_list_store_move_after(GTK_LIST_STORE(model), &iter, &position);
+  gtk_list_store_move_after(GTK_LIST_STORE(model), &iter, have_position ? &position : nullptr);
 }
 /**
  * 1. sort_column_id
@@ -376,16 +395,31 @@ gint GtkListStore_::set_sort_func_callback(GtkTreeModel *model, GtkTreeIter *a, 
     internal_parameters[i + 1] = callback_object->user_parameters[i];
   }
 
-  // Try to call the PHP function
-  // Wrap in try-catch to properly handle exceptions from PHP callbacks
+  // Try to call the PHP function.
+  //
+  // As in GObject_::connect_callback: a throwable must not unwind across
+  // GLib's C frames, so it is captured here and reported only after the catch
+  // scope has exited and released the pending Zend exception.
+  std::string callback_error;
+  long int callback_error_code = 0;
+  bool callback_failed = false;
   try {
     gint ret = Php::call("call_user_func_array", callback_name, internal_parameters);
     return ret;
-  } catch (Php::Exception &exception) {
-    // Re-throw to let PHP-CPP handle the exception properly
-    // This allows PHP try-catch blocks to catch it and Xdebug to track it correctly
-    throw;
+  } catch (Php::Throwable &throwable) {
+    callback_error = throwable.what();
+    callback_error_code = throwable.code();
+    callback_failed = true;
   }
+
+  if (callback_failed) {
+    phpgtk_report_callback_exception(callback_error, callback_error_code,
+                                     "GtkListStore::set_sort_func");
+  }
+
+  // 0 = "rows compare equal": the least disruptive result a failed sort
+  // function can produce.
+  return 0;
 }
 
 void GtkListStore_::set_sort_column_id(Php::Parameters &parameters) {
@@ -415,15 +449,21 @@ Php::Value GtkListStore_::get_sort_column_id() {
 }
 
 Php::Value GtkListStore_::iter_n_children(Php::Parameters &parameters) {
-  if (!parameters.empty()) {
-    // Php::call("var_dump", "iter_n_children NOT NULL");
-    GtkTreeIter iter;
-    Php::Value object_iter = parameters[0];
-    GtkTreeIter_ *phpgtk_iter = (GtkTreeIter_ *)object_iter.implementation();
-    iter = phpgtk_iter->get_instance();
+  if (!parameters.empty() && !parameters[0].isNull()) {
+    GtkTreeIter iter = phpgtk_require_tree_iter(parameters[0], "GtkListStore::iter_n_children");
+
+    // Reject stale or never-populated iterators here: GTK would emit a
+    // CRITICAL and return -1, which PHP code reading a count would happily
+    // treat as truthy.
+    if (!gtk_list_store_iter_is_valid(GTK_LIST_STORE(model), &iter)) {
+      throw Php::Exception(
+          "GtkListStore::iter_n_children(): GtkTreeIter is not valid for this model");
+    }
+
     gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
     return ret;
   }
+
   gint ret = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), nullptr);
 
   return ret;

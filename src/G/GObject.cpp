@@ -107,7 +107,14 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
   callback_object->parameters = parameters;
 
   // Retriave and store signal query parameters , to be used on callback
-  GSignalQuery signal_info;
+  //
+  // Zero-initialised: g_signal_query() only sets signal_id when the lookup
+  // fails, and neither branch below runs for a non-GObject instance. Without
+  // this, signal_name and param_types stay indeterminate - and the error path
+  // reads signal_name. A detailed signal such as "notify::visible" hits exactly
+  // that case: g_signal_lookup() does not parse details and fails, while
+  // g_signal_connect_closure() below does parse them and succeeds.
+  GSignalQuery signal_info = {};
 
   if (G_IS_OBJECT(instance)) {
     g_signal_query(g_signal_lookup(callback_event, G_OBJECT_TYPE(instance)), &signal_info);
@@ -251,9 +258,16 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
         break;
       }
 
-      default:
-        std::string error("[GObject_::connect_callback] Internal error: unsupported type ");
-        throw Php::Exception(error + g_type_name(callback_object->param_types[i]));
+      default: {
+        // Must not throw: this runs inside GLib's C signal-emission frames
+        // (see the catch below). Report the marshalling gap and pass null for
+        // this parameter. g_type_name() returns NULL for an unregistered type.
+        const gchar *type_name = g_type_name(callback_object->param_types[i]);
+        g_critical("php-gtk3: [GObject_::connect_callback] unsupported parameter type %s",
+                   (type_name != nullptr) ? type_name : "(unknown)");
+        internal_parameters[i + 1] = Php::Value();
+        break;
+      }
     }
   }
 
@@ -268,79 +282,47 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
   // Call php function with parameters.
   //
   // A PHP throwable may escape the handler. It must NOT be allowed to unwind
-  // across GLib's C signal-emission frames (gtk_dialog_run / gtk_main): a C++
-  // exception thrown through C code is silently lost and terminates the process.
+  // across GLib's C signal-emission frames (gtk_dialog_run / gtk_main):
+  // propagating a C++ exception through C code is undefined behaviour - GLib's
+  // emission-stack cleanup is skipped and the main loop is left inconsistent
+  // (and on toolchains without C unwind tables it calls std::terminate).
   // We therefore catch it here, at the C++/PHP boundary, and report it instead
   // of letting it propagate.
   //
+  // Consequence: exceptions from signal handlers no longer surface to a PHP
+  // try/catch around Gtk::main(). Use Gtk::set_exception_handler() to observe
+  // them; without one they are reported with g_critical() on stderr.
+  //
   // Important: catch Php::Throwable, not just Php::Exception. A PHP *Error*
   // (e.g. "Undefined constant") is surfaced by PHP-CPP as Php::Error, a sibling
-  // of Php::Exception under Php::Throwable; a Php::Exception-only catch misses
-  // it and the process aborts silently.
+  // of Php::Exception under Php::Throwable, so a Php::Exception-only catch
+  // misses it entirely.
   std::string callback_error;
+  long int callback_error_code = 0;
   bool callback_failed = false;
   try {
     Php::Value ret =
         Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
     return ret;
   } catch (Php::Throwable &throwable) {
-    // Capture the message now, but report only *after* this catch scope exits:
+    // Capture the details now, but report only *after* this catch scope exits:
     // PHP-CPP's ~Rethrowable clears the pending Zend exception on destruction
-    // (we do not rethrow), so calling back into PHP is safe only once the catch
-    // block has ended.
+    // (we do not rethrow), and while it is still pending Zend refuses to run
+    // any function - a report issued from inside this block would be dropped
+    // without a trace.
     callback_error = throwable.what();
+    callback_error_code = throwable.code();
     callback_failed = true;
   }
 
   if (callback_failed) {
-    const gchar *signal_name = callback_object->signal_name ? callback_object->signal_name : "";
-    try {
-      Php::call("call_user_func", std::string("Gtk3Helper::reportCallbackException"),
-                callback_error, std::string(signal_name));
-    } catch (...) {
-      // Never let error reporting itself throw across the C boundary.
-      try {
-        Php::call("error_log", std::string("Uncaught exception in GTK '") + signal_name +
-                                   "' handler: " + callback_error);
-      } catch (...) {}
-    }
+    phpgtk_report_callback_exception(callback_error, callback_error_code,
+                                     callback_object->signal_name);
   }
 
+  // FALSE = do not stop signal emission; a handler that failed must not also
+  // block GTK's default behaviour for this signal.
   return false;
-
-  // Return to st_callback
-  // struct st_callback *callback_object = (struct st_callback *) user_data;
-
-  // // Create internal params, GtkWidget + GdkEvent
-  // Php::Value internal_parameters;
-  // internal_parameters[0] = callback_object->self_widget;
-
-  // Php::call("var_dump", G_TYPE_IS_FUNDAMENTAL(G_TYPE_FROM_CLASS(user_param)));
-
-  //  // Verify if user_param is a GFundamentalType
-  // if(G_TYPE_IS_FUNDAMENTAL(G_TYPE_FROM_CLASS(user_param))) {
-
-  //     // Create event from callback
-  //     GdkEvent_ *event_ = new GdkEvent_();
-  //     Php::Value gdkevent = Php::Object("GdkEvent", event_);
-  //     event_->populate((GdkEvent *) user_param);
-
-  //     // Add as second parameter
-  //     internal_parameters[1] = gdkevent;
-  // }
-
-  // // Merge internal parameters with custom parameters
-  // // Php::Value callback_params = callback_object->callback_params;
-  // // Php::Value custom_parameters = Php::call("array_slice", callback_params, 2,
-  // callback_params.size());
-  // // Php::Value php_callback_param = Php::call("array_merge", internal_parameters,
-  // custom_parameters);
-
-  // // Call php function with parameters
-  // Php::Value ret = Php::call("call_user_func_array", callback_object->callback_name,
-  // internal_parameters);
-
-  // return ret;
 }
 
 /**

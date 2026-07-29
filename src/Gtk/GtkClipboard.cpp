@@ -1,6 +1,8 @@
 
 #include "GtkClipboard.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Struct for callback gpointer
  */
@@ -172,13 +174,25 @@ void GtkClipboard_::request_text_callback(GtkClipboard *clipboard, const gchar *
     internal_parameters[i + 1] = callback_object->user_parameters[i];
   }
 
-  // Call php function with parameters
-  // Wrap in try-catch to properly handle exceptions from PHP callbacks
+  // Call php function with parameters.
+  //
+  // As in GObject_::connect_callback: a throwable must not unwind across
+  // GLib's C frames, so it is captured here and reported only after the catch
+  // scope has exited and released the pending Zend exception.
+  std::string callback_error;
+  long int callback_error_code = 0;
+  bool callback_failed = false;
   try {
     Php::call("call_user_func_array", callback_name, internal_parameters);
-  } catch (Php::Exception &exception) {
-    // Re-throw to let PHP-CPP handle the exception properly
-    throw;
+  } catch (Php::Throwable &throwable) {
+    callback_error = throwable.what();
+    callback_error_code = throwable.code();
+    callback_failed = true;
+  }
+
+  if (callback_failed) {
+    phpgtk_report_callback_exception(callback_error, callback_error_code,
+                                     "GtkClipboard::request_text");
   }
 }
 

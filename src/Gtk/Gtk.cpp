@@ -30,6 +30,21 @@ void Gtk_::main_quit() {
   gtk_main_quit();
 }
 
+void Gtk_::set_exception_handler(Php::Parameters &parameters) {
+  if (parameters.empty() || parameters[0].isNull()) {
+    phpgtk_set_exception_handler(nullptr);
+    return;
+  }
+
+  // Validate now, while we can still throw into PHP space. Reporting time is a
+  // context where a bad handler could only be swallowed.
+  if (!Php::call("is_callable", parameters[0]).boolValue()) {
+    throw Php::Exception("Gtk::set_exception_handler() expects a callable or null");
+  }
+
+  phpgtk_set_exception_handler(parameters[0]);
+}
+
 Php::Value Gtk_::timeout_add(Php::Parameters &parameters) {
   guint interval = (int)parameters[0];
 
@@ -60,14 +75,29 @@ gint Gtk_::timeout_add_callback(gpointer data) {
   // Use the prepared callback_params directly
   Php::Array internal_parameters = callback_object->callback_params;
 
-  // Call php function with parameters
-  // Wrap in try-catch to properly handle exceptions from PHP callbacks
+  // Call php function with parameters.
+  //
+  // As in GObject_::connect_callback: a throwable must not unwind across
+  // GLib's C frames, so it is captured here and reported only after the catch
+  // scope has exited and released the pending Zend exception.
+  std::string callback_error;
+  long int callback_error_code = 0;
+  bool callback_failed = false;
   Php::Value ret;
   try {
     ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
-  } catch (Php::Exception &exception) {
-    // Re-throw to let PHP-CPP handle the exception properly
-    throw;
+  } catch (Php::Throwable &throwable) {
+    callback_error = throwable.what();
+    callback_error_code = throwable.code();
+    callback_failed = true;
+  }
+
+  if (callback_failed) {
+    phpgtk_report_callback_exception(callback_error, callback_error_code, "Gtk::timeout_add");
+
+    // FALSE = remove the source: a callback that throws would otherwise fire
+    // (and be reported) again on every interval.
+    return FALSE;
   }
 
   // verify return type
