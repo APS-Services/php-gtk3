@@ -50,11 +50,24 @@ jobs:
       # Compiles every object file (but does not link the final .so, so no
       # libphpcpp is needed) purely to capture accurate per-file compiler
       # flags/include paths into compile_commands.json for clang-tidy.
+      #
+      # PHP-CPP and GTK headers are passed with -isystem instead of -I: as
+      # user include paths their *internal* warnings would be reported too
+      # (-Woverloaded-virtual fires inside PHP-CPP's value.h, GTimeVal
+      # deprecations inside gtksourceview, ...), drowning out php-gtk3's own
+      # warnings. Locally this never shows because PHP-CPP sits in
+      # /usr/include, which is already a system path. The -isystem flags are
+      # also recorded into compile_commands.json, so clang-tidy likewise stops
+      # reporting findings located inside those headers.
+      #
+      # The GTKFLAGS package list must mirror the Makefile's GTKFLAGS line for
+      # the WITH_GLADEUI/WITH_LIBWNCK/WITH_WEBKIT=1 configuration used here.
       - name: Generate compile_commands.json
         run: |
           make compile_commands \
             WITH_GLADEUI=1 WITH_LIBWNCK=1 WITH_WEBKIT=1 \
-            PHPFLAGS="-I/tmp/PHP-CPP"
+            PHPFLAGS="-isystem /tmp/PHP-CPP" \
+            GTKFLAGS="$(pkg-config --cflags gtk+-3.0 gladeui-2.0 gtksourceview-3.0 libwnck-3.0 webkit2gtk-4.1 | sed 's/-I/-isystem/g')"
 
       # C++ linting only; this does NOT link/produce the extension.
       # Restrict to C++ sources (.cpp implementation files, no headers) in
