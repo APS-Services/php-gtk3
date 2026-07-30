@@ -192,8 +192,19 @@ GTKLIBS             =   `pkg-config --libs gtk+-3.0 ${GLADEUILIBS} gtksourceview
 
 GIT_HASH            :=   $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
 BUILD_DATE          :=   $(shell date -u +%Y-%m-%d)
-VERSION_FLAGS       :=   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\"$(BUILD_DATE)\"
 
+# Report the linked PHP-CPP release in the build info: the version is only
+# recorded in the library filename (libphpcpp.a.2.4.13 -> "2.4.13").
+ifdef PHPCPP_STATIC
+    PHPCPP_LIB      :=  $(patsubst libphpcpp.a.%,%,$(notdir $(PHPCPP_STATIC)))
+else
+    PHPCPP_LIB      :=  system
+endif
+
+VERSION_FLAGS       :=   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\"$(BUILD_DATE)\" -DPHPGTK_PHPCPP_LIB=\"$(PHPCPP_LIB)\"
+
+# NOTE: COMPILER_FLAGS must keep ending with '-o' - the object rule appends
+# '$@ source.cpp' directly after it. Never append flags below this line.
 COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
 

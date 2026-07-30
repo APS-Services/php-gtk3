@@ -51,10 +51,13 @@
 	                                      const char *context);
 
 	/**
-	 * Build metadata ("built <date>, git <hash>"), defined in version.cpp - the
+	 * Build metadata ("built <date>, git <hash>") and the compiled-in optional
+	 * features ("webkit=yes, gladeui=no, ..."), defined in version.cpp - the
 	 * one translation unit the Makefile force-rebuilds so the values stay current.
 	 */
 	const char *phpgtk_build_info();
+	const char *phpgtk_build_features();
+	const char *phpgtk_phpcpp_info();
 
 
 #endif

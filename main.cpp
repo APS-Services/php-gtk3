@@ -35,6 +35,16 @@ PHPCPP_EXPORT void *get_module() {
   extension.add(Php::Constant("PHPGTK_VERSION", "1.0"));
   extension.add(Php::Constant("PHPGTK_BUILD_INFO", phpgtk_build_info()));
 
+  extension.add(Php::Constant("PHPGTK_FEATURES", phpgtk_build_features()));
+  extension.add(Php::Constant("PHPGTK_PHPCPP", phpgtk_phpcpp_info()));
+
+  // Registered as ini directives so the build info also shows up in the
+  // php-gtk3 section of phpinfo() / php -i (PHP prints every extension's
+  // directives there). Place::System keeps them effectively read-only.
+  extension.add(Php::Ini("php-gtk3.build_info", phpgtk_build_info(), Php::Ini::Place::System));
+  extension.add(Php::Ini("php-gtk3.features", phpgtk_build_features(), Php::Ini::Place::System));
+  extension.add(Php::Ini("php-gtk3.phpcpp", phpgtk_phpcpp_info(), Php::Ini::Place::System));
+
   // Initialize GTK
   // gtk_init (0, NULL);
 
