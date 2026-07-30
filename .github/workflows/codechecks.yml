@@ -90,6 +90,12 @@ jobs:
           # push/workflow_dispatch runs without a meaningful diff simply
           # report nothing.
           files-changed-only: true
+          # ...and within those files, only count/annotate findings on lines
+          # the diff actually touches. Without this, editing one line of a
+          # legacy file reports that file's whole pre-existing backlog as
+          # "checks failed" (hundreds of findings a local ./lint.sh - which
+          # only fails on hard clang-tidy errors - never surfaces).
+          lines-changed-only: true
           # Compile database generated above, so clang-tidy knows the real
           # GTK/Glade/GtkSourceView/libwnck/WebKit/PHP-CPP include paths
           database: .
