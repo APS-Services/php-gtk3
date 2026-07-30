@@ -146,6 +146,7 @@ void GtkTreeSelection_::selected_foreach(Php::Parameters &parameters) {
   memset(callback_object, 0, sizeof(struct generic_st_callback));
 
   callback_object->callback_name = parameters[0];
+  callback_object->context = "GtkTreeSelection::selected_foreach";
 
   // Php::call("var_dump", "OK 1.1");
 

@@ -79,6 +79,24 @@ PHP-GTK3 includes `GtkStatusIcon` for creating system tray icons:
 GDK_BACKEND=x11 php your_app.php
 ```
 
+### Exception Handling in Callbacks
+
+An exception thrown inside a signal handler (or other callback, like a `Gtk::timeout_add` function) cannot propagate out of GTK's main loop, so a `try/catch` around `Gtk::main()` will **not** see it. Instead, PHP-GTK3 catches it at the C++/PHP boundary and reports it - by default with a `g_critical()` message on stderr, and the application keeps running.
+
+To route these failures into your own logging or error dialog, install a handler:
+
+```php
+<?php
+Gtk::set_exception_handler(function (string $message, string $origin, int $code) {
+    // $origin is the signal name, or the installing method (e.g. "Gtk::timeout_add")
+    error_log("[$origin] handler failed: $message");
+});
+```
+
+Pass `null` to remove the handler again. Both PHP `Exception`s and `Error`s (e.g. a `TypeError` or an undefined constant) are reported this way. Note that only the message and code are available - the original `Throwable` object (class, file, line, trace) cannot cross the C boundary, so catch inside your own callback if you need those details.
+
+See [examples/exception_handler.php](examples/exception_handler.php) for a runnable example.
+
 ## Example
 
 ```php

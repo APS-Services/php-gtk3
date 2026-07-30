@@ -24,21 +24,16 @@ extern "C" {
  *  @return void*   a pointer to an address that is understood by PHP
  */
 PHPCPP_EXPORT void *get_module() {
-#ifndef PHPGTK_GIT_HASH
-#define PHPGTK_GIT_HASH "unknown"
-#endif
-#ifndef PHPGTK_BUILD_DATE
-#define PHPGTK_BUILD_DATE "unknown"
-#endif
-
-  // version string shown by phpinfo(); PHPGTK_GIT_HASH and PHPGTK_BUILD_DATE
-  // are injected by the Makefile at compile time
-  static const std::string version_string =
-      std::string("1.0 (built ") + PHPGTK_BUILD_DATE + ", git " + PHPGTK_GIT_HASH + ")";
-
   // static(!) Php::Extension object that should stay in memory
   // for the entire duration of the process (that's why it's static)
-  static Php::Extension extension("php-gtk3", version_string.c_str());
+  //
+  // The version stays a plain number so phpversion('php-gtk3') remains
+  // version_compare()-friendly; the git hash / build date injected by the
+  // Makefile are exposed via the PHPGTK_BUILD_INFO constant instead.
+  static Php::Extension extension("php-gtk3", "1.0");
+
+  extension.add(Php::Constant("PHPGTK_VERSION", "1.0"));
+  extension.add(Php::Constant("PHPGTK_BUILD_INFO", phpgtk_build_info()));
 
   // Initialize GTK
   // gtk_init (0, NULL);
@@ -1181,6 +1176,7 @@ PHPCPP_EXPORT void *get_module() {
   gtk.method<&Gtk_::main_quit>("main_quit");
   gtk.method<&Gtk_::timeout_add>("timeout_add");
   gtk.method<&Gtk_::source_remove>("source_remove");
+  gtk.method<&Gtk_::set_exception_handler>("set_exception_handler");
   gtk.method<&Gtk_::is_destroyed>("is_destroyed");
   gtk.method<&Gtk_::show_uri_on_window>("show_uri_on_window");
   gtk.method<&Gtk_::events_pending>("events_pending");

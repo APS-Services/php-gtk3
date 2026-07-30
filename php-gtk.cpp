@@ -1,6 +1,75 @@
 
 #include "php-gtk.h"
 
+/**
+ * Slot holding the handler installed from PHP via Gtk::set_exception_handler(),
+ * or a null Php::Value when the application did not install one.
+ *
+ * Deliberately allocated once and never freed: a Php::Value with static storage
+ * duration would be destroyed at process exit, i.e. after Zend has already shut
+ * down, and releasing a zval at that point is not safe. Reassigning the slot
+ * instead releases the previous callable while PHP is still up.
+ */
+static Php::Value &phpgtk_exception_handler() {
+  static Php::Value *handler = new Php::Value();
+  return *handler;
+}
+
+/**
+ * Install (or, with a null value, remove) the callback exception handler.
+ */
+void phpgtk_set_exception_handler(const Php::Value &handler) {
+  phpgtk_exception_handler() = handler;
+}
+
+/**
+ * Whether a handler is installed. This only inspects the stored zval's type on
+ * purpose - it must not call into PHP, because it runs on a path where an
+ * exception may still be pending and every call would be dropped.
+ */
+bool phpgtk_has_exception_handler() {
+  return !phpgtk_exception_handler().isNull();
+}
+
+/**
+ * Report an exception that escaped a PHP callback.
+ *
+ * Call this only *after* the catch block that captured the throwable has been
+ * left: PHP-CPP clears the pending Zend exception when the caught object is
+ * destroyed, and while it is still pending Zend refuses to run any function,
+ * which would silently swallow both the handler and the fallback.
+ *
+ * Falls back to g_critical(), which is plain C and cannot throw, so a failure
+ * is always visible even when no handler is installed or the handler itself
+ * fails.
+ */
+void phpgtk_report_callback_exception(const std::string &message, long int code,
+                                      const char *context) {
+  // Signal name for signal handlers, otherwise the installing method
+  // (e.g. "Gtk::timeout_add")
+  const char *origin = (context != nullptr) ? context : "";
+  bool reported = false;
+
+  if (phpgtk_has_exception_handler()) {
+    try {
+      Php::call("call_user_func", phpgtk_exception_handler(), message, std::string(origin),
+                static_cast<int64_t>(code));
+      reported = true;
+    } catch (...) {
+      // The handler itself failed; fall through to g_critical() below so the
+      // original exception is still reported. Nothing may escape into GLib.
+      g_critical(
+          "php-gtk3: Gtk::set_exception_handler() callback failed while reporting an "
+          "exception from the '%s' handler",
+          origin);
+    }
+  }
+
+  if (!reported) {
+    g_critical("php-gtk3: uncaught exception in '%s' handler: %s", origin, message.c_str());
+  }
+}
+
 bool phpgtk_check_parameter(Php::Parameters &parameters, int param, Php::Type expected_type,
                             bool required, const char *object_type) {
   int param_count = parameters.size();
@@ -261,19 +330,36 @@ void generic_callback(gpointer *self, ...) {
         break;
       }
 
-      default:
-        std::string error("[generic_callback] Internal error: unsupported type ");
-        throw Php::Exception(error + g_type_name(callback_object->param_types[i]));
+      default: {
+        // Must not throw: this runs inside GLib's C frames (see the catch
+        // below). Report the marshalling gap and pass null for this parameter.
+        // g_type_name() returns NULL for an unregistered type.
+        const gchar *type_name = g_type_name(callback_object->param_types[i]);
+        g_critical("php-gtk3: [generic_callback] unsupported parameter type %s",
+                   (type_name != nullptr) ? type_name : "(unknown)");
+        internal_parameters[i] = Php::Value();
+        break;
+      }
     }
   }
 
-  // call php function with parameters
-  // Wrap in try-catch to properly handle exceptions from PHP callbacks
+  // Call php function with parameters.
+  //
+  // As in GObject_::connect_callback: a throwable must not unwind across
+  // GLib's C frames, so it is captured here and reported only after the catch
+  // scope has exited and released the pending Zend exception.
+  std::string callback_error;
+  long int callback_error_code = 0;
+  bool callback_failed = false;
   try {
-    Php::Value ret =
-        Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
-  } catch (Php::Exception &exception) {
-    // Re-throw to let PHP-CPP handle the exception properly
-    throw;
+    Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
+  } catch (Php::Throwable &throwable) {
+    callback_error = throwable.what();
+    callback_error_code = throwable.code();
+    callback_failed = true;
+  }
+
+  if (callback_failed) {
+    phpgtk_report_callback_exception(callback_error, callback_error_code, callback_object->context);
   }
 }

@@ -1,4 +1,4 @@
-name: PHP-GTK3 C++ CI (No-Build Checks)
+name: PHP-GTK3 C++ CI (static analysis)
 
 on:
   workflow_dispatch:
@@ -32,13 +32,17 @@ jobs:
       # build/link is required to generate an accurate compile database.
       #
       # phpcpp.h itself uses #include <phpcpp/xxx.h>, which only resolves
-      # once installed (PHP-CPP's own `make install` copies phpcpp.h next to
-      # include/*.h renamed into a phpcpp/ subdirectory) - a raw clone's
-      # include/ directory doesn't match that layout, so replicate it here
-      # without needing PHP-CPP's own build/configure.
+      # once installed (PHP-CPP's own `make install` copies phpcpp.h to the
+      # include root and include/*.h into a phpcpp/ subdirectory) - a raw
+      # clone's include/ directory doesn't match that layout, so replicate it
+      # here without needing PHP-CPP's own build/configure.
+      #
+      # Pinned to a commit so analysis results are reproducible and don't
+      # shift when the fork's default branch moves.
       - name: Fetch PHP-CPP public headers
         run: |
-          git clone --depth 1 https://github.com/fast-debug/PHP-CPP.git /tmp/phpcpp-src
+          git clone https://github.com/fast-debug/PHP-CPP.git /tmp/phpcpp-src
+          git -C /tmp/phpcpp-src checkout 640d12b1fee231e73b4dbbb8b0e10284bfbfb170
           mkdir -p /tmp/PHP-CPP/phpcpp
           cp /tmp/phpcpp-src/phpcpp.h /tmp/PHP-CPP/
           cp /tmp/phpcpp-src/include/*.h /tmp/PHP-CPP/phpcpp/
@@ -57,27 +61,31 @@ jobs:
       # this repo; there are no other .cpp files outside main.cpp/php-gtk.cpp/
       # src/**, so the default file discovery already covers exactly those.
       #
-      # Report-only for now: this is the first time these checks have ever
-      # run, and they surfaced ~9.7k pre-existing findings across the
-      # codebase. Failing the job on that backlog would block every future
-      # push/PR. File annotations (file-annotations, on by default) still
-      # surface findings for visibility; nothing here fails the build.
-      # Revisit once the backlog is triaged/burned down.
+      # Report-only: a full-codebase run (2026-07, with the action's default
+      # check list) surfaced ~9.7k pre-existing findings. Failing the job on
+      # that backlog would block every future push/PR. File annotations
+      # (file-annotations, on by default) still surface findings for
+      # visibility; nothing here fails the build. Revisit once the backlog is
+      # triaged/burned down.
       - name: C++ Linter (clang-tidy/clang-format)
-        id: cpp-linter
         uses: cpp-linter/cpp-linter-action@v2
         with:
           # Only .cpp implementation files, not headers
           extensions: cpp
-          # Analyze every matching file, not just ones changed in a diff -
-          # this workflow also runs on push/workflow_dispatch, which have no
-          # meaningful "changed files" diff to restrict to
-          files-changed-only: false
+          # Only analyze files changed in the triggering diff - the
+          # full-codebase backlog above makes whole-repo reports unusable.
+          # push/workflow_dispatch runs without a meaningful diff simply
+          # report nothing.
+          files-changed-only: true
           # Compile database generated above, so clang-tidy knows the real
           # GTK/Glade/GtkSourceView/libwnck/WebKit/PHP-CPP include paths
           database: .
-          # Do not try to auto-fix code; just report
+          # Use the repo .clang-format for style checks
           style: file
+          # Empty -> defer entirely to .clang-tidy at the repo root. Without
+          # this the action appends its own default check list, re-enabling
+          # every check .clang-tidy deliberately disables.
+          tidy-checks: ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -24,9 +24,37 @@
 		GType return_type;
 		int n_params;
 		GType *param_types;
+
+		// Where this callback was installed (e.g. "GtkTreeSelection::selected_foreach"),
+		// used when reporting an exception that escaped the PHP callback. Must point
+		// to a string literal - the struct outlives the installing call.
+		const char *context;
 	};
 
 	void generic_callback(gpointer *self, ...);
+
+	/**
+	 * Reporting of PHP exceptions that escape a callback.
+	 *
+	 * A throwable must never unwind across GLib's C signal-emission frames, so
+	 * every callback catches it and hands the details here instead. Reporting
+	 * has to keep working when no PHP handler is installed, which is why the
+	 * handler is *registered* rather than looked up by name: asking PHP whether
+	 * an unknown callable exists can itself raise, and a pending Zend exception
+	 * makes every later Php::call() a silent no-op.
+	 *
+	 * See Gtk_::set_exception_handler() for the PHP-facing API.
+	 */
+	void phpgtk_set_exception_handler(const Php::Value &handler);
+	bool phpgtk_has_exception_handler();
+	void phpgtk_report_callback_exception(const std::string &message, long int code,
+	                                      const char *context);
+
+	/**
+	 * Build metadata ("built <date>, git <hash>"), defined in version.cpp - the
+	 * one translation unit the Makefile force-rebuilds so the values stay current.
+	 */
+	const char *phpgtk_build_info();
 
 
 #endif
