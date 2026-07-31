@@ -20,7 +20,7 @@ This is extremely experimental
 
 6. Now you can build source with docker with command `docker run --name php-gtk3-container --rm -v $PWD:/app php-gtk3-image build 4`
 
-7. If all works fine, you can test your build with `docker run --name php-gtk3-container --rm -v $PWD:/app php-gtk3-image php -m`. You will see  `php-gtk3` extension on the list
+7. If all works fine, you can test your build with `docker run --name php-gtk3-container --rm -v $PWD:/app php-gtk3-image php -m`. You will see  `gtk3` extension on the list
 
 # How to install PHP-GTK on Linux with Docker
 

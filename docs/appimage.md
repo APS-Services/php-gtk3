@@ -114,7 +114,7 @@ _This is for my reference only._
 prepare:
 
 - Compile PHP to the prefix `/usr/local/php-gtk3`
-- If updating only, verify requerid libs of `php-gtk3.so` and `php` compiled. For exemplo, `php` can be compiled with `libreadline7` and new `php-gtk3.so` with `libreadline8`
+- If updating only, verify requerid libs of `gtk3.so` and `php` compiled. For exemplo, `php` can be compiled with `libreadline7` and new `gtk3.so` with `libreadline8`
 - Create dir like `AppDir` and copy this to same path  like `AppDir/usr/local/php-gtk3`
 - Copy default `AppRun`, `php-gtk3.desktop`, `php-gtk3.png` and `php-gtk3.png.png`. This last, are because deploy need a .png and tool need without .png
 

@@ -45,7 +45,7 @@ Important files and directories in the repo root:
 - `LICENSE` – Project licensing.
 - `php-gtk.cpp`, `php-gtk.h` – Core binding/extension implementation code.
 - `main.cpp`, `main.h` – Central glue for wiring GTK and PHP-CPP together (extension entry, registration, etc.).
-- `php-gtk3.ini` – Extension ini configuration template.
+- `gtk3.ini` – Extension ini configuration template.
 - `src/` – Core C++ implementation of the bindings, organized by GTK and related namespaces.
 - `docs/` – Additional documentation (you do not need to follow its build instructions).
 - `docker/` – Docker and AppImage assets (environment and packaging, not source logic).

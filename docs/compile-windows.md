@@ -312,7 +312,7 @@
 
    Rename file `C:\php-dev\php-8.1.14-nts-Win32-vs16-x64\php.ini-development` to `C:\php-dev\php-8.1.14-nts-Win32-vs16-x64\php.ini`
 
-   Edit `C:\php-dev\php-8.1.14-nts-Win32-vs16-x64\php.ini` adding on end of file `extension=php-gtk3`
+   Edit `C:\php-dev\php-8.1.14-nts-Win32-vs16-x64\php.ini` adding on end of file `extension=gtk3`
 
 2. Dependent libs
 
