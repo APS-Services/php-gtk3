@@ -9,3 +9,6 @@ thumbs.db
 build-*.sh
 ._codeql_detected_source_root
 compile_commands.json
+CLAUDE.md
+.claude/settings.local.json
+.claude

@@ -1,5 +1,5 @@
-
 #include "GtkSourceLanguageManager.h"
+#include <vector>
 
 /**
  * Constructor
@@ -62,7 +62,7 @@ Php::Value GtkSourceLanguageManager_::get_search_path() {
 void GtkSourceLanguageManager_::set_search_path(Php::Parameters &parameters) {
   // get the array param
   Php::Value arr = parameters[0];
-  gchar *dirs[arr.size() + 1];
+  std::vector<gchar*> dirs(arr.size() + 1);
 
   // loop indexes of param
   for (int index = 0; index < (int)arr.size(); index++) {
@@ -74,10 +74,10 @@ void GtkSourceLanguageManager_::set_search_path(Php::Parameters &parameters) {
   // finalize last post with null
   dirs[arr.size()] = nullptr;
 
-  gtk_source_language_manager_set_search_path(GTK_SOURCE_LANGUAGE_MANAGER(instance), dirs);
+  gtk_source_language_manager_set_search_path(GTK_SOURCE_LANGUAGE_MANAGER(instance), dirs.data());
 
   // free pointers
-  for (int i = 0; i < arr.size(); i++) {
+  for (size_t i = 0; i < arr.size(); i++) {
     g_free(dirs[i]);
   }
 }

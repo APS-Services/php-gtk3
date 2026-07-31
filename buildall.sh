@@ -54,7 +54,7 @@ for BUILD in "${BUILDS[@]}"; do
     echo "=== Building for PHP ${VERSION} (libphpcpp: ${PHPCPP_STATIC}) ==="
     make clean
     make PHP_CONFIG="${PHP_CONFIG}" INI_DIR="${INI_DIR}/" WITH_WEBKIT="${WITH_WEBKIT}" PHPCPP_STATIC="${PHPCPP_STATIC}" -j12
-    cp php-gtk3.so "${SO_DEST}"
+    cp gtk3.so "${SO_DEST}"
 done
 
 echo "=== All versions built successfully ==="
