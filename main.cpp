@@ -27,10 +27,15 @@ PHPCPP_EXPORT void *get_module() {
   // static(!) Php::Extension object that should stay in memory
   // for the entire duration of the process (that's why it's static)
   //
-  // The version stays a plain number so phpversion('php-gtk3') remains
+  // The module is named "gtk3" so the name reported by php -m /
+  // extension_loaded() matches the php.ini directive (extension=gtk3) and the
+  // library name PHP derives from it (php_gtk3.dll on Windows, gtk3.so
+  // elsewhere).
+  //
+  // The version stays a plain number so phpversion('gtk3') remains
   // version_compare()-friendly; the git hash / build date injected by the
   // Makefile are exposed via the PHPGTK_BUILD_INFO constant instead.
-  static Php::Extension extension("php-gtk3", "1.0");
+  static Php::Extension extension("gtk3", "1.0");
 
   extension.add(Php::Constant("PHPGTK_VERSION", "1.0"));
   extension.add(Php::Constant("PHPGTK_BUILD_INFO", phpgtk_build_info()));
@@ -39,11 +44,11 @@ PHPCPP_EXPORT void *get_module() {
   extension.add(Php::Constant("PHPGTK_PHPCPP", phpgtk_phpcpp_info()));
 
   // Registered as ini directives so the build info also shows up in the
-  // php-gtk3 section of phpinfo() / php -i (PHP prints every extension's
+  // gtk3 section of phpinfo() / php -i (PHP prints every extension's
   // directives there). Place::System keeps them effectively read-only.
-  extension.add(Php::Ini("php-gtk3.build_info", phpgtk_build_info(), Php::Ini::Place::System));
-  extension.add(Php::Ini("php-gtk3.features", phpgtk_build_features(), Php::Ini::Place::System));
-  extension.add(Php::Ini("php-gtk3.phpcpp", phpgtk_phpcpp_info(), Php::Ini::Place::System));
+  extension.add(Php::Ini("gtk3.build_info", phpgtk_build_info(), Php::Ini::Place::System));
+  extension.add(Php::Ini("gtk3.features", phpgtk_build_features(), Php::Ini::Place::System));
+  extension.add(Php::Ini("gtk3.phpcpp", phpgtk_phpcpp_info(), Php::Ini::Place::System));
 
   // Initialize GTK
   // gtk_init (0, NULL);

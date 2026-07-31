@@ -189,7 +189,7 @@ Then right-click in the web page and select "Inspect Element" to access:
 **Important**: If you experience a segfault when closing WebKit applications, ensure the PHP `gd` extension is loaded **after** the `php-gtk3` extension in your `php.ini` file:
 
 ```ini
-extension=php-gtk3
+extension=gtk3
 extension=gd
 ```
 

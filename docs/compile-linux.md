@@ -63,7 +63,7 @@ Compile and install
 
 ## Compile PHP-GTK3 from source
 
-This will create php-gtk3.so php module
+This will create gtk3.so php module
 
 Get GTK dependencies, on deb systems, like:
 
@@ -105,18 +105,18 @@ To compile with WebKit support:
 You can test with
 
 ```sh
-:$ /opt/php/php-8.2.22/bin/php -dextension=./php-gtk3.so examples/test1.php
+:$ /opt/php/php-8.2.22/bin/php -dextension=./gtk3.so examples/test1.php
 ```
 
 ## Make a manual instalation
 
-Copy `php-gtk3.so` created to php library dir
+Copy `gtk3.so` created to php library dir
 
 ```sh
-:$ sudo cp php-gtk3.so `/usr/local/php-gtk3/bin/php-config --extension-dir`
+:$ sudo cp gtk3.so `/usr/local/php-gtk3/bin/php-config --extension-dir`
 ```
 
-Add `php-gtk3.so` extension to `/usr/local/php-gtk3/lib/php.ini`. Create the file if needed.
+Add `gtk3.so` extension to `/usr/local/php-gtk3/lib/php.ini`. Create the file if needed.
 
 Create a script that will execute all
 
@@ -128,7 +128,7 @@ With content
 
 ```
 #!/bin/bash
-/opt/php/phpPHP-8.2.22/bin/php -dextension=php-gtk3.so $@
+/opt/php/phpPHP-8.2.22/bin/php -dextension=gtk3.so $@
 ```
 
 Make it executable

@@ -37,9 +37,12 @@
 #   name of the library file (name.so) and the name of the config file (name.ini)
 #   are automatically generated
 #
+#   It must match the module name registered in main.cpp so that php -m,
+#   extension_loaded() and the php.ini directive (extension=gtk3) all agree.
+#
 
 
-NAME                =   php-gtk3
+NAME                =   gtk3
 
 #
 #   Php.ini directories
