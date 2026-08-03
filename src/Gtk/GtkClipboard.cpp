@@ -146,10 +146,11 @@ void GtkClipboard_::request_contents(Php::Parameters &parameters) {
 }
 
 void GtkClipboard_::request_text(Php::Parameters &parameters) {
-  // std::string s_user_function = parameters[0];
-  // gchar *user_function = (gchar *)s_user_function.c_str();
-
-  // gpointer user_data = (gpointer)parameters[1];
+  // Validate here, while we are still in PHP space and can throw. Inside the
+  // callback a bad handler could only be reported, not raised.
+  if (parameters.empty() || !parameters[0].isCallable()) {
+    throw Php::Exception("GtkClipboard::request_text() expects a callable");
+  }
 
   // Create user data param of callaback.
   //
@@ -171,8 +172,12 @@ void GtkClipboard_::request_text_callback(GtkClipboard *clipboard, const gchar *
   // Return to st_callback
   struct st_request_callback *callback_object = (struct st_request_callback *)user_data;
 
-  // Callback_name
-  std::string callback_name = callback_object->user_parameters[0];
+  // The handler, kept as a Php::Value rather than converted to std::string:
+  // anything callable works that way - a closure, [$object, 'method'], an
+  // invokable - matching every other callback in the binding. Reading it into a
+  // std::string accepted only a plain function name, and turned a closure into
+  // an "object of class Closure could not be converted to string" error.
+  Php::Value callback_name = callback_object->user_parameters[0];
 
   // Create internal params, GtkClipboard + text + user_data...
   //

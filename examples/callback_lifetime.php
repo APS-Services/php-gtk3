@@ -68,27 +68,13 @@ final class Report
 }
 
 /**
- * GtkClipboard::request_text() takes the handler as a *function name*, not as a
- * callable - the binding reads it into a std::string - so these two cannot be
- * closures like the rest of the script uses.
+ * GtkClipboard::request_text() accepts any callable - a closure here, which is
+ * the case that used to fail: the handler was read into a std::string, so only
+ * a plain function name worked and a closure produced a conversion error.
  */
 $clipboard_text = 'not called';
 $clipboard_calls = 0;
 $clipboard_in_loop = false;
-
-function on_clipboard_text($clipboard, $text): void
-{
-    global $clipboard_text, $clipboard_calls, $clipboard_in_loop;
-
-    $clipboard_text = $text;
-    $clipboard_calls++;
-
-    // When this process owns the selection GTK answers immediately, before the
-    // main loop is ever entered - calling main_quit() then trips a Gtk-CRITICAL.
-    if ($clipboard_in_loop) {
-        Gtk::main_quit();
-    }
-}
 
 /**
  * Request the clipboard text and return once the handler has run, driving the
@@ -96,10 +82,21 @@ function on_clipboard_text($clipboard, $text): void
  */
 function request_clipboard_text($clipboard): void
 {
-    global $clipboard_text, $clipboard_in_loop;
+    global $clipboard_text, $clipboard_calls, $clipboard_in_loop;
 
     $clipboard_text = 'not called';
-    $clipboard->request_text('on_clipboard_text');
+    $clipboard->request_text(function ($clip, $text) {
+        global $clipboard_text, $clipboard_calls, $clipboard_in_loop;
+
+        $clipboard_text = $text;
+        $clipboard_calls++;
+
+        // When this process owns the selection GTK answers immediately, before
+        // the main loop is entered - main_quit() then trips a Gtk-CRITICAL.
+        if ($clipboard_in_loop) {
+            Gtk::main_quit();
+        }
+    });
 
     if ($clipboard_text !== 'not called') {
         return;
@@ -186,14 +183,16 @@ Gtk::main();
 Report::check('self-removing timeout ran exactly 3 times', $ticks === 3, 'ticks=' . $ticks);
 
 // ---------------------------------------------------------------------------
-Report::section('GtkClipboard::request_text - null text no longer crashes');
+Report::section('GtkClipboard::request_text - closures and null text');
 
 $clipboard = new GtkClipboard(GdkSelection::CLIPBOARD);
 $clipboard->set_text('php-gtk3 lifetime check', -1);
 
+// The handler is a closure - see request_clipboard_text(). That is the case the
+// std::string conversion used to reject outright.
 request_clipboard_text($clipboard);
 
-Report::check('handler received the text that was set', $clipboard_text === 'php-gtk3 lifetime check',
+Report::check('closure handler received the text that was set', $clipboard_text === 'php-gtk3 lifetime check',
     'got ' . var_export($clipboard_text, true));
 
 // The regression: GTK passes NULL when the clipboard holds nothing convertible
@@ -204,6 +203,32 @@ request_clipboard_text($clipboard);
 Report::check('empty clipboard yielded null, not a crash', $clipboard_text === null,
     'got ' . var_export($clipboard_text, true));
 Report::check('handler ran for both requests', $clipboard_calls === 2, 'calls=' . $clipboard_calls);
+
+// A method callable must work too, not just a closure.
+class ClipboardSink
+{
+    public $text = 'not called';
+
+    public function receive($clip, $text): void
+    {
+        $this->text = $text;
+    }
+}
+
+$sink = new ClipboardSink();
+$clipboard->set_text('array callable', -1);
+$clipboard->request_text([$sink, 'receive']);
+Report::check('[$object, method] callable accepted', $sink->text === 'array callable',
+    var_export($sink->text, true));
+
+// A non-callable must be rejected in PHP space, where it can still be thrown.
+$rejected = false;
+try {
+    $clipboard->request_text('this_function_does_not_exist');
+} catch (Throwable $e) {
+    $rejected = true;
+}
+Report::check('request_text rejects a non-callable', $rejected);
 
 // ---------------------------------------------------------------------------
 Report::section('GtkListStore::set_sort_func - data freed when the func is replaced');
@@ -248,7 +273,7 @@ $column->set_cell_data_func($renderer, function ($col, $cell, $model, $iter) {
 Report::check('cell data func replaced without crashing', true);
 
 // ---------------------------------------------------------------------------
-Report::section('GtkTreeSelection::selected_foreach - callback data now on the stack');
+Report::section('GtkTreeSelection::selected_foreach - typed callback');
 
 $view = new GtkTreeView();
 $view->set_model($store);
@@ -257,14 +282,43 @@ $view->append_column($column);
 $selection = $view->get_selection();
 $selection->select_path('0');
 
+// The handler now receives the arguments GTK actually passes. Previously this
+// went through a generic marshaller that scanned its varargs hunting for the
+// user data, reinterpreting the path and iter as PHP values on the way, and
+// delivered neither of them to PHP.
 $visited = 0;
-$selection->selected_foreach(function () use (&$visited) {
+$seen_model = null;
+$seen_path = null;
+$seen_iter = null;
+$seen_extra = null;
+
+$selection->selected_foreach(function ($model, $path, $iter, $extra) use (
+    &$visited, &$seen_model, &$seen_path, &$seen_iter, &$seen_extra
+) {
     $visited++;
-});
+    $seen_model = $model;
+    $seen_path = $path;
+    $seen_iter = $iter;
+    $seen_extra = $extra;
+}, 'user-data');
 
 Report::check('selected_foreach visited the selected row', $visited === 1, 'visited=' . $visited);
-Report::note('this path scans varargs for its user data and is fragile independently of');
-Report::note('the lifetime work - a crash here is not necessarily a regression');
+Report::check('handler received the GtkTreeModel', $seen_model instanceof GtkTreeModel,
+    is_object($seen_model) ? get_class($seen_model) : gettype($seen_model));
+Report::check('handler received the row path', $seen_path === '0', var_export($seen_path, true));
+Report::check('handler received a GtkTreeIter', $seen_iter instanceof GtkTreeIter,
+    is_object($seen_iter) ? get_class($seen_iter) : gettype($seen_iter));
+Report::check('handler received the user parameter', $seen_extra === 'user-data',
+    var_export($seen_extra, true));
+
+// A non-callable must be rejected in PHP space, where it can still be thrown.
+$rejected = false;
+try {
+    $selection->selected_foreach('this_function_does_not_exist');
+} catch (Throwable $e) {
+    $rejected = true;
+}
+Report::check('selected_foreach rejects a non-callable', $rejected);
 
 // ---------------------------------------------------------------------------
 Report::section('GtkAboutDialog credit lists');

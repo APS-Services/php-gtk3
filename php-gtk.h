@@ -14,29 +14,20 @@
 	Php::Value cobject_to_phpobject(gpointer *cobject);
 
 	/**
-	 * Struct for generic callback
+	 * There is deliberately no generic vararg callback marshaller here.
 	 *
-	 * The parameters are kept as a plain vector rather than a Php::Parameters:
-	 * Php::Parameters has no public default constructor, so a struct holding one
-	 * cannot be constructed normally - only the (invalid) malloc + memset trick
-	 * this struct used to be created with would compile.
+	 * There used to be one (generic_callback / generic_st_callback). Because a
+	 * GLib callback signature does not say where the user data sits, it walked
+	 * the varargs casting each argument in turn to its own struct type and
+	 * dereferencing it, looking for one whose first member happened to be a
+	 * callable. For GtkTreeSelectionForeachFunc that meant reading a GtkTreePath
+	 * and a GtkTreeIter as PHP values; it only worked because arbitrary memory
+	 * rarely looks like a callable.
+	 *
+	 * Write a callback typed to the exact GTK signature instead - the user data
+	 * position is then known rather than guessed. See
+	 * selected_foreach_callback() in src/Gtk/GtkTreeSelection.cpp for the shape.
 	 */
-	struct generic_st_callback {
-		Php::Value callback_name;
-		Php::Object self_widget;
-		std::vector<Php::Value> parameters;
-
-		GType return_type;
-		int n_params;
-		GType *param_types;
-
-		// Where this callback was installed (e.g. "GtkTreeSelection::selected_foreach"),
-		// used when reporting an exception that escaped the PHP callback. Must point
-		// to a string literal - the struct outlives the installing call.
-		const char *context;
-	};
-
-	void generic_callback(gpointer *self, ...);
 
 	/**
 	 * Reporting of PHP exceptions that escape a callback.

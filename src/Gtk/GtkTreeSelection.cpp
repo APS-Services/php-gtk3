@@ -105,62 +105,89 @@ Php::Value GtkTreeSelection_::get_selected(Php::Parameters &parameters) {
   return result;
 }
 
-void GtkTreeSelection_::selected_foreach(Php::Parameters &parameters) {
-  // GtkTreeIter *parent;
-  // if(parameters.size() > 0) {
-  // 	Php::Value object_parent = parameters[0];
-  // 	GtkTreeIter_ *phpgtk_parent = (GtkTreeIter_ *)object_parent.implementation();
-  // 	parent = GTK_WIDGET(phpgtk_parent->get_instance());
-  // }
+/**
+ * Callback data for selected_foreach().
+ *
+ * gtk_tree_selection_selected_foreach() is synchronous - it has invoked the
+ * callback for every selected row and returned by the time selected_foreach()
+ * exits - so this lives on that function's stack and needs no destroy notify.
+ */
+struct st_selected_foreach {
+  Php::Value callback;
+  std::vector<Php::Value> user_parameters;
+};
 
-  // gint position = (gint)parameters[1];
+/**
+ * GtkTreeSelectionForeachFunc - invoked once per selected row.
+ *
+ * https://docs.gtk.org/gtk3/callback.TreeSelectionForeachFunc.html
+ *
+ * Written against the exact signature GTK documents rather than routed through
+ * generic_callback(): that helper did not know where in its varargs the user
+ * data sat, so it walked them casting each in turn to its own struct type and
+ * dereferencing it - reading a GtkTreePath and a GtkTreeIter as if they were
+ * PHP values. It only ever worked because arbitrary memory rarely looks like a
+ * callable. With a typed callback the position is known, so nothing is guessed.
+ */
+static void selected_foreach_callback(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter,
+                                      gpointer user_data) {
+  auto *callback_object = static_cast<struct st_selected_foreach *>(user_data);
 
-  // GtkTreeIter *ret = gtk_tree_selection_selected_foreach (GTK_TREE_SELECTION(instance), parent,
-  // position);
+  // (GtkTreeModel, path string, GtkTreeIter, ...user parameters)
+  Php::Value internal_parameters;
 
-  // GtkTreeIter_ *return_parsed = new GtkTreeIter_();
-  // return_parsed->set_instance((gpointer *)ret);
-  // return Php::Object("GtkTreeIter", return_parsed);
+  GtkTreeModel_ *model_ = new GtkTreeModel_();
+  model_->set_model(model);
+  internal_parameters[0] = Php::Object("GtkTreeModel", model_);
 
-  /**
-   * on the caller
-   *
-   * - create a struct with CALLBACK_SPEC, SELF_OBJECT, PHP_FUNCTION_TO_CALL, USER_PARAMETERS
-   * - fetch specs from callback function, and store it on struct
-   * - call the default callback
-   *
-   * on the default callback
-   *
-   * - start create Php::parameters, add self object
-   * - read CALLBACK_SPEC and loop between paramters and parse to Php::value
-   * - append user parameters
-   * - call PHP_FUNCTION_TO_CALL
-   * - return the result of PHP_FUNCTION_TO_CALL
-   */
+  // Paths are passed as strings ("0:2"), matching get_selected_rows().
+  gchar *path_string = gtk_tree_path_to_string(path);
+  internal_parameters[1] = (path_string != nullptr) ? Php::Value(path_string) : Php::Value();
+  g_free(path_string);
 
-  // Create an object to populate and pass to the generic callback.
+  GtkTreeIter_ *iter_ = new GtkTreeIter_();
+  iter_->set_instance(*iter);
+  internal_parameters[2] = Php::Object("GtkTreeIter", iter_);
+
+  // Anything the caller passed after the callback itself
+  for (size_t i = 1; i < callback_object->user_parameters.size(); i++) {
+    internal_parameters[(int)i + 2] = callback_object->user_parameters[i];
+  }
+
+  // Call php function with parameters.
   //
-  // gtk_tree_selection_selected_foreach() is synchronous - it has invoked the
-  // callback for every selected row and returned by the time this function
-  // exits - so both the callback data and the parameter types can live on the
-  // stack. Value-initialised, otherwise the plain members would be garbage.
-  struct generic_st_callback callback_object = {};
+  // As in GObject_::connect_callback: a throwable must not unwind across
+  // GLib's C frames, so it is captured here and reported only after the catch
+  // scope has exited and released the pending Zend exception.
+  std::string callback_error;
+  long int callback_error_code = 0;
+  bool callback_failed = false;
+  try {
+    Php::call("call_user_func_array", callback_object->callback, internal_parameters);
+  } catch (Php::Throwable &throwable) {
+    callback_error = throwable.what();
+    callback_error_code = throwable.code();
+    callback_failed = true;
+  }
 
-  // The function params, as documented in
-  // https://docs.gtk.org/gtk3/callback.TreeSelectionForeachFunc.html
-  GType param_types[] = {g_type_from_name("GtkTreeModel"), g_type_from_name("GtkTreePath"),
-                         g_type_from_name("GtkTreeIter")};
+  if (callback_failed) {
+    phpgtk_report_callback_exception(callback_error, callback_error_code,
+                                     "GtkTreeSelection::selected_foreach");
+  }
+}
 
-  callback_object.callback_name = parameters[0];
-  callback_object.context = "GtkTreeSelection::selected_foreach";
-  callback_object.parameters.assign(parameters.begin(), parameters.end());
-  callback_object.self_widget = cobject_to_phpobject((gpointer *)instance);
-  callback_object.n_params = 3;
-  callback_object.return_type = 0;
-  callback_object.param_types = param_types;
+void GtkTreeSelection_::selected_foreach(Php::Parameters &parameters) {
+  // Validate here, while we are still in PHP space and can throw. Inside the
+  // callback a bad handler could only be reported, not raised.
+  if (parameters.empty() || !parameters[0].isCallable()) {
+    throw Php::Exception("GtkTreeSelection::selected_foreach() expects a callable");
+  }
 
-  gtk_tree_selection_selected_foreach(GTK_TREE_SELECTION(instance),
-                                      (GtkTreeSelectionForeachFunc)generic_callback,
+  struct st_selected_foreach callback_object;
+  callback_object.callback = parameters[0];
+  callback_object.user_parameters.assign(parameters.begin(), parameters.end());
+
+  gtk_tree_selection_selected_foreach(GTK_TREE_SELECTION(instance), selected_foreach_callback,
                                       &callback_object);
 }
 

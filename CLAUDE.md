@@ -142,10 +142,29 @@ not reorder includes.
 
 ## Tests
 
-There is no test suite. The only end-to-end verification is manual and done by the maintainer:
-build, install the `.so`, and run a script against it — `examples/*.php` are the working reference
-scripts (`php8.4 examples/exception_handler.php`). GUI code needs a display; `Xvfb` is the usual
-headless workaround, and `GDK_BACKEND=x11` is needed for `GtkStatusIcon` under Wayland.
+There is no test suite. Verification is manual and done by the maintainer: build, install the `.so`,
+and run a script against it — `examples/*.php` are the working reference scripts
+(`php8.4 examples/exception_handler.php`). GUI code needs a display; `Xvfb` is the usual headless
+workaround, and `GDK_BACKEND=x11` is needed for `GtkStatusIcon` under Wayland.
+
+`examples/callback_lifetime.php` is the closest thing to a regression test — 23 self-checking
+assertions over every callback entry point, exiting non-zero on failure:
+
+```sh
+# fresh build, without installing it (-n is required, see below)
+xvfb-run -a php8.4 -n -dextension=./gtk3.so examples/callback_lifetime.php
+
+# or the installed build
+xvfb-run -a php8.4 examples/callback_lifetime.php
+```
+
+**`-n` is not optional when combining `-dextension=` with an installed copy.** Without it PHP reads
+the ini files too, loads the extension a second time, and segfaults — which looks exactly like a bug
+in the build under test. `-n` also drops every other extension, which this script does not need.
+
+It deliberately drives callback *teardown* (widget destroy, source removal, sort-function
+replacement), not just registration, because that is the half where the destroy notifies run. Run it
+after touching anything in `GObject_::connect`, `Gtk::timeout_add`, or the `set_*_func` family.
 
 For source-level changes, `./lint.sh` plus reading the code is the practical check — say what you
 did and did not verify rather than assuming a build confirmed it.

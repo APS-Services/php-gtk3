@@ -62,7 +62,7 @@ Php::Value GtkSourceLanguageManager_::get_search_path() {
 void GtkSourceLanguageManager_::set_search_path(Php::Parameters &parameters) {
   // get the array param
   Php::Value arr = parameters[0];
-  std::vector<gchar*> dirs(arr.size() + 1);
+  std::vector<gchar *> dirs(arr.size() + 1);
 
   // loop indexes of param
   for (int index = 0; index < (int)arr.size(); index++) {
