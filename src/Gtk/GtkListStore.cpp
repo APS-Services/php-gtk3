@@ -1,8 +1,14 @@
 
 #include "GtkListStore.h"
 
+/**
+ * The user parameters are kept as a plain vector rather than a Php::Parameters:
+ * Php::Parameters has no public default constructor, so a struct holding one
+ * cannot be constructed normally - only the (invalid) malloc + memset trick
+ * this struct used to be created with would compile.
+ */
 struct GtkListStore_::st_request_callback {
-  Php::Parameters user_parameters;
+  std::vector<Php::Value> user_parameters;
   Php::Object self_widget;
 };
 
@@ -340,15 +346,19 @@ void GtkListStore_::move_after(Php::Parameters &parameters) {
 void GtkListStore_::set_sort_func(Php::Parameters &parameters) {
   gint sort_column_id = (gint)parameters[0];
 
-  // Create gpointer user data
-  struct st_request_callback *callback_object =
-      (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
-  memset(callback_object, 0, sizeof(struct st_request_callback));
-  callback_object->user_parameters = parameters;
+  // Create gpointer user data.
+  //
+  // Constructed, not malloc'd: the struct holds Php::Value members, so writing
+  // into raw memory whose constructors never ran is undefined behaviour. GTK
+  // calls the destroy notify below when the sort function is replaced or the
+  // sortable is finalised.
+  struct st_request_callback *callback_object = new struct st_request_callback();
+  callback_object->user_parameters.assign(parameters.begin(), parameters.end());
   callback_object->self_widget = Php::Object("GtkListStore", this);
 
-  gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model), sort_column_id, set_sort_func_callback,
-                                  (gpointer)callback_object, nullptr);
+  gtk_tree_sortable_set_sort_func(
+      GTK_TREE_SORTABLE(model), sort_column_id, set_sort_func_callback, (gpointer)callback_object,
+      [](gpointer data) { delete static_cast<struct st_request_callback *>(data); });
 }
 
 gint GtkListStore_::set_sort_func_callback(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,

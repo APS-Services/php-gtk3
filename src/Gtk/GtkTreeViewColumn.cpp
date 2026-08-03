@@ -1,8 +1,14 @@
 
 #include "GtkTreeViewColumn.h"
 
+/**
+ * The user parameters are kept as a plain vector rather than a Php::Parameters:
+ * Php::Parameters has no public default constructor, so a struct holding one
+ * cannot be constructed normally - only the (invalid) malloc + memset trick
+ * this struct used to be created with would compile.
+ */
 struct GtkTreeViewColumn_::st_request_callback {
-  Php::Parameters user_parameters;
+  std::vector<Php::Value> user_parameters;
   Php::Object self_widget;
 };
 
@@ -301,17 +307,21 @@ void GtkTreeViewColumn_::set_cell_data_func(Php::Parameters &parameters) {
 
   Php::Array callback_params = parameters;
 
-  // Create gpointer user data
-  struct st_request_callback *callback_object =
-      (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
-  memset(callback_object, 0, sizeof(struct st_request_callback));
-  callback_object->user_parameters = parameters;
+  // Create gpointer user data.
+  //
+  // Constructed, not malloc'd: the struct holds Php::Value members, so writing
+  // into raw memory whose constructors never ran is undefined behaviour. GTK
+  // calls the destroy notify below when the cell data function is replaced or
+  // the column is finalised.
+  struct st_request_callback *callback_object = new struct st_request_callback();
+  callback_object->user_parameters.assign(parameters.begin(), parameters.end());
   callback_object->self_widget = Php::Object("GtkTreeViewColumn", this);
 
   // Call the virtual callback
-  gtk_tree_view_column_set_cell_data_func(GTK_TREE_VIEW_COLUMN(instance), cell_renderer,
-                                          set_cell_data_func_callback, (gpointer)callback_object,
-                                          nullptr);
+  gtk_tree_view_column_set_cell_data_func(
+      GTK_TREE_VIEW_COLUMN(instance), cell_renderer, set_cell_data_func_callback,
+      (gpointer)callback_object,
+      [](gpointer data) { delete static_cast<struct st_request_callback *>(data); });
 }
 
 void GtkTreeViewColumn_::set_cell_data_func_callback(GtkTreeViewColumn *tree_column,

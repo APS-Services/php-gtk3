@@ -55,17 +55,21 @@ NAME                =   gtk3
 #   instead of a conf.d directory. In 16.04 the directory changed yet again.
 #   This has to be checked.
 #
-INI_DIR     =   /opt/php/php-8.2.22/mods-available/
+INI_DIR     =   /etc/php/8.4/mods-available/
 
 #
 #   PHP configuration
 #
 #   The path to php-config, used to get PHP include directories and extension directory.
 #   This should match your PHP installation. Common locations:
-#   - /opt/php/php-8.2.22/bin/php-config (custom installation)
-#   - /usr/bin/php-config (system installation)
+#   - /usr/bin/php-config8.4 (distro package, one php-config per version)
+#   - /usr/bin/php-config (system default)
 #
-PHP_CONFIG      =   /opt/php/php-8.2.22/bin/php-config
+#   Whatever you pick here, it MUST be the same php-config that PHP-CPP was
+#   built against - see the comment above BUILDS in buildall.sh for what
+#   happens when the two disagree.
+#
+PHP_CONFIG      =   /usr/bin/php-config8.4
 
 # Try to use system php-config if the specified one doesn't exist
 ifeq (,$(wildcard $(PHP_CONFIG)))

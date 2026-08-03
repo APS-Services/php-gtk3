@@ -7,6 +7,26 @@
 - [Compile PHP-GTK from source](https://github.com/scorninpc/php-gtk3/blob/master/docs/compile-linux.md#compile-php-gtk3-from-source)
 - [Make a manual instalation](https://github.com/scorninpc/php-gtk3/blob/master/docs/compile-linux.md#make-a-manual-instalation)
 
+## Which PHP to build against
+
+Two options. Whichever you pick, **PHP-CPP and php-gtk3 must be built against the same
+`php-config`.** Nothing checks this, and getting it wrong does not fail the build: the resulting
+`gtk3.so` loads and runs, then corrupts the heap during PHP's module shutdown, so the process aborts
+with `free(): invalid pointer` *after* your script has already finished. `ini_get('gtk3.phpcpp')`
+reports which libphpcpp a built binary actually linked.
+
+**Use your distribution's PHP** (simplest — skip the next section entirely):
+
+```sh
+:$ sudo apt-get install php8.4-dev        # provides /usr/bin/php-config8.4
+```
+
+Then pass `PHP_CONFIG=/usr/bin/php-config8.4` to both builds. This is what `buildall.sh` and
+`PHP-CPP/build-dist.sh` do, and it is the layout the Makefile defaults to.
+
+**Or compile PHP from source**, if you need a version or build options your distro does not ship.
+That is what the next section covers.
+
 ## Compile PHP from source
 
 Install dependencies for php and extensions. On deb packages for example:
@@ -42,7 +62,7 @@ Compile and install
 
 ## Compile PHP-CPP from source
 
-This will create and install libphpcpp.so.2.3
+This creates `libphpcpp.so` / `libphpcpp.a`, the Zend-API abstraction php-gtk3 links against.
 
 Clone source
 
@@ -51,15 +71,15 @@ Clone source
 :$ cd PHP-CPP
 ```
 
-Edit `PHP-CPP/Makefile` to use `/opt/php/php-8.2.22/bin/php-config`.
-
-`NOTE:` this path can be changed when you compile PHP-SRC.
-
-Compile and install
+Compile and install against a specific PHP. `PHP_VERSION=8.4` selects `php-config8.4`; use
+`PHP_CONFIG=/full/path/to/php-config` if yours is not on `$PATH` under that name:
 
 ```sh
-:$ make -j 4 && sudo make install
+:$ make release PHP_VERSION=8.4 -j 4 && sudo make install
 ```
+
+**Remember this choice** — the next section has to use the same one. Building php-gtk3 against a
+different PHP than this produces a binary that aborts at shutdown rather than failing to build.
 
 ## Compile PHP-GTK3 from source
 
@@ -77,7 +97,7 @@ For WebKit support (optional), also install:
 :$ sudo apt-get install libwebkit2gtk-4.1-dev
 ```
 
-If you are compiling from repository version, install `pkg-config` too. If you are compiling from source, use `/usr/local/php-gtk3/bin/php-config` on Makefile
+If you are compiling from repository version, install `pkg-config` too.
 
 Clone source
 
@@ -86,15 +106,15 @@ Clone source
 :$ cd PHP-GTK3
 ```
 
-Edit `PHP-CPP/Makefile` to use `/opt/php/php-8.2.22/bin/php-config`.
-
-`NOTE:` this path can be changed when you compile PHP-SRC.
-
-Compile
+Compile, pointing `PHP_CONFIG` at **the same `php-config` you built PHP-CPP with**:
 
 ```sh
-:$ make -j 4
+:$ make PHP_CONFIG=/usr/bin/php-config8.4 -j 4
 ```
+
+The Makefile defaults to `/usr/bin/php-config8.4` and falls back to `php-config` from `$PATH`, so
+plain `make` works if that is already the PHP you want. If you compiled PHP from source, use its
+`php-config` here instead — e.g. `/opt/php/php-8.2.22/bin/php-config`.
 
 To compile with WebKit support:
 
@@ -105,18 +125,37 @@ To compile with WebKit support:
 You can test with
 
 ```sh
-:$ /opt/php/php-8.2.22/bin/php -dextension=./gtk3.so examples/test1.php
+:$ php8.4 -dextension=./gtk3.so examples/exception_handler.php
 ```
+
+Loading the freshly built `.so` this way, rather than installing it first, keeps a bad build from
+disturbing a working installation.
 
 ## Make a manual instalation
 
-Copy `gtk3.so` created to php library dir
+`make install` does both steps below. To do it by hand instead:
+
+Copy `gtk3.so` to the extension dir of the PHP you built against — always ask that PHP's own
+`php-config`, so the file cannot land in the wrong version's directory:
 
 ```sh
-:$ sudo cp gtk3.so `/usr/local/php-gtk3/bin/php-config --extension-dir`
+:$ sudo cp gtk3.so `/usr/bin/php-config8.4 --extension-dir`
 ```
 
-Add `gtk3.so` extension to `/usr/local/php-gtk3/lib/php.ini`. Create the file if needed.
+Enable it. On Debian/Ubuntu that means a file in the `conf.d` of each SAPI you want it in:
+
+```sh
+:$ echo 'extension=gtk3' | sudo tee /etc/php/8.4/cli/conf.d/20-gtk3.ini
+```
+
+On installations with a single `php.ini`, add `extension=gtk3` there instead.
+
+Check it loaded — the name reported here is `gtk3`, matching the ini directive:
+
+```sh
+:$ php8.4 -m | grep gtk3
+:$ php8.4 -r 'echo ini_get("gtk3.build_info"), "\n";'
+```
 
 Create a script that will execute all
 
@@ -128,7 +167,7 @@ With content
 
 ```
 #!/bin/bash
-/opt/php/phpPHP-8.2.22/bin/php -dextension=gtk3.so $@
+php8.4 -dextension=gtk3.so "$@"
 ```
 
 Make it executable
@@ -140,5 +179,5 @@ Make it executable
 Done!
 
 ```sh
-:$ php-gtk3 test1.php
+:$ php-gtk3 examples/exception_handler.php
 ```

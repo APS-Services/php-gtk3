@@ -5,9 +5,14 @@
 
 /**
  * Struct for callback gpointer
+ *
+ * The user parameters are kept as a plain vector rather than a Php::Parameters:
+ * Php::Parameters has no public default constructor, so a struct holding one
+ * cannot be constructed normally - only the (invalid) malloc + memset trick
+ * this struct used to be created with would compile.
  */
 struct GtkClipboard_::st_request_callback {
-  Php::Parameters user_parameters;
+  std::vector<Php::Value> user_parameters;
   Php::Object self_widget;
 };
 
@@ -146,11 +151,14 @@ void GtkClipboard_::request_text(Php::Parameters &parameters) {
 
   // gpointer user_data = (gpointer)parameters[1];
 
-  // Create user data param of callaback
-  struct st_request_callback *callback_object =
-      (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
-  memset(callback_object, 0, sizeof(struct st_request_callback));
-  callback_object->user_parameters = parameters;
+  // Create user data param of callaback.
+  //
+  // Constructed, not malloc'd: the struct holds Php::Value members, so writing
+  // into raw memory whose constructors never ran is undefined behaviour.
+  // gtk_clipboard_request_text() invokes the callback exactly once, so
+  // request_text_callback() takes ownership and deletes it.
+  struct st_request_callback *callback_object = new struct st_request_callback();
+  callback_object->user_parameters.assign(parameters.begin(), parameters.end());
   callback_object->self_widget = Php::Object("GtkClipboard", this);
 
   // handle the callback
@@ -167,9 +175,14 @@ void GtkClipboard_::request_text_callback(GtkClipboard *clipboard, const gchar *
   std::string callback_name = callback_object->user_parameters[0];
 
   // Create internal params, GtkClipboard + text + user_data...
+  //
+  // GTK passes NULL when the clipboard is empty or holds something that cannot
+  // be converted to text, so the handler receives null in that case - assigning
+  // the NULL straight into a Php::Value would crash.
   Php::Value internal_parameters;
   internal_parameters[0] = callback_object->self_widget;
-  internal_parameters[1] = clipboard_text;
+  internal_parameters[1] =
+      (clipboard_text != nullptr) ? Php::Value(clipboard_text) : Php::Value(nullptr);
   for (int i = 1; i < (int)callback_object->user_parameters.size(); i++) {
     internal_parameters[i + 1] = callback_object->user_parameters[i];
   }
@@ -194,6 +207,10 @@ void GtkClipboard_::request_text_callback(GtkClipboard *clipboard, const gchar *
     phpgtk_report_callback_exception(callback_error, callback_error_code,
                                      "GtkClipboard::request_text");
   }
+
+  // One-shot request: this is the only invocation, so the data allocated by
+  // request_text() is released here.
+  delete callback_object;
 }
 
 void GtkClipboard_::request_image(Php::Parameters &parameters) {

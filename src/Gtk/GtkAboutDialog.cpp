@@ -2,6 +2,57 @@
 #include "GtkAboutDialog.h"
 
 /**
+ * Build the NULL-terminated string list that GTK's credit setters expect.
+ *
+ * Accepts either a single string or an array of strings, so both
+ * $dialog->set_authors("Alice") and $dialog->set_authors(["Alice", "Bob"])
+ * work - GTK has always taken a list here, the binding just could not express
+ * one.
+ *
+ * The returned pointers borrow from `storage`, which the caller must keep alive
+ * until the GTK call has returned. GTK copies the strings itself, so nothing has
+ * to outlive the setter.
+ */
+static std::vector<const gchar *> phpgtk_credit_list(const Php::Value &value,
+                                                     std::vector<std::string> &storage) {
+  if (value.isArray()) {
+    for (const auto &entry : value) {
+      storage.push_back(entry.second.stringValue());
+    }
+  } else {
+    storage.push_back(value.stringValue());
+  }
+
+  // Filled only once storage is complete: push_back may reallocate, which would
+  // invalidate any c_str() taken before the last insertion.
+  std::vector<const gchar *> list;
+  list.reserve(storage.size() + 1);
+  for (const std::string &entry : storage) {
+    list.push_back(entry.c_str());
+  }
+  list.push_back(nullptr);
+
+  return list;
+}
+
+/**
+ * Turn one of GTK's NULL-terminated credit lists into a PHP array.
+ *
+ * The list belongs to the dialog: the strings are copied into the returned
+ * value and nothing is freed here. A NULL list (nothing set yet) yields an
+ * empty array.
+ */
+static Php::Value phpgtk_credit_array(const gchar *const *list) {
+  Php::Array ret;
+
+  for (int i = 0; (list != nullptr) && (list[i] != nullptr); i++) {
+    ret[i] = list[i];
+  }
+
+  return ret;
+}
+
+/**
  * Constructor
  */
 GtkAboutDialog_::GtkAboutDialog_() = default;
@@ -132,45 +183,41 @@ void GtkAboutDialog_::set_website_label(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_authors() {
-  const gchar *const *c_ret = gtk_about_dialog_get_authors(GTK_ABOUT_DIALOG(instance));
-
-  return (const char *)c_ret;
+  return phpgtk_credit_array(gtk_about_dialog_get_authors(GTK_ABOUT_DIALOG(instance)));
 }
 
 void GtkAboutDialog_::set_authors(Php::Parameters &parameters) {
-  std::string s_authors = parameters[0];
+  // Local, not static: the list holds pointers into storage, which dies with
+  // this call. A static list would be initialised on the first call only and
+  // keep handing that first (long dangling) pointer to GTK on every later call.
+  std::vector<std::string> storage;
+  std::vector<const gchar *> authors = phpgtk_credit_list(parameters[0], storage);
 
-  static const gchar *authors[] = {(gchar *)s_authors.c_str(), nullptr};
-
-  gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(instance), authors);
+  gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(instance), authors.data());
 }
 
 Php::Value GtkAboutDialog_::get_artists() {
-  const gchar *const *c_ret = gtk_about_dialog_get_artists(GTK_ABOUT_DIALOG(instance));
-
-  return (const char *)c_ret;
+  return phpgtk_credit_array(gtk_about_dialog_get_artists(GTK_ABOUT_DIALOG(instance)));
 }
 
 void GtkAboutDialog_::set_artists(Php::Parameters &parameters) {
-  std::string s_artists = parameters[0];
+  // Local, not static - see set_authors() for why.
+  std::vector<std::string> storage;
+  std::vector<const gchar *> artists = phpgtk_credit_list(parameters[0], storage);
 
-  static const gchar *artists[] = {(gchar *)s_artists.c_str(), nullptr};
-
-  gtk_about_dialog_set_artists(GTK_ABOUT_DIALOG(instance), artists);
+  gtk_about_dialog_set_artists(GTK_ABOUT_DIALOG(instance), artists.data());
 }
 
 Php::Value GtkAboutDialog_::get_documenters() {
-  const gchar *const *c_ret = gtk_about_dialog_get_documenters(GTK_ABOUT_DIALOG(instance));
-
-  return (const char *)c_ret;
+  return phpgtk_credit_array(gtk_about_dialog_get_documenters(GTK_ABOUT_DIALOG(instance)));
 }
 
 void GtkAboutDialog_::set_documenters(Php::Parameters &parameters) {
-  std::string s_documenters = parameters[0];
+  // Local, not static - see set_authors() for why.
+  std::vector<std::string> storage;
+  std::vector<const gchar *> documenters = phpgtk_credit_list(parameters[0], storage);
 
-  static const gchar *documenters[] = {(gchar *)s_documenters.c_str(), nullptr};
-
-  gtk_about_dialog_set_documenters(GTK_ABOUT_DIALOG(instance), documenters);
+  gtk_about_dialog_set_documenters(GTK_ABOUT_DIALOG(instance), documenters.data());
 }
 
 Php::Value GtkAboutDialog_::get_translator_credits() {
@@ -225,10 +272,11 @@ void GtkAboutDialog_::add_credit_section(Php::Parameters &parameters) {
   std::string s_section_name = parameters[0];
   gchar *section_name = (gchar *)s_section_name.c_str();
 
-  std::string s_people = parameters[1];
-  static const gchar *people[] = {(gchar *)s_people.c_str(), nullptr};
+  // Local, not static - see set_authors() for why.
+  std::vector<std::string> storage;
+  std::vector<const gchar *> people = phpgtk_credit_list(parameters[1], storage);
 
-  gtk_about_dialog_add_credit_section(GTK_ABOUT_DIALOG(instance), section_name, people);
+  gtk_about_dialog_add_credit_section(GTK_ABOUT_DIALOG(instance), section_name, people.data());
 }
 
 void GtkAboutDialog_::gtk_show_about_dialog(Php::Parameters &parameters) {

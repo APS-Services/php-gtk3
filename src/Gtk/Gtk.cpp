@@ -54,17 +54,23 @@ Php::Value Gtk_::timeout_add(Php::Parameters &parameters) {
     callback_params[i - 2] = parameters[i];
   }
 
-  // Create gpointer user data
-  struct st_timeout_add *callback_object =
-      (struct st_timeout_add *)malloc(sizeof(struct st_timeout_add));
-  memset(callback_object, 0, sizeof(struct st_timeout_add));
+  // Create gpointer user data.
+  //
+  // Constructed, not malloc'd: the struct holds Php::Value members, so writing
+  // into raw memory whose constructors never ran is undefined behaviour.
+  struct st_timeout_add *callback_object = new struct st_timeout_add();
 
   // Add my internal parameters
   callback_object->callback_name = parameters[1];
   callback_object->callback_params = callback_params;
 
-  // Call
-  gint ret = g_timeout_add(interval, timeout_add_callback, callback_object);
+  // Call. g_timeout_add_full() rather than g_timeout_add() for the destroy
+  // notify: it runs when the source goes away - because the callback returned
+  // FALSE, or because Gtk::source_remove() was called - and is the only place
+  // the struct (and the reference it holds on the PHP callable) can be released.
+  gint ret =
+      g_timeout_add_full(G_PRIORITY_DEFAULT, interval, timeout_add_callback, callback_object,
+                         [](gpointer data) { delete static_cast<struct st_timeout_add *>(data); });
   return ret;
 }
 

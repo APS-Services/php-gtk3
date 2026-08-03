@@ -228,29 +228,39 @@ void GtkBuilder_::connect_signals_full(Php::Parameters &parameters) {
 
 /**
  * Struct for callback gpointer
+ *
+ * The parameters are kept as a plain vector rather than a Php::Parameters:
+ * Php::Parameters has no public default constructor, so a struct holding one
+ * cannot be constructed normally - only the (invalid) malloc + memset trick
+ * this struct used to be created with would compile.
  */
 struct GtkBuilder_::st_callback {
   Php::Value callback_name;
   Php::Array callback_params;
   Php::Object self_widget;
-  Php::Parameters parameters;
+  std::vector<Php::Value> parameters;
 
-  guint signal_id;
-  const gchar *signal_name;
-  GType itype;
-  GSignalFlags signal_flags;
-  GType return_type;
-  guint n_params;
-  const GType *param_types;
+  // Initialised here rather than left to the caller: these used to be zeroed by
+  // the memset, and the callback's error path reads signal_name.
+  guint signal_id{};
+  const gchar *signal_name{};
+  GType itype{};
+  GSignalFlags signal_flags{};
+  GType return_type{};
+  guint n_params{};
+  const GType *param_types{};
 };
 
 void GtkBuilder_::connect_signals_full_callback(GtkBuilder *builder, GObject *instance,
                                                 const gchar *signal_name, const char *handler_name,
                                                 GObject *object, GConnectFlags flags,
                                                 gpointer data) {
-  // Create gpoint param
-  struct st_callback *callback_object = (struct st_callback *)malloc(sizeof(struct st_callback));
-  memset(callback_object, 0, sizeof(struct st_callback));
+  // Create gpoint param.
+  //
+  // Constructed, not malloc'd: the struct holds Php::Value members, so writing
+  // into raw memory whose constructors never ran is undefined behaviour. It is
+  // released by the closure's notify below.
+  struct st_callback *callback_object = new struct st_callback();
 
   // Add my internal parameters
   callback_object->callback_name = handler_name;
@@ -281,10 +291,12 @@ void GtkBuilder_::connect_signals_full_callback(GtkBuilder *builder, GObject *in
   callback_object->n_params = signal_info.n_params;
   callback_object->param_types = signal_info.param_types;
 
-  // Connect
+  // Connect. The closure owns callback_object and frees it when it is finalised,
+  // i.e. when the object the handler was connected to is destroyed.
   GClosure *closure;
-  closure =
-      g_cclosure_new_swap(G_CALLBACK(connect_signals_full_callback1), callback_object, nullptr);
+  closure = g_cclosure_new_swap(
+      G_CALLBACK(connect_signals_full_callback1), callback_object,
+      [](gpointer data, GClosure *) { delete static_cast<struct st_callback *>(data); });
   g_signal_connect_closure(instance, signal_name, closure, TRUE);
 }
 

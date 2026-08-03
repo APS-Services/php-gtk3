@@ -8,20 +8,27 @@
 
 /**
  * Struct for callback gpointer
+ *
+ * The parameters are kept as a plain vector rather than a Php::Parameters:
+ * Php::Parameters has no public default constructor, so a struct holding one
+ * cannot be constructed normally - only the (invalid) malloc + memset trick
+ * this struct used to be created with would compile.
  */
 struct GObject_::st_callback {
   Php::Value callback_name;
   Php::Array callback_params;
   Php::Object self_widget;
-  Php::Parameters parameters;
+  std::vector<Php::Value> parameters;
 
-  guint signal_id;
-  const gchar *signal_name;
-  GType itype;
-  GSignalFlags signal_flags;
-  GType return_type;
-  guint n_params;
-  const GType *param_types;
+  // Initialised here rather than left to the caller: these used to be zeroed by
+  // the memset, and connect_callback()'s error path reads signal_name.
+  guint signal_id{};
+  const gchar *signal_name{};
+  GType itype{};
+  GSignalFlags signal_flags{};
+  GType return_type{};
+  guint n_params{};
+  const GType *param_types{};
 };
 
 /**
@@ -91,9 +98,12 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
   Php::Value callback_event = callback_params[0];
   Php::Value callback_name = callback_params[1];
 
-  // Create gpoint param
-  struct st_callback *callback_object = (struct st_callback *)malloc(sizeof(struct st_callback));
-  memset(callback_object, 0, sizeof(struct st_callback));
+  // Create gpoint param.
+  //
+  // Constructed, not malloc'd: the struct holds Php::Value members, so writing
+  // into raw memory whose constructors never ran is undefined behaviour. It is
+  // released by destroy_notify() when the closure is finalised.
+  struct st_callback *callback_object = new struct st_callback();
 
   // Add my internal parameters
   callback_object->callback_name = callback_name;
@@ -104,7 +114,9 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
       (instance && G_IS_OBJECT(instance)) ? g_type_name(G_TYPE_FROM_INSTANCE(instance)) : nullptr;
   std::string object_type = (type_name != nullptr) ? type_name : "GObject";
   callback_object->self_widget = Php::Object(object_type.c_str(), this);
-  callback_object->parameters = parameters;
+  // Copy the values out rather than assigning the Php::Parameters itself: only
+  // the values are needed, and assigning would slice off its base-object member.
+  callback_object->parameters.assign(parameters.begin(), parameters.end());
 
   // Retriave and store signal query parameters , to be used on callback
   //
@@ -132,15 +144,18 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
   callback_object->n_params = signal_info.n_params;
   callback_object->param_types = signal_info.param_types;
 
-  // Create the CPP callback
+  // Create the CPP callback.
+  //
+  // The closure owns callback_object and frees it through destroy_notify() when
+  // it is finalised - i.e. when the GObject the signal is connected to is
+  // destroyed. Without that notify the struct, and with it the reference this
+  // holds on the PHP callable and on the emitting object, would live until the
+  // process exits (see https://github.com/scorninpc/php-gtk3/issues/81, where
+  // the notify was disabled because deleting the then-malloc'd struct was
+  // itself undefined behaviour).
   GClosure *closure;
 
-  // this method are removed, since leak memory does not happen anymore
-  // https://github.com/scorninpc/php-gtk3/issues/81
-  // closure = g_cclosure_new_swap (G_CALLBACK (connect_callback), callback_object,
-  // (GClosureNotify)destroy_notify);
-
-  closure = g_cclosure_new_swap(G_CALLBACK(connect_callback), callback_object, nullptr);
+  closure = g_cclosure_new_swap(G_CALLBACK(connect_callback), callback_object, destroy_notify);
   int ret = g_signal_connect_closure(instance, callback_event, closure, after);
 
   // Return handler id
@@ -148,14 +163,15 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
 }
 
 /**
- * this method are removed, since leak memory does not happen anymore
- * https://github.com/scorninpc/php-gtk3/issues/81
+ * Free the callback data once the closure that owns it is finalised.
+ *
+ * Installed as the GClosureNotify in connect_internal(). Destroying the struct
+ * releases its Php::Value members, which drops the extension's reference to the
+ * PHP callable and to the PHP object wrapping the emitter.
  */
 void GObject_::destroy_notify(gpointer user_data, GClosure *closure) {
-  // return to st_callback
   struct st_callback *callback_object = (struct st_callback *)user_data;
 
-  // delete references;
   delete callback_object;
 }
 

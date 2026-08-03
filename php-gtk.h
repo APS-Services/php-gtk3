@@ -15,11 +15,16 @@
 
 	/**
 	 * Struct for generic callback
+	 *
+	 * The parameters are kept as a plain vector rather than a Php::Parameters:
+	 * Php::Parameters has no public default constructor, so a struct holding one
+	 * cannot be constructed normally - only the (invalid) malloc + memset trick
+	 * this struct used to be created with would compile.
 	 */
 	struct generic_st_callback {
 		Php::Value callback_name;
 		Php::Object self_widget;
-		Php::Parameters parameters;
+		std::vector<Php::Value> parameters;
 
 		GType return_type;
 		int n_params;
