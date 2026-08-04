@@ -104,17 +104,10 @@ Windows is a first-class target, but it is built differently from Linux.
   these directly.** `WebKitWebView.cpp` `#include`s one of them based on `_WIN32`; adding them to
   the build produces duplicate symbols.
 
-**MSVC settings that matter** (full list in `docs/compile-windows.md`): dynamic library (.dll), x64
-Release, `/std:c++17`, `/MT`, `/W0`, `/sdl-`, and a long preprocessor list including `PHP_WIN32`,
-`ZEND_WIN32`, `BUILDING_PHPCPP`, `_NOEXCEPT=noexcept`, `GTK_COMPILATION`/`GDK_COMPILATION`/
-`GLIB_COMPILATION`/`GIO_COMPILATION`/`GDK_PIXBUF_COMPILATION`, and a `PHP_VERSION_ID` matching the
-target PHP. PHP-CPP itself needs manual patching for Windows (unmerged upstream PRs, plus renaming
-`zend/string.h` to `strings.h` and fixing its includes) — that is a known, documented wart.
-
-**Deployment on Windows** is a copy job, not an installer: `php_gtk3.dll` into `ext\`,
-`extension=gtk3` in `php.ini`, ~40 MSYS2 `mingw64/bin/*.dll` runtime libraries next to `php.exe`,
-`mingw64/share` themes/icons, and a `gdk-pixbuf-query-loaders.exe --update-cache` run plus
-`lib/gdk-pixbuf-2.0`. See the "Running and packing" section of `docs/compile-windows.md`.
+**MSVC project settings and the deployment copy job** live in the `windows-build` skill
+(`.claude/skills/windows-build/SKILL.md`) — compiler/preprocessor flags, the PHP-CPP Windows
+patching wart, and the runtime-DLL/theme packaging steps. `docs/compile-windows.md` remains the full
+reference.
 
 **WebView on Windows is a different engine.** `WITH_WEBKIT=1` means WebKit2GTK on Linux and
 **Microsoft Edge WebView2** on Windows, selected by `_WIN32` at compile time — same PHP-facing
