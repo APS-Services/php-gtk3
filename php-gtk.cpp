@@ -240,7 +240,6 @@ void generic_callback(gpointer *self, ...) {
   for (int i = 0; i < 5; i++) {
     callback_object = (struct generic_st_callback *)va_arg(ap, generic_st_callback *);
     if (callback_object->callback_name.isCallable()) {
-      va_end(ap);
       test = true;
       break;
     }
@@ -248,110 +247,130 @@ void generic_callback(gpointer *self, ...) {
   va_end(ap);
 
   if (!test) {
-    std::string error;
-    throw Php::Exception(error + "cannot find callable method");
+    // Must not throw: like the rest of this function, it runs inside GLib's C
+    // frames (it is installed as a GtkTreeSelectionForeachFunc and friends),
+    // where unwinding is undefined behaviour. There is no callable to invoke,
+    // so report the failure and return.
+    g_critical("php-gtk3: [generic_callback] no callable found in the callback userdata");
+    return;
   }
 
-  // create internal params
-  Php::Value internal_parameters;
-
-  // add self widget
-  internal_parameters[0] = cobject_to_phpobject((gpointer *)self);
-
-  // Loop into param_types of GSignalQuery from g_signal_query
-  va_start(ap, self);
-  for (int i = 1; i < callback_object->n_params; i++) {
-    switch (G_TYPE_FUNDAMENTAL(callback_object->param_types[i])) {
-      case G_TYPE_CHAR:
-        // Php::call("var_dump", "char");
-        break;
-
-      case G_TYPE_UCHAR:
-        // Php::call("var_dump", "uchar");
-        break;
-
-      case G_TYPE_STRING:
-        // Php::call("var_dump", "string");
-        internal_parameters[i] = va_arg(ap, char *);
-        break;
-
-      case G_TYPE_BOOLEAN:
-        // Php::call("var_dump", "boolean");
-        internal_parameters[i] = va_arg(ap, gboolean);
-        break;
-
-      case G_TYPE_INT:
-        // Php::call("var_dump", "int");
-        internal_parameters[i] = va_arg(ap, gint);
-        break;
-
-      case G_TYPE_UINT:
-        // Php::call("var_dump", "int");
-        internal_parameters[i] = (int)va_arg(ap, guint);
-        break;
-
-      case G_TYPE_OBJECT: {
-        // Php::call("var_dump", "object");
-        gpointer *e = va_arg(ap, gpointer *);
-        internal_parameters[i] = cobject_to_phpobject(e);
-
-        break;
-      }
-      case G_TYPE_POINTER:
-        // Php::call("var_dump", "pointer");
-        break;
-      case G_TYPE_INTERFACE:
-        // Php::call("var_dump", "interface");
-        break;
-      case G_TYPE_PARAM:
-        // Php::call("var_dump", "param");
-        break;
-      case G_TYPE_BOXED: {
-        // ----------------
-        // GtkTreePath *e =  va_arg(ap, GtkTreePath *);
-        // Php::call("var_dump", gtk_tree_path_to_string(e));
-        // internal_parameters[i] = cobject_to_phpobject((gpointer *)e);
-
-        // ----------------
-        // gpointer *e = va_arg(ap, gpointer *);
-
-        // Php::call("var_dump", g_type_name(G_TYPE_FROM_CLASS((gpointer *)e)));
-
-        // ----------------
-        // GdkEvent *e =  va_arg(ap, GdkEvent *);
-
-        // // Create event from callback
-        // GdkEvent_ *event_ = new GdkEvent_();
-        // Php::Value gdkevent = Php::Object("GdkEvent", event_);
-        // event_->populate(e);
-
-        // internal_parameters[i] = gdkevent;
-
-        break;
-      }
-
-      default: {
-        // Must not throw: this runs inside GLib's C frames (see the catch
-        // below). Report the marshalling gap and pass null for this parameter.
-        // g_type_name() returns NULL for an unregistered type.
-        const gchar *type_name = g_type_name(callback_object->param_types[i]);
-        g_critical("php-gtk3: [generic_callback] unsupported parameter type %s",
-                   (type_name != nullptr) ? type_name : "(unknown)");
-        internal_parameters[i] = Php::Value();
-        break;
-      }
-    }
-  }
-
-  // Call php function with parameters.
-  //
   // As in GObject_::connect_callback: a throwable must not unwind across
   // GLib's C frames, so it is captured here and reported only after the catch
-  // scope has exited and released the pending Zend exception.
+  // scope has exited and released the pending Zend exception. The try covers
+  // marshalling as well - cobject_to_phpobject() builds a Php::Object from the
+  // GType name and throws Php::Error for any type main.cpp does not register.
   std::string callback_error;
   long int callback_error_code = 0;
   bool callback_failed = false;
+
   try {
+    // create internal params
+    Php::Value internal_parameters;
+
+    // add self widget
+    internal_parameters[0] = cobject_to_phpobject((gpointer *)self);
+
+    // Loop into param_types of GSignalQuery from g_signal_query
+    va_start(ap, self);
+
+    // Runs va_end() on every exit path, including a throw out of the loop below.
+    phpgtk_va_list_guard ap_guard(ap);
+
+    bool marshalling_aborted = false;
+    for (int i = 1; i < callback_object->n_params && !marshalling_aborted; i++) {
+      switch (G_TYPE_FUNDAMENTAL(callback_object->param_types[i])) {
+        case G_TYPE_CHAR:
+          // Php::call("var_dump", "char");
+          break;
+
+        case G_TYPE_UCHAR:
+          // Php::call("var_dump", "uchar");
+          break;
+
+        case G_TYPE_STRING:
+          // Php::call("var_dump", "string");
+          internal_parameters[i] = va_arg(ap, char *);
+          break;
+
+        case G_TYPE_BOOLEAN:
+          // Php::call("var_dump", "boolean");
+          internal_parameters[i] = va_arg(ap, gboolean);
+          break;
+
+        case G_TYPE_INT:
+          // Php::call("var_dump", "int");
+          internal_parameters[i] = va_arg(ap, gint);
+          break;
+
+        case G_TYPE_UINT:
+          // Php::call("var_dump", "int");
+          internal_parameters[i] = (int)va_arg(ap, guint);
+          break;
+
+        case G_TYPE_OBJECT: {
+          // Php::call("var_dump", "object");
+          gpointer *e = va_arg(ap, gpointer *);
+          internal_parameters[i] = cobject_to_phpobject(e);
+
+          break;
+        }
+        case G_TYPE_POINTER:
+          // Php::call("var_dump", "pointer");
+          break;
+        case G_TYPE_INTERFACE:
+          // Php::call("var_dump", "interface");
+          break;
+        case G_TYPE_PARAM:
+          // Php::call("var_dump", "param");
+          break;
+        case G_TYPE_BOXED: {
+          // ----------------
+          // GtkTreePath *e =  va_arg(ap, GtkTreePath *);
+          // Php::call("var_dump", gtk_tree_path_to_string(e));
+          // internal_parameters[i] = cobject_to_phpobject((gpointer *)e);
+
+          // ----------------
+          // gpointer *e = va_arg(ap, gpointer *);
+
+          // Php::call("var_dump", g_type_name(G_TYPE_FROM_CLASS((gpointer *)e)));
+
+          // ----------------
+          // GdkEvent *e =  va_arg(ap, GdkEvent *);
+
+          // // Create event from callback
+          // GdkEvent_ *event_ = new GdkEvent_();
+          // Php::Value gdkevent = Php::Object("GdkEvent", event_);
+          // event_->populate(e);
+
+          // internal_parameters[i] = gdkevent;
+
+          break;
+        }
+
+        default: {
+          // Stops marshalling rather than skipping one parameter - see the
+          // matching arm in GObject_::connect_callback for why the va_arg slot
+          // cannot simply be skipped.
+          const gchar *type_name = g_type_name(callback_object->param_types[i]);
+          g_critical(
+              "php-gtk3: [generic_callback] unsupported parameter type %s in '%s'; passing "
+              "null for it and the %d parameter(s) after it",
+              (type_name != nullptr) ? type_name : "(unknown)",
+              (callback_object->context != nullptr) ? callback_object->context : "?",
+              callback_object->n_params - i - 1);
+
+          for (int j = i; j < callback_object->n_params; j++) {
+            internal_parameters[j] = Php::Value();
+          }
+
+          marshalling_aborted = true;
+          break;
+        }
+      }
+    }
+
+    // Call php function with parameters
     Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
   } catch (Php::Throwable &throwable) {
     callback_error = throwable.what();

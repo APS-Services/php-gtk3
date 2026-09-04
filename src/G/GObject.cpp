@@ -166,128 +166,19 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
   // Return to st_callback
   struct st_callback *callback_object = (struct st_callback *)user_data;
 
-  // Create internal params, GtkWidget + GdkEvent
-  Php::Value internal_parameters;
-  internal_parameters[0] = callback_object->self_widget;
-
-  // Get param counter from g_signal_query, to loop casting types and store into internal_parameters
-  int param_count = callback_object->n_params;
-  va_list ap;
-  va_start(ap, user_data);
-
-  // Loop into param_types of GSignalQuery from g_signal_query
-  for (int i = 0; i < param_count; i++) {
-    // Php::call("var_dump", g_type_name(callback_object->param_types[i]));
-
-    switch (G_TYPE_FUNDAMENTAL(callback_object->param_types[i])) {
-      case G_TYPE_CHAR:
-        // Php::call("var_dump", "char");
-        break;
-
-      case G_TYPE_UCHAR:
-        // Php::call("var_dump", "uchar");
-        break;
-
-      case G_TYPE_STRING:
-        // Php::call("var_dump", "string");
-        internal_parameters[i + 1] = va_arg(ap, char *);
-        break;
-
-      case G_TYPE_BOOLEAN:
-        // Php::call("var_dump", "boolean");
-        internal_parameters[i + 1] = va_arg(ap, gboolean);
-        break;
-
-      case G_TYPE_INT:
-        // Php::call("var_dump", "int");
-        internal_parameters[i + 1] = va_arg(ap, gint);
-        break;
-
-      case G_TYPE_UINT:
-        // Php::call("var_dump", "int");
-        internal_parameters[i + 1] = (int)va_arg(ap, guint);
-        break;
-
-      case G_TYPE_ENUM:
-        // Php::call("var_dump", "enum");
-        // Enums are passed as integers (promoted to int in varargs)
-        internal_parameters[i + 1] = (int)va_arg(ap, gint);
-        break;
-
-      case G_TYPE_FLAGS:
-        // Php::call("var_dump", "flags");
-        // Flags are passed as unsigned integers (promoted to unsigned int in varargs)
-        internal_parameters[i + 1] = (int)va_arg(ap, guint);
-        break;
-
-      case G_TYPE_OBJECT: {
-        // Php::call("var_dump", "object");
-        gpointer *e = va_arg(ap, gpointer *);
-
-        // Create event from callback
-        GObject_ *event_ = new GObject_();
-        event_->set_instance(e);
-        const gchar *param_type_name = g_type_name(callback_object->param_types[i]);
-        std::string type_name = (param_type_name != nullptr) ? param_type_name : "GObject";
-        Php::Value gobject_ = Php::Object(type_name.c_str(), event_);
-        internal_parameters[i + 1] = gobject_;
-
-        break;
-      }
-      case G_TYPE_POINTER:
-        // Php::call("var_dump", "pointer");
-        break;
-      case G_TYPE_INTERFACE:
-        // Php::call("var_dump", "interface");
-        break;
-      case G_TYPE_PARAM:
-        // Php::call("var_dump", "param");
-        break;
-      case G_TYPE_BOXED: {
-        // Php::call("var_dump", "boxed");
-
-        GdkEvent *e = va_arg(ap, GdkEvent *);
-
-        // Create event from callback
-        GdkEvent_ *event_ = new GdkEvent_();
-        Php::Value gdkevent = Php::Object("GdkEvent", event_);
-        event_->populate(e);
-
-        internal_parameters[i + 1] = gdkevent;
-
-        break;
-      }
-
-      default: {
-        // Must not throw: this runs inside GLib's C signal-emission frames
-        // (see the catch below). Report the marshalling gap and pass null for
-        // this parameter. g_type_name() returns NULL for an unregistered type.
-        const gchar *type_name = g_type_name(callback_object->param_types[i]);
-        g_critical("php-gtk3: [GObject_::connect_callback] unsupported parameter type %s",
-                   (type_name != nullptr) ? type_name : "(unknown)");
-        internal_parameters[i + 1] = Php::Value();
-        break;
-      }
-    }
-  }
-
-  va_end(ap);
-
-  // Add user extra param
-  int parameters_count = callback_object->parameters.size();
-  for (int i = 2; i < parameters_count; i++) {
-    internal_parameters[internal_parameters.size() + i - 1] = callback_object->parameters[i];
-  }
-
-  // Call php function with parameters.
+  // A PHP throwable must NOT be allowed to unwind across GLib's C
+  // signal-emission frames (gtk_dialog_run / gtk_main): propagating a C++
+  // exception through C code is undefined behaviour - GLib's emission-stack
+  // cleanup is skipped and the main loop is left inconsistent (and on
+  // toolchains without C unwind tables it calls std::terminate). We therefore
+  // catch it here, at the C++/PHP boundary, and report it instead of letting it
+  // propagate.
   //
-  // A PHP throwable may escape the handler. It must NOT be allowed to unwind
-  // across GLib's C signal-emission frames (gtk_dialog_run / gtk_main):
-  // propagating a C++ exception through C code is undefined behaviour - GLib's
-  // emission-stack cleanup is skipped and the main loop is left inconsistent
-  // (and on toolchains without C unwind tables it calls std::terminate).
-  // We therefore catch it here, at the C++/PHP boundary, and report it instead
-  // of letting it propagate.
+  // The try covers the *whole* body, not just the Php::call() below, because
+  // marshalling throws too: Php::Object(name, ...) raises Php::Error("Unknown
+  // class name") for any GType main.cpp does not register, which a signal such
+  // as GtkWidget::query-tooltip (it carries a GtkTooltip *) hits on every
+  // emission.
   //
   // Consequence: exceptions from signal handlers no longer surface to a PHP
   // try/catch around Gtk::main(). Use Gtk::set_exception_handler() to observe
@@ -300,7 +191,141 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
   std::string callback_error;
   long int callback_error_code = 0;
   bool callback_failed = false;
+
   try {
+    // Create internal params, GtkWidget + GdkEvent
+    Php::Value internal_parameters;
+    internal_parameters[0] = callback_object->self_widget;
+
+    // Get param counter from g_signal_query, to loop casting types and store into
+    // internal_parameters
+    int param_count = callback_object->n_params;
+    va_list ap;
+    va_start(ap, user_data);
+
+    // Runs va_end() on every exit path, including a throw out of the loop below.
+    phpgtk_va_list_guard ap_guard(ap);
+
+    // Loop into param_types of GSignalQuery from g_signal_query
+    bool marshalling_aborted = false;
+    for (int i = 0; i < param_count && !marshalling_aborted; i++) {
+      // Php::call("var_dump", g_type_name(callback_object->param_types[i]));
+
+      switch (G_TYPE_FUNDAMENTAL(callback_object->param_types[i])) {
+        case G_TYPE_CHAR:
+          // Php::call("var_dump", "char");
+          break;
+
+        case G_TYPE_UCHAR:
+          // Php::call("var_dump", "uchar");
+          break;
+
+        case G_TYPE_STRING:
+          // Php::call("var_dump", "string");
+          internal_parameters[i + 1] = va_arg(ap, char *);
+          break;
+
+        case G_TYPE_BOOLEAN:
+          // Php::call("var_dump", "boolean");
+          internal_parameters[i + 1] = va_arg(ap, gboolean);
+          break;
+
+        case G_TYPE_INT:
+          // Php::call("var_dump", "int");
+          internal_parameters[i + 1] = va_arg(ap, gint);
+          break;
+
+        case G_TYPE_UINT:
+          // Php::call("var_dump", "int");
+          internal_parameters[i + 1] = (int)va_arg(ap, guint);
+          break;
+
+        case G_TYPE_ENUM:
+          // Php::call("var_dump", "enum");
+          // Enums are passed as integers (promoted to int in varargs)
+          internal_parameters[i + 1] = (int)va_arg(ap, gint);
+          break;
+
+        case G_TYPE_FLAGS:
+          // Php::call("var_dump", "flags");
+          // Flags are passed as unsigned integers (promoted to unsigned int in varargs)
+          internal_parameters[i + 1] = (int)va_arg(ap, guint);
+          break;
+
+        case G_TYPE_OBJECT: {
+          // Php::call("var_dump", "object");
+          gpointer *e = va_arg(ap, gpointer *);
+
+          // Create event from callback
+          GObject_ *event_ = new GObject_();
+          event_->set_instance(e);
+          const gchar *param_type_name = g_type_name(callback_object->param_types[i]);
+          std::string type_name = (param_type_name != nullptr) ? param_type_name : "GObject";
+          Php::Value gobject_ = Php::Object(type_name.c_str(), event_);
+          internal_parameters[i + 1] = gobject_;
+
+          break;
+        }
+        case G_TYPE_POINTER:
+          // Php::call("var_dump", "pointer");
+          break;
+        case G_TYPE_INTERFACE:
+          // Php::call("var_dump", "interface");
+          break;
+        case G_TYPE_PARAM:
+          // Php::call("var_dump", "param");
+          break;
+        case G_TYPE_BOXED: {
+          // Php::call("var_dump", "boxed");
+
+          GdkEvent *e = va_arg(ap, GdkEvent *);
+
+          // Create event from callback
+          GdkEvent_ *event_ = new GdkEvent_();
+          Php::Value gdkevent = Php::Object("GdkEvent", event_);
+          event_->populate(e);
+
+          internal_parameters[i + 1] = gdkevent;
+
+          break;
+        }
+
+        default: {
+          // Marshalling has to stop here, not just skip this one parameter:
+          // this arm cannot decode the value, so it cannot consume its va_arg
+          // slot either, and every following parameter would then be read from
+          // the wrong offset - handing a bogus pointer to Php::Object() or
+          // GdkEvent_::populate(). Sizes differ per type (a gdouble does not
+          // even come from the same register save area as a pointer on
+          // x86-64), so the slot cannot be skipped blind. Report, pass null for
+          // this and every remaining parameter, and stop reading the va_list.
+          //
+          // g_type_name() returns NULL for an unregistered type.
+          const gchar *type_name = g_type_name(callback_object->param_types[i]);
+          g_critical(
+              "php-gtk3: [GObject_::connect_callback] unsupported parameter type %s in signal "
+              "'%s'; passing null for it and the %d parameter(s) after it",
+              (type_name != nullptr) ? type_name : "(unknown)",
+              (callback_object->signal_name != nullptr) ? callback_object->signal_name : "?",
+              param_count - i - 1);
+
+          for (int j = i; j < param_count; j++) {
+            internal_parameters[j + 1] = Php::Value();
+          }
+
+          marshalling_aborted = true;
+          break;
+        }
+      }
+    }
+
+    // Add user extra param
+    int parameters_count = callback_object->parameters.size();
+    for (int i = 2; i < parameters_count; i++) {
+      internal_parameters[internal_parameters.size() + i - 1] = callback_object->parameters[i];
+    }
+
+    // Call php function with parameters
     Php::Value ret =
         Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
     return ret;

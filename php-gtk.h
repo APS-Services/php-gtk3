@@ -4,7 +4,8 @@
     #include <phpcpp.h>
     #include <iostream>
     #include <gtk/gtk.h>
-    
+    #include <cstdarg>
+
 	#include "src/Gtk/GtkWidget.h"
 
 
@@ -32,6 +33,27 @@
 	};
 
 	void generic_callback(gpointer *self, ...);
+
+	/**
+	 * Calls va_end() when it leaves scope.
+	 *
+	 * The callback trampolines wrap their whole body - marshalling included - in
+	 * a try block, because building a Php::Object from a GType that main.cpp does
+	 * not register throws. A plain va_end() after the marshalling loop would be
+	 * skipped when that happens, and va_end() has to run in the same function
+	 * that called va_start(), which a local guard satisfies.
+	 */
+	class phpgtk_va_list_guard {
+	 public:
+		explicit phpgtk_va_list_guard(va_list &list) : _list(list) {}
+		~phpgtk_va_list_guard() { va_end(_list); }
+
+		phpgtk_va_list_guard(const phpgtk_va_list_guard &) = delete;
+		phpgtk_va_list_guard &operator=(const phpgtk_va_list_guard &) = delete;
+
+	 private:
+		va_list &_list;
+	};
 
 	/**
 	 * Reporting of PHP exceptions that escape a callback.
