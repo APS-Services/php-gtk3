@@ -5,27 +5,46 @@
 #include <gtk/gtk.h>
 
 /**
- * Custom log handler to suppress GTK 3 bug with gtk_widget_get_scale_factor
+ * Custom log handler to suppress known-noisy GTK 3 CRITICAL warnings
  *
- * When loading icons or performing certain operations, GTK internally calls
- * gtk_widget_get_scale_factor on non-widget objects (like GtkStatusIcon),
- * causing a critical warning. This is a known GTK 3 issue and the warning
- * is harmless but can break applications in environments where critical
- * warnings are configured as fatal.
+ * Currently suppresses the following harmless-but-noisy warnings emitted from
+ * GTK 3 internals. String matching is required because GTK does not provide
+ * error codes for log messages.
+ *
+ *  1. gtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)' failed
+ *     When loading icons or performing certain operations, GTK internally
+ *     calls gtk_widget_get_scale_factor on non-widget objects (like
+ *     GtkStatusIcon), causing a critical warning.
+ *
+ *  2. gtk_distribute_natural_allocation: assertion 'extra_space >= 0' failed
+ *     A well-known upstream GTK 3 bug (see GNOME/gtk#1735 and many downstream
+ *     reports) triggered from GTK's own size-negotiation code when a container
+ *     is transiently allocated less space than the sum of its children's
+ *     minimum sizes during a layout pass. The warning is harmless -- GTK
+ *     handles the case gracefully -- but noisy and can break applications
+ *     that treat CRITICAL warnings as fatal (G_DEBUG=fatal-criticals).
+ *
+ * Both messages are harmless in practice but can break applications in
+ * environments where critical warnings are configured as fatal.
  */
-inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlags log_level,
-                                          const gchar *message, gpointer user_data) {
+inline void suppress_known_gtk_warnings(const gchar *log_domain, GLogLevelFlags log_level,
+                                        const gchar *message, gpointer user_data) {
   (void)log_domain;
   (void)log_level;
   (void)user_data;
 
-  // Suppress the specific gtk_widget_get_scale_factor warning
-  // Expected message format: "gtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)'
-  // failed" String matching is necessary as GTK doesn't provide error codes for log messages
-  if (g_strstr_len(message, -1, "gtk_widget_get_scale_factor") &&
-      g_strstr_len(message, -1, "GTK_IS_WIDGET")) {
-    // Silently ignore this specific warning
-    return;
+  if (message != NULL) {
+    // Suppress: gtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)' failed
+    if (g_strstr_len(message, -1, "gtk_widget_get_scale_factor") &&
+        g_strstr_len(message, -1, "GTK_IS_WIDGET")) {
+      return;
+    }
+
+    // Suppress: gtk_distribute_natural_allocation: assertion 'extra_space >= 0' failed
+    if (g_strstr_len(message, -1, "gtk_distribute_natural_allocation") &&
+        g_strstr_len(message, -1, "extra_space")) {
+      return;
+    }
   }
 
   // For all other messages, use default handler
@@ -54,8 +73,7 @@ class GtkLogSuppressor {
   GtkLogSuppressor() {
     // Disable fatal behavior and install custom log handler
     old_fatal_mask = g_log_set_always_fatal((GLogLevelFlags)0);
-    handler_id =
-        g_log_set_handler("Gtk", G_LOG_LEVEL_CRITICAL, suppress_scale_factor_warning, NULL);
+    handler_id = g_log_set_handler("Gtk", G_LOG_LEVEL_CRITICAL, suppress_known_gtk_warnings, NULL);
   }
 
   ~GtkLogSuppressor() {
