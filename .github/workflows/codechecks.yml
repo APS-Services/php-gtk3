@@ -1,5 +1,9 @@
 name: PHP-GTK3 C++ CI (static analysis)
 
+# Runs on the self-hosted fcsrv runners (set up in APS-Services/configs,
+# server/fcsrv/ci), like the other APS-Services repositories. Jobs there run as
+# root, and the runner container and its checkout persist between jobs.
+
 on:
   workflow_dispatch:
   pull_request:
@@ -9,7 +13,7 @@ on:
 jobs:
   cpp-static-analysis:
     name: C++ static analysis
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, fcsrv]
 
     steps:
       - name: Checkout repository
@@ -19,12 +23,20 @@ jobs:
       # file, including the Glade/libwnck/WebKit ones, which are only
       # compiled in when WITH_GLADEUI/WITH_LIBWNCK/WITH_WEBKIT are set below.
       # `bear` records compiler invocations into compile_commands.json.
+      #
+      # The fcsrv runner image has build-essential and pkg-config but not
+      # these headers. Jobs run as root (no sudo), and a runner container that
+      # already installed them for an earlier job skips the download.
       - name: Install GTK/Glade/GtkSourceView/libwnck/WebKit dev headers
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            libgtk-3-dev libgladeui-dev libgtksourceview-3.0-dev \
-            libwnck-3-dev libwebkit2gtk-4.1-dev bear
+          pkgs="libgtk-3-dev libgladeui-dev libgtksourceview-3.0-dev libwnck-3-dev libwebkit2gtk-4.1-dev bear"
+          if dpkg -s $pkgs > /dev/null 2>&1; then
+            echo "Already installed: $pkgs"
+          else
+            apt-get update -qq
+            # shellcheck disable=SC2086
+            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends $pkgs
+          fi
 
       # Only PHP-CPP's public headers (phpcpp.h + include/) are needed: no
       # php-gtk3 source includes any php-src/Zend header directly, only
@@ -39,13 +51,17 @@ jobs:
       #
       # Pinned to a commit so analysis results are reproducible and don't
       # shift when the fork's default branch moves.
+      #
+      # Under $RUNNER_TEMP, which the runner empties for every job: /tmp
+      # survives between jobs on fcsrv, and a second clone into it would fail.
       - name: Fetch PHP-CPP public headers
         run: |
-          git clone https://github.com/fast-debug/PHP-CPP.git /tmp/phpcpp-src
-          git -C /tmp/phpcpp-src checkout 640d12b1fee231e73b4dbbb8b0e10284bfbfb170
-          mkdir -p /tmp/PHP-CPP/phpcpp
-          cp /tmp/phpcpp-src/phpcpp.h /tmp/PHP-CPP/
-          cp /tmp/phpcpp-src/include/*.h /tmp/PHP-CPP/phpcpp/
+          src="$RUNNER_TEMP/phpcpp-src"
+          git clone --quiet https://github.com/fast-debug/PHP-CPP.git "$src"
+          git -C "$src" checkout --quiet 640d12b1fee231e73b4dbbb8b0e10284bfbfb170
+          mkdir -p "$RUNNER_TEMP/PHP-CPP/phpcpp"
+          cp "$src/phpcpp.h" "$RUNNER_TEMP/PHP-CPP/"
+          cp "$src"/include/*.h "$RUNNER_TEMP/PHP-CPP/phpcpp/"
 
       # Compiles every object file (but does not link the final .so, so no
       # libphpcpp is needed) purely to capture accurate per-file compiler
@@ -66,7 +82,7 @@ jobs:
         run: |
           make compile_commands \
             WITH_GLADEUI=1 WITH_LIBWNCK=1 WITH_WEBKIT=1 \
-            PHPFLAGS="-isystem /tmp/PHP-CPP" \
+            PHPFLAGS="-isystem $RUNNER_TEMP/PHP-CPP" \
             GTKFLAGS="$(pkg-config --cflags gtk+-3.0 gladeui-2.0 gtksourceview-3.0 libwnck-3.0 webkit2gtk-4.1 | sed 's/-I/-isystem/g')"
 
       # C++ linting only; this does NOT link/produce the extension.
@@ -110,7 +126,7 @@ jobs:
 
   markdown-metadata:
     name: Markdown metadata check (no build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, fcsrv]
 
     steps:
       - name: Checkout repository
