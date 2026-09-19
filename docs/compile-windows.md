@@ -1,5 +1,6 @@
 # Table of contents
 
+- [Automated build (GitHub Actions)](#automated-build-github-actions)
 - [How to install PHP-GTK on Windows](#how-to-install-php-gtk-on-windows)
 - [How to Build PHP-GTK on Windows](#how-to-build-php-gtk-on-windows)
   - [Preparing Visual Studio](#preparing-visual-studio)
@@ -8,6 +9,45 @@
   - [Downloading GTK on windows](#downloading-gtk-on-windows)
   - [Creating Visual Studio project](#creating-visual-studio-project)
   - [Running and packing](#running-and-packing)
+
+# Automated build (GitHub Actions)
+
+The extension is built on every push and pull request by
+`.github/workflows/windows.yml` (runs on GitHub's Windows runners), once per
+PHP release in its matrix, currently PHP 8.4 (VS17) and PHP 7.4 (VC15). The
+artifact `php_gtk3-php<version>-nts-<vs>-x64` holds `php_gtk3.dll`, its PDB,
+`gtk3.ini` and a `BUILD-INFO.txt` with the exact PHP, PHP-CPP, WebView2 and GTK
+versions. Another release is a new matrix entry: version, the Visual Studio
+it was built with, and the matching toolset.
+
+The same build works locally with Visual Studio 2022, CMake and MSYS2 and
+replaces the hand-made project described below:
+
+```cmd
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 ^
+      -DPHP_DEVEL_DIR=C:\php-devel\php-8.4.25-devel-vs17-x64 ^
+      -DPHPCPP_DIR=C:\php-dev\PHP-CPP ^
+      -DMSYS2_PREFIX=C:\msys64\ucrt64 ^
+      -DWEBVIEW2_SDK=C:\WebView2SDK
+cmake --build build --config RelWithDebInfo
+```
+
+The toolset must not be newer than the one `php.exe` was built with: PHP
+refuses to load a module "linked with 14.51, but the core is linked with
+14.44" (PHP 7.4 even compares only the tens digit). For the VS17 releases
+(PHP 8.4) that is the v143 toolset, which Visual Studio 2022 uses by default;
+on Visual Studio 2026 add `-T v143`. PHP 7.4 (VC15) needs `-T v141`, the
+"MSVC v141 - VS 2017 C++ x64/x86 build tools" component of Visual Studio 2022.
+
+CMake applies `windows/phpcpp-msvc.patch` to the PHP-CPP checkout (the
+`__vectorcall` calling convention the Zend engine uses on Windows x64, one
+cast); upstream PHP-CPP does not compile with MSVC without it.
+
+`PHP_DEVEL_DIR` is the unpacked *devel pack* of the PHP release you target
+(`php-devel-pack-<version>-nts-Win32-vs17-x64.zip` from windows.php.net); it
+provides the headers and `php8.lib`, so PHP itself no longer has to be compiled.
+The result is `build\RelWithDebInfo\php_gtk3.dll`; the DLLs it needs at run
+time are those of the MSYS2 environment, as listed under "Dependent libs".
 
 # How to install PHP-GTK on Windows
 

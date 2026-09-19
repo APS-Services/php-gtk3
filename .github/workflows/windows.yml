@@ -1,0 +1,191 @@
+name: Windows build
+
+# Builds php_gtk3.dll for the official Windows PHP releases (NTS, x64) with
+# Visual Studio, following docs/compile-windows.md: PHP headers from the devel
+# pack on windows.php.net, GTK from MSYS2 (UCRT64, the environment the
+# PHP_8.4_GTK3 runtime ships), WebView2 from NuGet, PHP-CPP compiled in.
+# The build itself is CMakeLists.txt.
+#
+# GitHub-hosted runners on purpose: the repository is public, so they are
+# free, and fcsrv has no Windows runner (its Windows VM only signs and
+# encodes). The artifact is the bare extension; assembling the redistributable
+# runtime (php.exe, GTK DLLs, themes) is still PHP_8.4_GTK3/updateAssets.bat.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned so the same sources give the same DLL. The fork is upstream
+  # PHP-CPP (PHP 8.4 support, MSVC exports) plus the const-heap fix.
+  PHPCPP_REPO: apss-pohl/PHP-CPP
+  PHPCPP_REF: 4d1a856f01f076ed8aaeec18118dfaa89579a3b1
+  WEBVIEW2_VERSION: 1.0.4191.47
+
+jobs:
+  build:
+    name: php_gtk3.dll for PHP ${{ matrix.php }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        # php.exe refuses a module linked with a newer MSVC than its own core
+        # (8.4: "linked with 14.51, but the core is linked with 14.44"; 7.4
+        # even compares only the tens digit of the minor version), so each
+        # release is built with the toolset of the Visual Studio it came from.
+        include:
+          # 8.4 is what the PHP_8.4_GTK3 runtime ships (VS17 = toolset 14.44).
+          - php: "8.4.25"
+            vs: vs17
+            toolset: v143
+            runner: windows-latest
+          # 7.4 is what the Freeclimber servers still run (VC15 = toolset
+          # 14.16). No runner image has v141 any more; VS 2022 on
+          # windows-2022 can still install it, VS 2026 cannot.
+          - php: "7.4.33"
+            vs: vc15
+            toolset: v141
+            runner: windows-2022
+            toolset-component: Microsoft.VisualStudio.Component.VC.v141.x86.x64
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout php-gtk3
+        uses: actions/checkout@v7
+
+      - name: Checkout PHP-CPP
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.PHPCPP_REPO }}
+          ref: ${{ env.PHPCPP_REF }}
+          path: PHP-CPP
+
+      # Adds the toolset to the runner's Visual Studio; takes a few minutes.
+      - name: Install the ${{ matrix.toolset }} toolset
+        if: matrix.toolset-component != ''
+        run: |
+          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+          $vs = & "$installer\vswhere.exe" -latest -property installationPath
+          if (& "$installer\vswhere.exe" -latest -requires '${{ matrix.toolset-component }}' -property installationPath) {
+            Write-Host "${{ matrix.toolset-component }} is already installed"
+          } else {
+            $p = Start-Process -Wait -PassThru "$installer\setup.exe" -ArgumentList @(
+              'modify', '--installPath', "`"$vs`"", '--add', '${{ matrix.toolset-component }}',
+              '--quiet', '--norestart', '--nocache')
+            if ($p.ExitCode -notin 0, 3010) { throw "Visual Studio installer exited with $($p.ExitCode)" }
+          }
+          Write-Host "MSVC toolsets: $((Get-ChildItem "$vs\VC\Tools\MSVC").Name -join ', ')"
+
+      - name: Install GTK from MSYS2 (UCRT64)
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: >-
+            mingw-w64-ucrt-x86_64-gtk3
+            mingw-w64-ucrt-x86_64-gtksourceview3
+            mingw-w64-ucrt-x86_64-glade
+            mingw-w64-ucrt-x86_64-pkgconf
+
+      - name: Cache PHP ${{ matrix.php }} and the WebView2 SDK
+        id: deps
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}\deps
+          key: windows-deps-php${{ matrix.php }}-webview2-${{ env.WEBVIEW2_VERSION }}
+
+      - name: Download PHP ${{ matrix.php }} (devel pack and binaries) and the WebView2 SDK
+        if: steps.deps.outputs.cache-hit != 'true'
+        run: |
+          # curl's exit code is checked by hand below; keep pwsh from turning it into an exception first.
+          $PSNativeCommandUseErrorActionPreference = $false
+          $deps = "$env:RUNNER_TEMP\deps"
+          New-Item -ItemType Directory -Force $deps | Out-Null
+
+          # windows.php.net keeps only the newest release in releases/; older
+          # ones move to archives/, so try both.
+          function Get-Php($name) {
+            foreach ($base in 'https://windows.php.net/downloads/releases', 'https://windows.php.net/downloads/releases/archives') {
+              curl.exe -fsSL --retry 3 -o "$deps\$name" "$base/$name"
+              if ($LASTEXITCODE -eq 0) { return }
+            }
+            throw "$name not found on windows.php.net"
+          }
+          $flavor = "${{ matrix.php }}-nts-Win32-${{ matrix.vs }}-x64"
+          Get-Php "php-devel-pack-$flavor.zip"
+          Get-Php "php-$flavor.zip"
+          Expand-Archive "$deps\php-devel-pack-$flavor.zip" "$deps\php-devel"
+          Expand-Archive "$deps\php-$flavor.zip" "$deps\php"
+
+          $v = '${{ env.WEBVIEW2_VERSION }}'
+          curl.exe -fsSL --retry 3 -o "$deps\webview2.zip" "https://api.nuget.org/v3-flatcontainer/microsoft.web.webview2/$v/microsoft.web.webview2.$v.nupkg"
+          if ($LASTEXITCODE -ne 0) { throw "WebView2 SDK $v not found on nuget.org" }
+          Expand-Archive "$deps\webview2.zip" "$deps\webview2"
+          Remove-Item "$deps\*.zip"
+
+      - name: Configure
+        run: |
+          $deps = "$env:RUNNER_TEMP\deps"
+          # The devel pack unpacks into php-<version>-devel-<vs>-x64.
+          $phpDevel = (Get-ChildItem "$deps\php-devel" -Directory | Select-Object -First 1).FullName
+          $msys2 = '${{ steps.msys2.outputs.msys2-location }}'
+          # No -G: the runner image decides which Visual Studio is installed;
+          # the toolset comes from the matrix (see there).
+          cmake -S . -B build -A x64 -T ${{ matrix.toolset }} `
+            -DPHP_DEVEL_DIR="$($phpDevel -replace '\\', '/')" `
+            -DPHPCPP_DIR="$($env:GITHUB_WORKSPACE -replace '\\', '/')/PHP-CPP" `
+            -DMSYS2_PREFIX="$($msys2 -replace '\\', '/')/ucrt64" `
+            -DWEBVIEW2_SDK="$($deps -replace '\\', '/')/webview2"
+
+      - name: Build
+        run: cmake --build build --config RelWithDebInfo --parallel
+
+      - name: Collect php_gtk3.dll, its PDB and gtk3.ini
+        run: cmake --install build --config RelWithDebInfo --prefix dist
+
+      # The real test: the official php.exe of the same release loads the
+      # DLL. GTK's own DLLs come from PATH, as they do in an installation.
+      - name: Load the extension in php.exe ${{ matrix.php }}
+        run: |
+          $deps = "$env:RUNNER_TEMP\deps"
+          Copy-Item dist\php_gtk3.dll "$deps\php\ext\"
+          $env:PATH = '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin;' + $env:PATH
+          $php = "$deps\php\php.exe"
+          $ini = @('-n', "-d extension_dir=$deps\php\ext", '-d extension=gtk3')
+          & $php @ini --ri gtk3
+          & $php @ini -r 'exit(extension_loaded("gtk3") && class_exists("GtkWindow") && class_exists("GtkWebView") ? 0 : 1);'
+          if ($LASTEXITCODE -ne 0) { throw "php.exe did not load php_gtk3.dll" }
+
+      - name: Write the build info
+        shell: msys2 {0}
+        run: |
+          dist=$(cygpath -u "$GITHUB_WORKSPACE")/dist
+          {
+            echo "php_gtk3.dll for PHP ${{ matrix.php }} (NTS, ${{ matrix.vs }}, x64, toolset ${{ matrix.toolset }})"
+            echo "php-gtk3   ${{ github.sha }}"
+            echo "PHP-CPP    $PHPCPP_REPO@$PHPCPP_REF"
+            echo "WebView2   $WEBVIEW2_VERSION"
+            echo "GTK (MSYS2 UCRT64):"
+            pacman -Q mingw-w64-ucrt-x86_64-gtk3 mingw-w64-ucrt-x86_64-gtksourceview3 mingw-w64-ucrt-x86_64-glade | sed 's/^/  /'
+          } > "$dist/BUILD-INFO.txt"
+          { echo '```'; cat "$dist/BUILD-INFO.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload php_gtk3-php${{ matrix.php }}-nts-${{ matrix.vs }}-x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: php_gtk3-php${{ matrix.php }}-nts-${{ matrix.vs }}-x64
+          path: dist
+          if-no-files-found: error

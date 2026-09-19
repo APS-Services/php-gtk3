@@ -1,0 +1,252 @@
+diff --git a/include/classbase.h b/include/classbase.h
+index dfa2f38..11f37b6 100644
+--- a/include/classbase.h
++++ b/include/classbase.h
+@@ -41,7 +41,7 @@ class ClassImpl;
+  *  @param  execute_data    Data about the current call stack
+  *  @param  return_value    Holder for the return value
+  */
+-using ZendCallback = void(*)(struct _zend_execute_data *execute_data, struct _zval_struct *return_value);
++using ZendCallback = void (PHPCPP_FASTCALL *)(struct _zend_execute_data *execute_data, struct _zval_struct *return_value);
+ 
+ /**
+  *  A couple of predefined native callback functions that can be registered.
+diff --git a/include/visibility.h b/include/visibility.h
+index afb8a6b..002b0b5 100644
+--- a/include/visibility.h
++++ b/include/visibility.h
+@@ -28,3 +28,19 @@
+ #else
+     #define PHPCPP_EXPORT __attribute__ ((visibility ("default")))
+ #endif
++
++/**
++ *  Calling convention of the functions the Zend engine calls (zif_handler).
++ *  Mirrors ZEND_FASTCALL in Zend/zend_portability.h, which the public headers
++ *  cannot include: on Windows x64 that is __vectorcall, and a handler declared
++ *  without it does not even convert to zif_handler under MSVC.
++ */
++#if defined(__GNUC__) && defined(__i386__)
++    #define PHPCPP_FASTCALL __attribute__((fastcall))
++#elif defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1700
++    #define PHPCPP_FASTCALL __fastcall
++#elif defined(_MSC_VER) && _MSC_VER >= 1800
++    #define PHPCPP_FASTCALL __vectorcall
++#else
++    #define PHPCPP_FASTCALL
++#endif
+diff --git a/include/zendcallable.h b/include/zendcallable.h
+index f6ddbc8..76b726e 100644
+--- a/include/zendcallable.h
++++ b/include/zendcallable.h
+@@ -79,7 +79,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, void (T::*callback)()>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // catch exceptions thrown by the C++ methods
+         try
+@@ -104,7 +104,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, void (T::*callback)() const>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // catch exceptions thrown by the C++ methods
+         try
+@@ -129,7 +129,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, Value (T::*callback)()>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // catch exceptions thrown by the C++ methods
+         try
+@@ -154,7 +154,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, Value (T::*callback)() const>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // catch exceptions thrown by the C++ methods
+         try
+@@ -179,7 +179,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, void(T::*callback)(Parameters &parameters)>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // check parameter count
+         if (!valid(execute_data, return_value)) return;
+@@ -210,7 +210,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, void(T::*callback)(Parameters &parameters) const>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // check parameter count
+         if (!valid(execute_data, return_value)) return;
+@@ -241,7 +241,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, Value (T::*callback)(Parameters &parameters)>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // check parameter count
+         if (!valid(execute_data, return_value)) return;
+@@ -272,7 +272,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <typename T, Value (T::*callback)(Parameters &parameters) const>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // check parameter count
+         if (!valid(execute_data, return_value)) return;
+@@ -303,7 +303,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <void(*callback)()>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // catch exceptions thrown by the C++ methods
+         try
+@@ -328,7 +328,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <Value(*callback)()>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // catch exceptions thrown by the C++ methods
+         try
+@@ -353,7 +353,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <void(*callback)(Parameters &parameters)>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // check parameter count
+         if (!valid(execute_data, return_value)) return;
+@@ -384,7 +384,7 @@ public:
+      *  @param  return_value    The value we are returning to PHP
+      */
+     template <Value(*callback)(Parameters &parameters)>
+-    static void invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
++    static void PHPCPP_FASTCALL invoke(struct _zend_execute_data *execute_data, struct _zval_struct *return_value)
+     {
+         // check parameter count
+         if (!valid(execute_data, return_value)) return;
+diff --git a/phpcpp.h b/phpcpp.h
+index 1b0da15..19931fc 100644
+--- a/phpcpp.h
++++ b/phpcpp.h
+@@ -15,6 +15,9 @@
+  */
+ #include <string.h>
+ #include <string>
++// The headers below stream std::string inline (Php::out << ...). MSVC's STL
++// needs the complete std::ostream for that; libstdc++ happens not to.
++#include <ostream>
+ #include <initializer_list>
+ #include <vector>
+ #include <memory>
+diff --git a/zend/callable.cpp b/zend/callable.cpp
+index a1a684e..deca07e 100644
+--- a/zend/callable.cpp
++++ b/zend/callable.cpp
+@@ -22,7 +22,7 @@ namespace Php {
+  *  @param  return_value_used
+  *  @return integer
+  */
+-void Callable::invoke(INTERNAL_FUNCTION_PARAMETERS)
++void PHPCPP_FASTCALL Callable::invoke(INTERNAL_FUNCTION_PARAMETERS)
+ {
+     uint32_t argc       = EX(func)->common.num_args;
+     zend_arg_info* info = EX(func)->common.arg_info;
+diff --git a/zend/callable.h b/zend/callable.h
+index 8e46fd5..abf00c7 100644
+--- a/zend/callable.h
++++ b/zend/callable.h
+@@ -270,7 +270,7 @@ protected:
+      *  @param  return_value_used
+      *  @return integer
+      */
+-    static void invoke(INTERNAL_FUNCTION_PARAMETERS);
++    static void PHPCPP_FASTCALL invoke(INTERNAL_FUNCTION_PARAMETERS);
+ 
+ };
+ 
+diff --git a/zend/classimpl.cpp b/zend/classimpl.cpp
+index 2f8e7ba..ea2e25d 100644
+--- a/zend/classimpl.cpp
++++ b/zend/classimpl.cpp
+@@ -100,7 +100,7 @@ struct CallData
+  *  Handler function that runs the __call function
+  *  @param  ...     All normal parameters for function calls
+  */
+-void ClassImpl::callMethod(INTERNAL_FUNCTION_PARAMETERS)
++void PHPCPP_FASTCALL ClassImpl::callMethod(INTERNAL_FUNCTION_PARAMETERS)
+ {
+     // retrieve the originally called (and by us allocated) function object
+     auto *data = (CallData *)execute_data->func;
+@@ -146,7 +146,7 @@ void ClassImpl::callMethod(INTERNAL_FUNCTION_PARAMETERS)
+  *  Handler function that runs the __invoke function
+  *  @param  ...     All normal parameters for function calls
+  */
+-void ClassImpl::callInvoke(INTERNAL_FUNCTION_PARAMETERS)
++void PHPCPP_FASTCALL ClassImpl::callInvoke(INTERNAL_FUNCTION_PARAMETERS)
+ {
+     // retrieve the originally called (and by us allocated) function object
+     auto *data = (CallData *)execute_data->func;
+diff --git a/zend/classimpl.h b/zend/classimpl.h
+index 6933f38..826def3 100644
+--- a/zend/classimpl.h
++++ b/zend/classimpl.h
+@@ -207,8 +207,8 @@ public:
+      *  @param  this_ptr                Object being called
+      *  @param  return_value_used       Is the return value used or not?
+      */
+-    static void callMethod(zend_execute_data *execute_data, zval *return_value);
+-    static void callInvoke(zend_execute_data *execute_data, zval *return_value);
++    static void PHPCPP_FASTCALL callMethod(zend_execute_data *execute_data, zval *return_value);
++    static void PHPCPP_FASTCALL callInvoke(zend_execute_data *execute_data, zval *return_value);
+ 
+     /**
+      *  Function that is used to count the number of elements in the object
+diff --git a/zend/includes.h b/zend/includes.h
+index 3ae0cc5..280a773 100644
+--- a/zend/includes.h
++++ b/zend/includes.h
+@@ -26,6 +26,8 @@
+ #include <exception>
+ #include <type_traits>
+ #include <functional>
++// std::min in value.cpp; older MSVC STLs (v141) do not include it transitively.
++#include <algorithm>
+ 
+ // for debug
+ #include <iostream>
+diff --git a/zend/module.h b/zend/module.h
+index 34d4aac..6c97fe3 100644
+--- a/zend/module.h
++++ b/zend/module.h
+@@ -75,7 +75,7 @@ private:
+                 auto iter = _handles.begin();
+                 
+                 // remove the handle
+-                DL_UNLOAD(*iter);
++                DL_UNLOAD((DL_HANDLE)*iter);
+                 
+                 // remove from set
+                 _handles.erase(iter);

@@ -12,3 +12,6 @@ compile_commands.json
 CLAUDE.md
 .claude/settings.local.json
 .claude
+# CMake build (Windows)
+build/
+dist/
