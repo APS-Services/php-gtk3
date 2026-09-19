@@ -8,8 +8,9 @@ name: Windows build
 #
 # GitHub-hosted runners on purpose: the repository is public, so they are
 # free, and fcsrv has no Windows runner (its Windows VM only signs and
-# encodes). The artifact is the bare extension; assembling the redistributable
-# runtime (php.exe, GTK DLLs, themes) is still PHP_8.4_GTK3/updateAssets.bat.
+# encodes). The artifact is the bare extension; the redistributable runtime
+# (php.exe, GTK DLLs, themes) is assembled by PHP_8.4_GTK3's "Update bundle"
+# workflow, which the last job below starts after every build of master.
 
 on:
   push:
@@ -189,3 +190,23 @@ jobs:
           name: php_gtk3-php${{ matrix.php }}-nts-${{ matrix.vs }}-x64
           path: dist
           if-no-files-found: error
+
+  # Tells PHP_8.4_GTK3 to bundle this build. Its workflow reads the artifact
+  # with its own token (this repository is public); only the start needs a
+  # token with "Actions: write" on PHP_8.4_GTK3, the repository secret
+  # PHP_8_4_GTK3_DISPATCH_TOKEN. Without it the job only says so.
+  bundle:
+    name: Start the PHP_8.4_GTK3 bundle
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.PHP_8_4_GTK3_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::PHP_8_4_GTK3_DISPATCH_TOKEN is not set; start the Update bundle workflow of PHP_8.4_GTK3 by hand with run id $GITHUB_RUN_ID"
+            exit 0
+          fi
+          gh workflow run update-bundle.yml -R APS-Services/PHP_8.4_GTK3 --ref main -f "php-gtk3-run-id=$GITHUB_RUN_ID"
+          echo "Update bundle started in PHP_8.4_GTK3 for run $GITHUB_RUN_ID"
