@@ -216,9 +216,24 @@ Php::Value cobject_to_phpobject(gpointer *cobject) {
     return {};
   }
 
+  // Wrap as the object's own class when PHP knows it, otherwise as the nearest
+  // ancestor it does know. GTK creates toplevels of internal types (GtkTooltipWindow,
+  // GtkTrayIcon) that main.cpp never registers; without the fallback a single one of
+  // them made gtk_window_list_toplevels() & co. throw "Unknown class name" as a whole.
+  // class_exists() also sees userland subclasses, so an app may still add its own.
+  GType type = G_TYPE_FROM_INSTANCE((gpointer *)cobject);
+  while (type != 0 && !Php::call("class_exists", g_type_name(type), false).boolValue()) {
+    type = g_type_parent(type);
+  }
+  if (type == 0) {
+    throw Php::Exception(std::string("php-gtk3: no PHP class for ") +
+                         g_type_name(G_TYPE_FROM_INSTANCE((gpointer *)cobject)) +
+                         " or any of its ancestors");
+  }
+
   GtkWidget_ *return_parsed = new GtkWidget_();
   return_parsed->set_instance((gpointer *)cobject);
-  return Php::Object(g_type_name(G_TYPE_FROM_INSTANCE((gpointer *)cobject)), return_parsed);
+  return Php::Object(g_type_name(type), return_parsed);
 }
 
 /**
