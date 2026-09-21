@@ -47,9 +47,30 @@ This will create and install libphpcpp.so.2.3
 Clone source
 
 ```sh
-:$ git clone https://github.com/fast-debug/PHP-CPP.git
+:$ git clone https://github.com/apss-pohl/PHP-CPP.git
 :$ cd PHP-CPP
 ```
+
+`NOTE:` use that fork, not upstream. PHP-CPP registers a module's constants
+with `CONST_PERSISTENT`, so the engine releases them with plain `free()` at
+module shutdown, but the constructors allocated the strings with request
+lifetime (`ZVAL_STRINGL`, i.e. `emalloc`). Freeing those with `free()`
+corrupts the heap, and since php-gtk3 declares a lot of string constants,
+**every** process loading the built `gtk3.so` aborts on exit:
+
+```
+munmap_chunk(): invalid pointer
+#1 free ()
+#3 zend_hash_destroy ()
+#5 php_module_shutdown ()
+```
+
+The script still finishes and prints its result, so this is easy to miss -
+it shows up as an exit code of 139 on an otherwise successful run. The fork
+allocates those strings persistently and releases them in the destructor;
+the change is proposed upstream as
+[PHP-CPP#557](https://github.com/CopernicaMarketingSoftware/PHP-CPP/pull/557)
+and this note can go once it is merged.
 
 Edit `PHP-CPP/Makefile` to use `/opt/php/php-8.2.22/bin/php-config`.
 
