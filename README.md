@@ -18,7 +18,7 @@ See [issues](https://github.com/scorninpc/php-gtk3/issues) for problems and impr
 
 ## How its works
 
-PHP-GTK3 work with a middleway of [PHP-CPP](https://github.com/CopernicaMarketingSoftware/PHP-CPP). In addition to making work faster, syntax and how to program closely resemble PHP, so more people can contribute to the project. Another strong point, perhaps the most important are the updates of Zend.h. In the migration from PHP5 to PHP7 for example, every bind was lost. In that way, there is a nice community working on PHP-CPP to make this updated
+PHP-GTK3 work with a middleway of [PHP-CPP](https://github.com/CopernicaMarketingSoftware/PHP-CPP) (build against [our fork](https://github.com/apss-pohl/PHP-CPP) until [#557](https://github.com/CopernicaMarketingSoftware/PHP-CPP/pull/557) is merged - see [docs/compile-linux.md](docs/compile-linux.md#compile-php-cpp-from-source)). In addition to making work faster, syntax and how to program closely resemble PHP, so more people can contribute to the project. Another strong point, perhaps the most important are the updates of Zend.h. In the migration from PHP5 to PHP7 for example, every bind was lost. In that way, there is a nice community working on PHP-CPP to make this updated
 
 ## PHP-GTK 3 Cookbook
 
