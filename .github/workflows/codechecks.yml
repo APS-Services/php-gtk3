@@ -9,7 +9,9 @@ on:
 jobs:
   cpp-static-analysis:
     name: C++ static analysis
-    runs-on: ubuntu-latest
+    # Pinned: Ubuntu 26.04 (ubuntu-latest from Oct/Nov 2026) no longer ships
+    # libgladeui-dev, which the header install below needs.
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -110,7 +112,7 @@ jobs:
 
   markdown-metadata:
     name: Markdown metadata check (no build)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
