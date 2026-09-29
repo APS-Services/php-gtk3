@@ -29,9 +29,10 @@ concurrency:
 
 env:
   # Pinned so the same sources give the same DLL. The fork is upstream
-  # PHP-CPP (PHP 8.4 support, MSVC exports) plus the const-heap fix.
+  # PHP-CPP (PHP 8.4 support, MSVC exports) plus the const-heap fix and the
+  # __call trampolines owning their function name (apss-pohl/PHP-CPP#2).
   PHPCPP_REPO: apss-pohl/PHP-CPP
-  PHPCPP_REF: 4d1a856f01f076ed8aaeec18118dfaa89579a3b1
+  PHPCPP_REF: e9345f4d72561bdeb5f3b12406d0ab4ac39063c4
   WEBVIEW2_VERSION: 1.0.4191.47
 
 jobs:
@@ -189,6 +190,26 @@ jobs:
             Write-Output "$($case.Mode): status $($p.ExitCode)"; Write-Output $text
             if ($p.ExitCode -ne $case.Status) { throw "$($case.Mode): expected exit status $($case.Status)" }
             if ($text -notmatch 'shutdown function ran' -or $text -notmatch 'buffered output flushed') { throw "$($case.Mode): shutdown incomplete" }
+          }
+
+      # Looking up a method an extension object does not have must not free
+      # the caller's method name (PHP-CPP's __call trampoline took no
+      # reference to it). Only refcounted names are hit, as in ionCube-encoded
+      # scripts - plain literals are interned, so no application test sees it.
+      - name: Method lookup misses keep the name in php.exe ${{ matrix.php }}
+        run: |
+          $deps = "$env:RUNNER_TEMP\deps"
+          $env:PATH = '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin;' + $env:PATH
+          foreach ($case in @(@{ Mode = 'probe'; Status = 0; Text = 'OK' }, @{ Mode = 'call'; Status = 255; Text = 'Undefined method attachEvents' })) {
+            $out = "$env:RUNNER_TEMP\lookup-$($case.Mode).txt"
+            $p = Start-Process -FilePath "$deps\php\php.exe" -PassThru -NoNewWindow -RedirectStandardOutput $out `
+              -ArgumentList @('-n', "-d extension_dir=$deps\php\ext", '-d extension=gtk3', '-d display_errors=1', 'tests\method_lookup_miss.php', $case.Mode)
+            $null = $p.Handle  # without a cached handle ExitCode stays empty after WaitForExit(ms)
+            if (-not $p.WaitForExit(60000)) { $p.Kill(); throw "$($case.Mode): php.exe still running" }
+            $text = Get-Content -Raw $out
+            Write-Output "$($case.Mode): status $($p.ExitCode)"; Write-Output $text
+            if ($p.ExitCode -ne $case.Status) { throw "$($case.Mode): expected exit status $($case.Status)" }
+            if ($text -notmatch [regex]::Escape($case.Text) -or $text -match 'BUG:') { throw "$($case.Mode): expected '$($case.Text)' and no BUG line" }
           }
 
       - name: Write the build info
