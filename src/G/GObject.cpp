@@ -191,6 +191,7 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
   std::string callback_error;
   long int callback_error_code = 0;
   bool callback_failed = false;
+  bool exit_requested = false;
 
   try {
     // Create internal params, GtkWidget + GdkEvent
@@ -330,6 +331,7 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
         Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
     return ret;
   } catch (Php::Throwable &throwable) {
+    exit_requested = phpgtk_exit_pending();
     // Capture the details now, but report only *after* this catch scope exits:
     // PHP-CPP's ~Rethrowable clears the pending Zend exception on destruction
     // (we do not rethrow), and while it is still pending Zend refuses to run
@@ -338,6 +340,10 @@ bool GObject_::connect_callback(gpointer user_data, ...) {
     callback_error = throwable.what();
     callback_error_code = throwable.code();
     callback_failed = true;
+  }
+
+  if (exit_requested) {
+    phpgtk_finish_exit();
   }
 
   if (callback_failed) {

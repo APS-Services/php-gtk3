@@ -97,6 +97,8 @@ Pass `null` to remove the handler again. Both PHP `Exception`s and `Error`s (e.g
 
 See [examples/exception_handler.php](examples/exception_handler.php) for a runnable example.
 
+`exit()` and `die()` inside a callback are not exceptions and never reach this handler: they end the script as they do anywhere else, running shutdown functions and flushing output buffers.
+
 ## Example
 
 ```php

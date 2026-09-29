@@ -26,11 +26,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libgtk-3-dev libgladeui-dev libgtksourceview-3.0-dev \
-            libwnck-3-dev libwebkit2gtk-4.1-dev bear
+            libwnck-3-dev libwebkit2gtk-4.1-dev bear php-dev
 
-      # Only PHP-CPP's public headers (phpcpp.h + include/) are needed: no
-      # php-gtk3 source includes any php-src/Zend header directly, only
-      # <phpcpp.h>. So a header-only shallow clone is enough; no PHP-CPP
+      # PHP-CPP's public headers (phpcpp.h + include/) cover every source but
+      # php-gtk.cpp, which also includes <php.h>/<zend_exceptions.h> for the
+      # exit() handling in callbacks - those come from php-dev (PHPFLAGS below).
+      # A header-only shallow clone of PHP-CPP is enough; no PHP-CPP
       # build/link is required to generate an accurate compile database.
       #
       # phpcpp.h itself uses #include <phpcpp/xxx.h>, which only resolves
@@ -68,7 +69,7 @@ jobs:
         run: |
           make compile_commands \
             WITH_GLADEUI=1 WITH_LIBWNCK=1 WITH_WEBKIT=1 \
-            PHPFLAGS="-isystem /tmp/PHP-CPP" \
+            PHPFLAGS="-isystem /tmp/PHP-CPP $(php-config --includes | sed 's/-I/-isystem/g')" \
             GTKFLAGS="$(pkg-config --cflags gtk+-3.0 gladeui-2.0 gtksourceview-3.0 libwnck-3.0 webkit2gtk-4.1 | sed 's/-I/-isystem/g')"
 
       # C++ linting only; this does NOT link/produce the extension.
