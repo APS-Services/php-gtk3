@@ -172,6 +172,25 @@ jobs:
           & $php @ini -r 'exit(extension_loaded("gtk3") && class_exists("GtkWindow") && class_exists("GtkWebView") ? 0 : 1);'
           if ($LASTEXITCODE -ne 0) { throw "php.exe did not load php_gtk3.dll" }
 
+      # exit() inside a GTK callback must end php.exe on PHP 8 (it used to be
+      # swallowed at the callback boundary). The jump back to PHP crosses the
+      # MinGW-built GTK frames, which only this build exercises.
+      - name: exit() inside callbacks ends php.exe ${{ matrix.php }}
+        run: |
+          $deps = "$env:RUNNER_TEMP\deps"
+          $env:PATH = '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin;' + $env:PATH
+          foreach ($case in @(@{ Mode = 'dialog'; Status = 3 }, @{ Mode = 'timeout'; Status = 4 })) {
+            $out = "$env:RUNNER_TEMP\exit-$($case.Mode).txt"
+            $p = Start-Process -FilePath "$deps\php\php.exe" -PassThru -NoNewWindow -RedirectStandardOutput $out `
+              -ArgumentList @('-n', "-d extension_dir=$deps\php\ext", '-d extension=gtk3', 'tests\exit_in_callback.php', $case.Mode)
+            $null = $p.Handle  # without a cached handle ExitCode stays empty after WaitForExit(ms)
+            if (-not $p.WaitForExit(30000)) { $p.Kill(); throw "$($case.Mode): exit() was swallowed, php.exe still running" }
+            $text = Get-Content -Raw $out
+            Write-Output "$($case.Mode): status $($p.ExitCode)"; Write-Output $text
+            if ($p.ExitCode -ne $case.Status) { throw "$($case.Mode): expected exit status $($case.Status)" }
+            if ($text -notmatch 'shutdown function ran' -or $text -notmatch 'buffered output flushed') { throw "$($case.Mode): shutdown incomplete" }
+          }
+
       - name: Write the build info
         shell: msys2 {0}
         run: |

@@ -1,6 +1,10 @@
 
 #include "php-gtk.h"
 
+// EG(), zend_is_unwind_exit() and zend_bailout() for phpgtk_exit_pending()/phpgtk_finish_exit()
+#include <php.h>
+#include <zend_exceptions.h>
+
 /**
  * Slot holding the handler installed from PHP via Gtk::set_exception_handler(),
  * or a null Php::Value when the application did not install one.
@@ -68,6 +72,35 @@ void phpgtk_report_callback_exception(const std::string &message, long int code,
   if (!reported) {
     g_critical("php-gtk3: uncaught exception in '%s' handler: %s", origin, message.c_str());
   }
+}
+
+/**
+ * Whether the throwable a callback just caught is PHP's exit()/die().
+ *
+ * Must be called inside the catch block: that is the only place where the
+ * unwind exception is still pending in EG(exception).
+ */
+bool phpgtk_exit_pending() {
+#if PHP_VERSION_ID >= 80000
+  return EG(exception) != nullptr && zend_is_unwind_exit(EG(exception));
+#else
+  // Before PHP 8, exit() bailed out directly and never reached a catch
+  return false;
+#endif
+}
+
+/**
+ * Finish an exit() that a callback caught: jump to the request's bailout
+ * point, which is exactly what exit() did before PHP 8, so shutdown functions,
+ * output buffers and the exit status are handled by PHP as usual. The jump
+ * crosses GLib's frames just like the pre-PHP-8 exit() did.
+ *
+ * Call it only after the catch scope has been left, so PHP-CPP has already
+ * cleared the pending unwind exception - otherwise shutdown functions would
+ * see it and refuse to run.
+ */
+void phpgtk_finish_exit() {
+  zend_bailout();
 }
 
 bool phpgtk_check_parameter(Php::Parameters &parameters, int param, Php::Type expected_type,
@@ -278,6 +311,7 @@ void generic_callback(gpointer *self, ...) {
   std::string callback_error;
   long int callback_error_code = 0;
   bool callback_failed = false;
+  bool exit_requested = false;
 
   try {
     // create internal params
@@ -388,9 +422,14 @@ void generic_callback(gpointer *self, ...) {
     // Call php function with parameters
     Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
   } catch (Php::Throwable &throwable) {
+    exit_requested = phpgtk_exit_pending();
     callback_error = throwable.what();
     callback_error_code = throwable.code();
     callback_failed = true;
+  }
+
+  if (exit_requested) {
+    phpgtk_finish_exit();
   }
 
   if (callback_failed) {

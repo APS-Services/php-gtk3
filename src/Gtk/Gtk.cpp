@@ -83,13 +83,19 @@ gint Gtk_::timeout_add_callback(gpointer data) {
   std::string callback_error;
   long int callback_error_code = 0;
   bool callback_failed = false;
+  bool exit_requested = false;
   Php::Value ret;
   try {
     ret = Php::call("call_user_func_array", callback_object->callback_name, internal_parameters);
   } catch (Php::Throwable &throwable) {
+    exit_requested = phpgtk_exit_pending();
     callback_error = throwable.what();
     callback_error_code = throwable.code();
     callback_failed = true;
+  }
+
+  if (exit_requested) {
+    phpgtk_finish_exit();
   }
 
   if (callback_failed) {

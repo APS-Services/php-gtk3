@@ -73,6 +73,19 @@
 	                                      const char *context);
 
 	/**
+	 * exit()/die() inside a callback.
+	 *
+	 * Since PHP 8, exit() no longer bails out on the spot: it throws an internal
+	 * "unwind exit" that PHP-CPP hands to the callback's catch like any other
+	 * throwable, and clearing it there would silently cancel the exit - the
+	 * application keeps running after it asked to terminate. Call
+	 * phpgtk_exit_pending() inside the catch (while the exception is still
+	 * pending) and phpgtk_finish_exit() after the catch scope has been left.
+	 */
+	bool phpgtk_exit_pending();
+	[[noreturn]] void phpgtk_finish_exit();
+
+	/**
 	 * Build metadata ("built <date>, git <hash>") and the compiled-in optional
 	 * features ("webkit=yes, gladeui=no, ..."), defined in version.cpp - the
 	 * one translation unit the Makefile force-rebuilds so the values stay current.
