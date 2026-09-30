@@ -7,7 +7,7 @@
  * Struct for callback gpointer
  */
 struct GtkClipboard_::st_request_callback {
-  Php::Parameters user_parameters;
+  std::vector<Php::Value> user_parameters;
   Php::Object self_widget;
 };
 
@@ -147,9 +147,8 @@ void GtkClipboard_::request_text(Php::Parameters &parameters) {
   // gpointer user_data = (gpointer)parameters[1];
 
   // Create user data param of callaback
-  struct st_request_callback *callback_object =
-      (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
-  memset(callback_object, 0, sizeof(struct st_request_callback));
+  // One request, one callback: request_text_callback() frees it
+  auto *callback_object = new st_request_callback();
   callback_object->user_parameters = parameters;
   callback_object->self_widget = Php::Object("GtkClipboard", this);
 
@@ -195,6 +194,9 @@ void GtkClipboard_::request_text_callback(GtkClipboard *clipboard, const gchar *
   if (exit_requested) {
     phpgtk_finish_exit();
   }
+
+  // The request is answered, nothing calls back again
+  delete callback_object;
 
   if (callback_failed) {
     phpgtk_report_callback_exception(callback_error, callback_error_code,
