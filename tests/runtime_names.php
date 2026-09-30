@@ -9,14 +9,13 @@
  * reference, literals of a plain script are interned. ionCube-encoded scripts
  * have refcounted literals, which is where such bugs surface.
  *
- * Usage: php runtime_names.php probe|churn
- *   probe  property lookups that miss, a static name that misses, a callback
- *          registered by name, a signal connected by name, an exception message
- *          reported through Gtk::set_exception_handler(): every string intact
- *          afterwards, and the callbacks ran.
- *   churn  20 000 connect()/handler_disconnect() cycles must not grow the heap
- *          (connect_internal() must free what it allocates once the handler is
- *          gone).
+ * Covered: property lookups that miss, a static name that misses, a callback
+ * registered by name, a signal connected by name, an exception message reported
+ * through Gtk::set_exception_handler() - every string intact afterwards, and
+ * the callbacks ran. (What a callback keeps alive, and for how long, is
+ * tests/callback_lifetime.php.)
+ *
+ * Usage: php runtime_names.php
  * Expected: exit status 0 and "OK" on stdout - no "BUG:" line, no crash.
  */
 Gtk::init();
@@ -80,22 +79,6 @@ function namedCallbackTarget(): bool
 }
 
 $button = GtkButton::new_with_label('probe');
-
-if (($argv[1] ?? 'probe') === 'churn') {
-    $before = memory_get_usage();
-    for ($i = 0; $i < 20000; $i++) {
-        $id = $button->connect('clicked', function (): void {
-        });
-        $button->handler_disconnect($id);
-    }
-    $grown = memory_get_usage() - $before;
-    if ($grown > 0) {
-        echo "BUG: 20000 connect/disconnect cycles left $grown bytes behind\n";
-        exit(1);
-    }
-    echo "OK\n";
-    exit(0);
-}
 
 // Property lookups that miss: read, isset, write and unset of an unknown property
 $name = runtimeCopy('noSuchProperty');

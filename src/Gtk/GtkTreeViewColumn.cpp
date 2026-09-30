@@ -2,7 +2,7 @@
 #include "GtkTreeViewColumn.h"
 
 struct GtkTreeViewColumn_::st_request_callback {
-  Php::Parameters user_parameters;
+  std::vector<Php::Value> user_parameters;
   Php::Object self_widget;
 };
 
@@ -302,16 +302,22 @@ void GtkTreeViewColumn_::set_cell_data_func(Php::Parameters &parameters) {
   Php::Array callback_params = parameters;
 
   // Create gpointer user data
-  struct st_request_callback *callback_object =
-      (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
-  memset(callback_object, 0, sizeof(struct st_request_callback));
+  // Freed by request_callback_destroy() when the function is replaced or the object goes away
+  auto *callback_object = new st_request_callback();
   callback_object->user_parameters = parameters;
   callback_object->self_widget = Php::Object("GtkTreeViewColumn", this);
 
   // Call the virtual callback
   gtk_tree_view_column_set_cell_data_func(GTK_TREE_VIEW_COLUMN(instance), cell_renderer,
                                           set_cell_data_func_callback, (gpointer)callback_object,
-                                          nullptr);
+                                          request_callback_destroy);
+}
+
+/**
+ * Frees the callback data, when GTK drops the function it belongs to.
+ */
+void GtkTreeViewColumn_::request_callback_destroy(gpointer data) {
+  delete (struct st_request_callback *)data;
 }
 
 void GtkTreeViewColumn_::set_cell_data_func_callback(GtkTreeViewColumn *tree_column,

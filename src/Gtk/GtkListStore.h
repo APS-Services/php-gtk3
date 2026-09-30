@@ -72,6 +72,7 @@ class GtkListStore_ : public GtkTreeModel_ {
 
   static gint set_sort_func_callback(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
                                      gpointer user_data);
+  static void request_callback_destroy(gpointer data);
 
   void set_sort_column_id(Php::Parameters &parameters);
 

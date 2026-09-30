@@ -2,7 +2,7 @@
 #include "GtkListStore.h"
 
 struct GtkListStore_::st_request_callback {
-  Php::Parameters user_parameters;
+  std::vector<Php::Value> user_parameters;
   Php::Object self_widget;
 };
 
@@ -341,14 +341,20 @@ void GtkListStore_::set_sort_func(Php::Parameters &parameters) {
   gint sort_column_id = (gint)parameters[0];
 
   // Create gpointer user data
-  struct st_request_callback *callback_object =
-      (struct st_request_callback *)malloc(sizeof(struct st_request_callback));
-  memset(callback_object, 0, sizeof(struct st_request_callback));
+  // Freed by request_callback_destroy() when the function is replaced or the object goes away
+  auto *callback_object = new st_request_callback();
   callback_object->user_parameters = parameters;
   callback_object->self_widget = Php::Object("GtkListStore", this);
 
   gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model), sort_column_id, set_sort_func_callback,
-                                  (gpointer)callback_object, nullptr);
+                                  (gpointer)callback_object, request_callback_destroy);
+}
+
+/**
+ * Frees the callback data, when GTK drops the function it belongs to.
+ */
+void GtkListStore_::request_callback_destroy(gpointer data) {
+  delete (struct st_request_callback *)data;
 }
 
 gint GtkListStore_::set_sort_func_callback(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,

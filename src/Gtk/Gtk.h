@@ -53,6 +53,7 @@ class Gtk_ : public Php::Base {
   static Php::Value is_destroyed(Php::Parameters &parameters);
   static Php::Value show_uri_on_window(Php::Parameters &parameters);
   static gint timeout_add_callback(gpointer data);
+  static void timeout_add_destroy(gpointer data);
 
   /**
    * Install a handler that is called when a PHP signal/callback handler throws.
