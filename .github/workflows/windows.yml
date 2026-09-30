@@ -216,21 +216,23 @@ jobs:
             if ($text -notmatch [regex]::Escape($case.Text) -or $text -match 'BUG:') { throw "$($case.Mode): expected '$($case.Text)' and no BUG line" }
           }
 
-      # The other places a script's string crosses into the extension:
-      # property lookups that miss, a static name, callbacks and signals by
-      # name, an exception message through the exception handler.
-      - name: Names handed to the extension stay intact in php.exe ${{ matrix.php }}
+      # The other places a script's string crosses into the extension (property lookups that
+      # miss, a static name, callbacks and signals by name, an exception message), and what a
+      # callback keeps alive: released on disconnect, destroy and timeout end, not before.
+      - name: Names stay intact and callback data is freed in php.exe ${{ matrix.php }}
         run: |
           $deps = "$env:RUNNER_TEMP\deps"
           $env:PATH = '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin;' + $env:PATH
-          $out = "$env:RUNNER_TEMP\runtime-names.txt"
-          $p = Start-Process -FilePath "$deps\php\php.exe" -PassThru -NoNewWindow -RedirectStandardOutput $out `
-            -ArgumentList @('-n', "-d extension_dir=$deps\php\ext", '-d extension=gtk3', '-d display_errors=1', 'tests\runtime_names.php', 'probe')
-          $null = $p.Handle
-          if (-not $p.WaitForExit(60000)) { $p.Kill(); throw "runtime_names probe: php.exe still running" }
-          $text = Get-Content -Raw $out
-          Write-Output "probe: status $($p.ExitCode)"; Write-Output $text
-          if ($p.ExitCode -ne 0 -or $text -notmatch 'OK' -or $text -match 'BUG:') { throw "runtime_names probe failed" }
+          foreach ($test in @('runtime_names', 'callback_lifetime')) {
+            $out = "$env:RUNNER_TEMP\$test.txt"
+            $p = Start-Process -FilePath "$deps\php\php.exe" -PassThru -NoNewWindow -RedirectStandardOutput $out `
+              -ArgumentList @('-n', "-d extension_dir=$deps\php\ext", '-d extension=gtk3', '-d display_errors=1', "tests\$test.php")
+            $null = $p.Handle
+            if (-not $p.WaitForExit(120000)) { $p.Kill(); throw "${test}: php.exe still running" }
+            $text = Get-Content -Raw $out
+            Write-Output "${test}: status $($p.ExitCode)"; Write-Output $text
+            if ($p.ExitCode -ne 0 -or $text -notmatch 'OK' -or $text -match 'BUG:') { throw "$test failed" }
+          }
 
       - name: Write the build info
         shell: msys2 {0}

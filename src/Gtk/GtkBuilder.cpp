@@ -233,7 +233,7 @@ struct GtkBuilder_::st_callback {
   Php::Value callback_name;
   Php::Array callback_params;
   Php::Object self_widget;
-  Php::Parameters parameters;
+  std::vector<Php::Value> parameters;
 
   guint signal_id;
   const gchar *signal_name;
@@ -244,13 +244,20 @@ struct GtkBuilder_::st_callback {
   const GType *param_types;
 };
 
+/**
+ * Frees what connect_signals_full_callback() allocated, when GLib finalizes the handler's closure.
+ */
+void GtkBuilder_::destroy_notify(gpointer user_data, GClosure *closure) {
+  delete (struct st_callback *)user_data;
+}
+
 void GtkBuilder_::connect_signals_full_callback(GtkBuilder *builder, GObject *instance,
                                                 const gchar *signal_name, const char *handler_name,
                                                 GObject *object, GConnectFlags flags,
                                                 gpointer data) {
   // Create gpoint param
-  struct st_callback *callback_object = (struct st_callback *)malloc(sizeof(struct st_callback));
-  memset(callback_object, 0, sizeof(struct st_callback));
+  // Freed by destroy_notify() once the handler is gone
+  auto *callback_object = new st_callback();
 
   // Add my internal parameters
   callback_object->callback_name = handler_name;
@@ -284,7 +291,7 @@ void GtkBuilder_::connect_signals_full_callback(GtkBuilder *builder, GObject *in
   // Connect
   GClosure *closure;
   closure =
-      g_cclosure_new_swap(G_CALLBACK(connect_signals_full_callback1), callback_object, nullptr);
+      g_cclosure_new_swap(G_CALLBACK(connect_signals_full_callback1), callback_object, destroy_notify);
   g_signal_connect_closure(instance, signal_name, closure, TRUE);
 }
 

@@ -13,7 +13,8 @@ struct GObject_::st_callback {
   Php::Value callback_name;
   Php::Array callback_params;
   Php::Object self_widget;
-  Php::Parameters parameters;
+  // Not Php::Parameters: it has no default constructor, and the struct is created with new
+  std::vector<Php::Value> parameters;
 
   guint signal_id;
   const gchar *signal_name;
@@ -92,8 +93,8 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
   Php::Value callback_name = callback_params[1];
 
   // Create gpoint param
-  struct st_callback *callback_object = (struct st_callback *)malloc(sizeof(struct st_callback));
-  memset(callback_object, 0, sizeof(struct st_callback));
+  // Freed by destroy_notify() once the handler is gone
+  auto *callback_object = new st_callback();
 
   // Add my internal parameters
   callback_object->callback_name = callback_name;
@@ -135,12 +136,10 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
   // Create the CPP callback
   GClosure *closure;
 
-  // this method are removed, since leak memory does not happen anymore
-  // https://github.com/scorninpc/php-gtk3/issues/81
-  // closure = g_cclosure_new_swap (G_CALLBACK (connect_callback), callback_object,
-  // (GClosureNotify)destroy_notify);
-
-  closure = g_cclosure_new_swap(G_CALLBACK(connect_callback), callback_object, nullptr);
+  // The closure owns callback_object: GLib calls destroy_notify() when the handler is
+  // disconnected or the object is disposed, which releases the callable, its parameters and
+  // the reference to the PHP object. Without it every connect() leaked all three.
+  closure = g_cclosure_new_swap(G_CALLBACK(connect_callback), callback_object, destroy_notify);
   int ret = g_signal_connect_closure(instance, callback_event, closure, after);
 
   // Return handler id
@@ -148,15 +147,12 @@ Php::Value GObject_::connect_internal(Php::Parameters &parameters, bool after) {
 }
 
 /**
- * this method are removed, since leak memory does not happen anymore
- * https://github.com/scorninpc/php-gtk3/issues/81
+ * Frees what connect_internal() allocated, when GLib finalizes the handler's closure. During
+ * an emission GLib holds a reference to the closure, so a handler that disconnects itself
+ * is only freed after it returned.
  */
 void GObject_::destroy_notify(gpointer user_data, GClosure *closure) {
-  // return to st_callback
-  struct st_callback *callback_object = (struct st_callback *)user_data;
-
-  // delete references;
-  delete callback_object;
+  delete (struct st_callback *)user_data;
 }
 
 /**

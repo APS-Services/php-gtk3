@@ -20,7 +20,8 @@
 	struct generic_st_callback {
 		Php::Value callback_name;
 		Php::Object self_widget;
-		Php::Parameters parameters;
+		// Not Php::Parameters: it has no default constructor, and the struct is created with new
+		std::vector<Php::Value> parameters;
 
 		GType return_type;
 		int n_params;
