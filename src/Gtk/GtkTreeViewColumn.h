@@ -223,6 +223,7 @@ class GtkTreeViewColumn_ : public GObject_ {
   static void set_cell_data_func_callback(GtkTreeViewColumn *tree_column, GtkCellRenderer *cell,
                                           GtkTreeModel *tree_model, GtkTreeIter *iter,
                                           gpointer user_data);
+  static void request_callback_destroy(gpointer data);
 };
 
 #endif

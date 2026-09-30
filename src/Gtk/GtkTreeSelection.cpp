@@ -141,9 +141,8 @@ void GtkTreeSelection_::selected_foreach(Php::Parameters &parameters) {
   // Php::call("var_dump", "OK 1.0");
 
   // create a object to populate and pass to generic callback
-  struct generic_st_callback *callback_object =
-      (struct generic_st_callback *)malloc(sizeof(struct generic_st_callback));
-  memset(callback_object, 0, sizeof(struct generic_st_callback));
+  // Only used during the foreach below, freed right after it
+  auto *callback_object = new generic_st_callback();
 
   callback_object->callback_name = parameters[0];
   callback_object->context = "GtkTreeSelection::selected_foreach";
@@ -186,6 +185,9 @@ void GtkTreeSelection_::selected_foreach(Php::Parameters &parameters) {
 
   gtk_tree_selection_selected_foreach(
       GTK_TREE_SELECTION(instance), (GtkTreeSelectionForeachFunc)generic_callback, callback_object);
+
+  free(callback_object->param_types);
+  delete callback_object;
   // Php::call("var_dump", "OK 1.10");
 }
 

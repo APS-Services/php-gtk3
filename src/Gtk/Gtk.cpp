@@ -55,17 +55,25 @@ Php::Value Gtk_::timeout_add(Php::Parameters &parameters) {
   }
 
   // Create gpointer user data
-  struct st_timeout_add *callback_object =
-      (struct st_timeout_add *)malloc(sizeof(struct st_timeout_add));
-  memset(callback_object, 0, sizeof(struct st_timeout_add));
+  // Freed by timeout_add_destroy() once the source is removed
+  auto *callback_object = new st_timeout_add();
 
   // Add my internal parameters
   callback_object->callback_name = parameters[1];
   callback_object->callback_params = callback_params;
 
   // Call
-  gint ret = g_timeout_add(interval, timeout_add_callback, callback_object);
+  gint ret = g_timeout_add_full(G_PRIORITY_DEFAULT, interval, timeout_add_callback, callback_object,
+                                timeout_add_destroy);
   return ret;
+}
+
+/**
+ * Frees what timeout_add() allocated, when GLib removes the source: the callback returned
+ * false, or Gtk::source_remove() was called.
+ */
+void Gtk_::timeout_add_destroy(gpointer data) {
+  delete (struct st_timeout_add *)data;
 }
 
 gint Gtk_::timeout_add_callback(gpointer data) {

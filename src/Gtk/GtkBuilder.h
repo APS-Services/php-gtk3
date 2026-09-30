@@ -76,6 +76,7 @@ class GtkBuilder_ : public GObject_ {
                                             GObject *connect_object, GConnectFlags flags,
                                             gpointer data);
   static void connect_signals_full_callback1(gpointer user_data, ...);
+  static void destroy_notify(gpointer user_data, GClosure *closure);
 
   void set_translation_domain(Php::Parameters &parameters);
 
