@@ -48,6 +48,12 @@ class GdkPixbuf_ : public Php::Base {
    * https://developer.gnome.org/gdk-pixbuf/stable/gdk-pixbuf-File-Loading.html#gdk-pixbuf-new-from-file
    */
   static Php::Value new_from_file(Php::Parameters &parameters);
+
+  /**
+   * Creates a new pixbuf from a GD image, as created by imagecreatefromstring()
+   * and friends. The image is encoded to PNG by GD and read back through a
+   * GdkPixbufLoader, so nothing is written to disk.
+   */
   static Php::Value new_from_gd(Php::Parameters &parameters);
 
   static Php::Value new_from_file_at_size(Php::Parameters &parameters);
