@@ -45,19 +45,46 @@ Php::Value GdkPixbuf_::new_from_file(Php::Parameters &parameters) {
 }
 
 Php::Value GdkPixbuf_::new_from_gd(Php::Parameters &parameters) {
-  Php::Value a = parameters[0];
-  if (!a.instanceOf("gd")) {
-    throw Php::Exception("Not a GD resource");
+  Php::Value image = parameters[0];
+
+  // PHP 8 hands out a GdImage object where PHP 5 had a "gd" resource
+  if (!image.instanceOf("GdImage")) {
+    throw Php::Exception("GdkPixbuf::new_from_gd() expects a GdImage");
   }
-  Php::call("var_dump", "OK1");
-  Php::call("imagepng", a.implementation());
-  Php::call("var_dump", "OK2");
-  return 1;
 
-  std::string filename = parameters[0];
+  // Let GD encode the image for us. imagepng() without a filename writes to
+  // the output, so catch it in an output buffer instead of sending it to the
+  // browser or the terminal.
+  Php::call("ob_start");
+  bool encoded = Php::call("imagepng", image);
+  std::string png = Php::call("ob_get_clean");
 
-  // Create pixbuff
-  GdkPixbuf *l_pixbuf = gdk_pixbuf_new_from_file(filename.c_str(), nullptr);
+  if (!encoded || png.empty()) {
+    throw Php::Exception("GdkPixbuf::new_from_gd() could not encode the GdImage");
+  }
+
+  // Feed the encoded image to a loader, which turns the bytes into a pixbuf
+  GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+  GError *error = nullptr;
+
+  if (!gdk_pixbuf_loader_write(loader, (const guchar *)png.data(), png.size(), &error) ||
+      !gdk_pixbuf_loader_close(loader, &error)) {
+    std::string message = error != nullptr ? error->message : "unknown error";
+    if (error != nullptr) g_error_free(error);
+    g_object_unref(loader);
+
+    throw Php::Exception("GdkPixbuf::new_from_gd() could not read the encoded image: " + message);
+  }
+
+  // The loader owns the pixbuf, so take a reference of our own before the
+  // loader goes away
+  GdkPixbuf *l_pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+  if (l_pixbuf != nullptr) g_object_ref(l_pixbuf);
+  g_object_unref(loader);
+
+  if (l_pixbuf == nullptr) {
+    throw Php::Exception("GdkPixbuf::new_from_gd() received no image from the loader");
+  }
 
   // Create the PHP-GTK object and set GTK object
   GdkPixbuf_ *pixbuf_ = new GdkPixbuf_();
