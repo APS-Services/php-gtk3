@@ -206,9 +206,11 @@ endif
 
 VERSION_FLAGS       :=   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\"$(BUILD_DATE)\" -DPHPGTK_PHPCPP_LIB=\"$(PHPCPP_LIB)\"
 
+# -MD -MP writes a .d file next to every object, listing the headers that went
+# into it, so editing a header rebuilds what includes it (see DEPENDENCIES below).
 # NOTE: COMPILER_FLAGS must keep ending with '-o' - the object rule appends
 # '$@ source.cpp' directly after it. Never append flags below this line.
-COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -o
+COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -MD -MP -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
 
 # Use the static library directly by full path to avoid picking up the wrong
@@ -261,6 +263,7 @@ else
 endif
 
 OBJECTS         = $(SOURCES:%.cpp=%.o)
+DEPENDENCIES    = $(OBJECTS:%.o=%.d)
 
 
 #
@@ -274,13 +277,20 @@ objects:                ${OBJECTS}
 ${EXTENSION}:           ${OBJECTS}
 						${LINKER} ${LINKER_FLAGS} -o $@ ${OBJECTS} ${LINKER_DEPENDENCIES}
 
-${OBJECTS}:
-						${COMPILER} ${PHPFLAGS} ${GTKFLAGS} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp}
+${OBJECTS}: %.o:        %.cpp
+						${COMPILER} ${PHPFLAGS} ${GTKFLAGS} ${COMPILER_FLAGS} $@ $<
 
-# Object files are only rebuilt when missing (the rule above has no source
-# prerequisites), which would leave the git hash / build date baked into
-# version.o stale after a new commit. FORCE makes that one - deliberately
-# tiny - translation unit recompile on every make.
+# The headers each object was built from, as recorded by -MD. Absent before the
+# first build of an object, and absent for objects built before this file
+# started generating them - those still rebuild on a source change, they just
+# do not notice a header change until they have been compiled once more. '-'
+# keeps make quiet about the missing files.
+-include ${DEPENDENCIES}
+
+# version.cpp bakes in the git hash and the build date, which come from make
+# variables rather than from the source, so the rule above cannot see them
+# change. FORCE recompiles that one - deliberately tiny - translation unit on
+# every make.
 version.o:              FORCE
 
 FORCE:
@@ -295,4 +305,6 @@ compile_commands:
 clean:
 						${RM} ${EXTENSION}
 						${RM} ${OBJECTS}
+						${RM} ${DEPENDENCIES}
 						${RM} src/WebKit/*.o
+						${RM} src/WebKit/*.d
