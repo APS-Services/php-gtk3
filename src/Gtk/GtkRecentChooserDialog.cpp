@@ -1,6 +1,8 @@
 
 #include "GtkRecentChooserDialog.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Constructor
  */
@@ -188,6 +190,8 @@ Php::Value GtkRecentChooserDialog_::set_current_uri(Php::Parameters &parameters)
 
   bool ret = gtk_recent_chooser_set_current_uri(GTK_RECENT_CHOOSER(instance), uri, &error);
 
+  phpgtk_warn_on_error("GtkRecentChooserDialog::set_current_uri", error);
+
   return ret;
 }
 
@@ -217,6 +221,8 @@ Php::Value GtkRecentChooserDialog_::select_uri(Php::Parameters &parameters) {
   GError *error = nullptr;
 
   bool ret = gtk_recent_chooser_select_uri(GTK_RECENT_CHOOSER(instance), uri, &error);
+
+  phpgtk_warn_on_error("GtkRecentChooserDialog::select_uri", error);
 
   return ret;
 }

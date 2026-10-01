@@ -1,6 +1,8 @@
 
 #include "GtkBuilder.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Constructor
  */
@@ -89,6 +91,8 @@ Php::Value GtkBuilder_::add_from_file(Php::Parameters &parameters) {
 
   int ret = gtk_builder_add_from_file(GTK_BUILDER(instance), filename, &err);
 
+  phpgtk_warn_on_error("GtkBuilder::add_from_file", err);
+
   return ret;
 }
 
@@ -100,6 +104,8 @@ Php::Value GtkBuilder_::add_from_resource(Php::Parameters &parameters) {
 
   int ret = gtk_builder_add_from_resource(GTK_BUILDER(instance), resource_path, &err);
 
+  phpgtk_warn_on_error("GtkBuilder::add_from_resource", err);
+
   return ret;
 }
 
@@ -110,6 +116,8 @@ Php::Value GtkBuilder_::add_from_string(Php::Parameters &parameters) {
   GError *err = nullptr;
 
   int ret = gtk_builder_add_from_string(GTK_BUILDER(instance), buffer, s_buffer.length(), &err);
+
+  phpgtk_warn_on_error("GtkBuilder::add_from_string", err);
 
   return ret;
 }

@@ -1,6 +1,8 @@
 
 #include "GtkPrintSettings.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Constructor
  */
@@ -19,8 +21,16 @@ Php::Value GtkPrintSettings_::new_from_file(Php::Parameters &parameters) {
   std::string s_file_name = parameters[0];
   gchar *file_name = (gchar *)s_file_name.c_str();
 
-  GError *error;
+  GError *error = nullptr;
   GtkPrintSettings *ret = gtk_print_settings_new_from_file(file_name, &error);
+
+  // Nothing to hand back on failure: wrapping the NULL would postpone the
+  // problem to the first method call on the object
+  phpgtk_throw_on_error("GtkPrintSettings::new_from_file", error);
+  if (ret == nullptr) {
+    throw Php::Exception("GtkPrintSettings::new_from_file: no settings were read from " +
+                         s_file_name);
+  }
 
   GtkPrintSettings_ *return_parsed = new GtkPrintSettings_();
   return_parsed->set_instance((gpointer *)ret);
@@ -560,8 +570,10 @@ Php::Value GtkPrintSettings_::load_file(Php::Parameters &parameters) {
   std::string s_file_name = parameters[0];
   gchar *file_name = (gchar *)s_file_name.c_str();
 
-  GError *error;
+  GError *error = nullptr;
   bool ret = gtk_print_settings_load_file(GTK_PRINT_SETTINGS(instance), file_name, &error);
+
+  phpgtk_warn_on_error("GtkPrintSettings::load_file", error);
 
   return ret;
 }
@@ -583,8 +595,10 @@ Php::Value GtkPrintSettings_::to_file(Php::Parameters &parameters) {
   std::string s_file_name = parameters[0];
   gchar *file_name = (gchar *)s_file_name.c_str();
 
-  GError *error;
+  GError *error = nullptr;
   bool ret = gtk_print_settings_to_file(GTK_PRINT_SETTINGS(instance), file_name, &error);
+
+  phpgtk_warn_on_error("GtkPrintSettings::to_file", error);
 
   return ret;
 }

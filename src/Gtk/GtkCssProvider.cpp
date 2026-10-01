@@ -1,6 +1,8 @@
 
 #include "GtkCssProvider.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Constructor
  */
@@ -31,6 +33,8 @@ Php::Value GtkCssProvider_::load_from_data(Php::Parameters &parameters) {
 
   bool ret = gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(instance), data, length, &error);
 
+  phpgtk_warn_on_error("GtkCssProvider::load_from_data", error);
+
   return ret;
 }
 
@@ -46,6 +50,8 @@ Php::Value GtkCssProvider_::load_from_file(Php::Parameters &parameters) {
 
   g_object_unref(file);
 
+  phpgtk_warn_on_error("GtkCssProvider::load_from_file", error);
+
   return ret;
 }
 
@@ -56,6 +62,8 @@ Php::Value GtkCssProvider_::load_from_path(Php::Parameters &parameters) {
   GError *error = nullptr;
 
   bool ret = gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(instance), path, &error);
+
+  phpgtk_warn_on_error("GtkCssProvider::load_from_path", error);
 
   return ret;
 }
