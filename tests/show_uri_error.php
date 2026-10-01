@@ -16,11 +16,16 @@
  * message. The `guint32 timestamp;` next to it was uninitialised too, so the
  * event time handed to GTK was whatever was on the stack.
  *
- * Usage: php show_uri_error.php      (needs a display; skips without one)
+ * Usage: php show_uri_error.php      (needs a display on X11/Wayland, not on Windows)
  * Expected: exit status 0 and "OK" on stdout - no "BUG:" line, no crash and
  *           no GLib-WARNING about uninitialized memory.
  */
-if (getenv('DISPLAY') === false && getenv('WAYLAND_DISPLAY') === false) {
+// Windows GTK needs no display server; X11/Wayland hosts do, and gtk_init()
+// aborts the process rather than failing when it cannot open one
+if (PHP_OS_FAMILY !== 'Windows'
+    && getenv('DISPLAY') === false
+    && getenv('WAYLAND_DISPLAY') === false
+) {
     echo "SKIP: Gtk::init() needs a display\n";
     exit(0);
 }
