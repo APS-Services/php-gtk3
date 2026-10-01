@@ -206,11 +206,20 @@ endif
 
 VERSION_FLAGS       :=   -DPHPGTK_GIT_HASH=\"$(GIT_HASH)\" -DPHPGTK_BUILD_DATE=\"$(BUILD_DATE)\" -DPHPGTK_PHPCPP_LIB=\"$(PHPCPP_LIB)\"
 
+# -Wno-deprecated-declarations: binding GTK 3 means binding the parts of it that
+# GTK 3 itself deprecated - GtkStatusIcon, GtkTable, GtkAlignment, GtkViewport
+# and friends - so those 66 warnings are the bindings doing their job, and
+# another 42 come from inside the GTK and gtksourceview headers. Together they
+# buried the handful of warnings that do mean something: a full rebuild reported
+# 118, of which 10 were about this code. GTK 3.24 is the final series, so
+# nothing new will be deprecated under us. Drop this flag (and expect the noise)
+# if the bindings are ever ported to GTK 4.
+#
 # -MD -MP writes a .d file next to every object, listing the headers that went
 # into it, so editing a header rebuilds what includes it (see DEPENDENCIES below).
 # NOTE: COMPILER_FLAGS must keep ending with '-o' - the object rule appends
 # '$@ source.cpp' directly after it. Never append flags below this line.
-COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wdeprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -MD -MP -o
+COMPILER_FLAGS      +=   ${VERSION_FLAGS} -Wall -Wno-deprecated-declarations -Woverloaded-virtual -c -std=c++11 -fpic -MD -MP -o
 LINKER_FLAGS        =   -shared ${GTKLIBS}
 
 # Use the static library directly by full path to avoid picking up the wrong
