@@ -79,6 +79,16 @@ jobs:
           repository: ${{ env.PHPCPP_REPO }}
           path: PHP-CPP
 
+      # Recorded here rather than in the build-info step: that one runs in the
+      # MSYS2 shell, which has no git on its PATH ("git: command not found"), and
+      # a failed command substitution there stamped an empty commit silently.
+      - name: Record which PHP-CPP commit was checked out
+        run: |
+          $sha = (git -C PHP-CPP rev-parse HEAD).Trim()
+          if ($sha -notmatch '^[0-9a-f]{40}$') { throw "could not read the PHP-CPP commit, got '$sha'" }
+          "PHPCPP_SHA=$sha" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "PHP-CPP at $sha"
+
       # Adds the toolset to the runner's Visual Studio; takes a few minutes.
       - name: Install the ${{ matrix.toolset }} toolset
         if: matrix.toolset-component != ''
@@ -242,10 +252,11 @@ jobs:
         run: |
           workspace=$(cygpath -u "$GITHUB_WORKSPACE")
           dist=$workspace/dist
+          [ -n "$PHPCPP_SHA" ] || { echo "::error::PHPCPP_SHA is empty, the build info would not say which PHP-CPP this is"; exit 1; }
           {
             echo "php_gtk3.dll for PHP ${{ matrix.php }} (NTS, ${{ matrix.vs }}, x64, toolset ${{ matrix.toolset }})"
             echo "php-gtk3   ${{ github.sha }}"
-            echo "PHP-CPP    $PHPCPP_REPO@$(git -C "$workspace/PHP-CPP" rev-parse HEAD)"
+            echo "PHP-CPP    $PHPCPP_REPO@$PHPCPP_SHA"
             echo "WebView2   $WEBVIEW2_VERSION"
             echo "GTK (MSYS2 UCRT64):"
             pacman -Q mingw-w64-ucrt-x86_64-gtk3 mingw-w64-ucrt-x86_64-gtksourceview3 mingw-w64-ucrt-x86_64-glade | sed 's/^/  /'
