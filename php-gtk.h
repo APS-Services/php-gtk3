@@ -87,6 +87,30 @@
 	[[noreturn]] void phpgtk_finish_exit();
 
 	/**
+	 * GLib out-parameter errors.
+	 *
+	 * A GError has to be NULL before a GLib call fills it in - GLib reads it to
+	 * see whether an error is already set - and has to be freed afterwards, or
+	 * the message leaks. Both are easy to get wrong the same way in every
+	 * binding, so declare the error as `GError *error = nullptr;` and hand it to
+	 * whichever of these fits the call:
+	 *
+	 *   phpgtk_warn_on_error()  reports it as a PHP warning and frees it. For a
+	 *                           call that already tells PHP it failed, through a
+	 *                           false return value, so losing only the reason.
+	 *   phpgtk_throw_on_error() frees it and throws. For a call whose return
+	 *                           value cannot say "it failed" - one handing back
+	 *                           an object, where the alternative is wrapping a
+	 *                           NULL that crashes on first use.
+	 *
+	 * Both do nothing when no error was set. 'call' names the binding in the
+	 * message ("GtkCssProvider::load_from_data") and must outlive the call, so
+	 * pass a string literal.
+	 */
+	void phpgtk_warn_on_error(const char *call, GError *&error);
+	void phpgtk_throw_on_error(const char *call, GError *&error);
+
+	/**
 	 * Build metadata ("built <date>, git <hash>") and the compiled-in optional
 	 * features ("webkit=yes, gladeui=no, ..."), defined in version.cpp - the
 	 * one translation unit the Makefile force-rebuilds so the values stay current.

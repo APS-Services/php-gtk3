@@ -1,6 +1,8 @@
 
 #include "GtkPageSetup.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Constructor
  */
@@ -19,8 +21,15 @@ Php::Value GtkPageSetup_::new_from_file(Php::Parameters &parameters) {
   std::string s_file_name = parameters[0];
   gchar *file_name = (gchar *)s_file_name.c_str();
 
-  GError *error;
+  GError *error = nullptr;
   GtkPageSetup *ret = gtk_page_setup_new_from_file(file_name, &error);
+
+  // Nothing to hand back on failure: wrapping the NULL would postpone the
+  // problem to the first method call on the object
+  phpgtk_throw_on_error("GtkPageSetup::new_from_file", error);
+  if (ret == nullptr) {
+    throw Php::Exception("GtkPageSetup::new_from_file: no page setup was read from " + s_file_name);
+  }
 
   GtkPageSetup_ *return_parsed = new GtkPageSetup_();
   return_parsed->set_instance((gpointer *)ret);
@@ -204,8 +213,10 @@ Php::Value GtkPageSetup_::load_file(Php::Parameters &parameters) {
   std::string s_file_name = parameters[0];
   gchar *file_name = (gchar *)s_file_name.c_str();
 
-  GError *error;
+  GError *error = nullptr;
   bool ret = gtk_page_setup_load_file(GTK_PAGE_SETUP(instance), file_name, &error);
+
+  phpgtk_warn_on_error("GtkPageSetup::load_file", error);
 
   return ret;
 }
@@ -227,8 +238,10 @@ Php::Value GtkPageSetup_::to_file(Php::Parameters &parameters) {
   std::string s_file_name = parameters[0];
   gchar *file_name = (gchar *)s_file_name.c_str();
 
-  GError *error;
+  GError *error = nullptr;
   bool ret = gtk_page_setup_to_file(GTK_PAGE_SETUP(instance), file_name, &error);
+
+  phpgtk_warn_on_error("GtkPageSetup::to_file", error);
 
   return ret;
 }

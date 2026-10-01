@@ -436,3 +436,27 @@ void generic_callback(gpointer *self, ...) {
     phpgtk_report_callback_exception(callback_error, callback_error_code, callback_object->context);
   }
 }
+
+/**
+ * Reports a GError as a PHP warning and frees it.
+ */
+void phpgtk_warn_on_error(const char *call, GError *&error) {
+  if (error == nullptr) return;
+
+  std::string message = error->message;
+  g_clear_error(&error);
+
+  Php::warning << call << ": " << message << std::flush;
+}
+
+/**
+ * Frees a GError and throws its message.
+ */
+void phpgtk_throw_on_error(const char *call, GError *&error) {
+  if (error == nullptr) return;
+
+  std::string message = error->message;
+  g_clear_error(&error);
+
+  throw Php::Exception(std::string(call) + ": " + message);
+}
