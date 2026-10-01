@@ -166,11 +166,22 @@ Php::Value Gtk_::show_uri_on_window(Php::Parameters &parameters) {
   std::string s_uri = parameters[1];
   char *uri = (char *)s_uri.c_str();
 
-  // @TODO
-  guint32 timestamp;
-  GError **error;
+  // The timestamp of the event that asked for the URI. Callers may pass one;
+  // without it, take the event GTK is handling, or GDK_CURRENT_TIME when there
+  // is none.
+  guint32 timestamp = parameters.size() >= 3
+                          ? (guint32)parameters[2].numericValue()
+                          : gtk_get_current_event_time();
 
-  gboolean ret = gtk_show_uri_on_window(parent, uri, timestamp, error);
+  GError *error = nullptr;
+
+  gboolean ret = gtk_show_uri_on_window(parent, uri, timestamp, &error);
+
+  if (error != nullptr) {
+    std::string error_msg = error->message;
+    g_error_free(error);
+    throw Php::Exception("Failed to show the URI: " + error_msg);
+  }
 
   return ret;
 }
