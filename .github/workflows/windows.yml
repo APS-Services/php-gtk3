@@ -28,11 +28,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Pinned so the same sources give the same DLL. The fork is upstream
-  # PHP-CPP (PHP 8.4 support, MSVC exports) plus the const-heap fix and the
-  # __call trampolines owning their function name (apss-pohl/PHP-CPP#2).
+  # The fork's default branch, deliberately unpinned: it is where the fixes
+  # php-gtk3 depends on land, and a pin silently keeps them out of the DLL.
+  # The fork is upstream PHP-CPP (PHP 8.4 support, MSVC exports) plus the
+  # const-heap fix, the __call trampolines owning their function name
+  # (apss-pohl/PHP-CPP#2) and request-lifetime strings for class lookups
+  # (#3). It is permanent - these are not going upstream - so there is no
+  # ref to move back to. BUILD-INFO.txt records the commit each DLL was
+  # built from, which is what makes a build reproducible after the fact.
   PHPCPP_REPO: apss-pohl/PHP-CPP
-  PHPCPP_REF: e9345f4d72561bdeb5f3b12406d0ab4ac39063c4
   WEBVIEW2_VERSION: 1.0.4191.47
 
 jobs:
@@ -73,7 +77,6 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: ${{ env.PHPCPP_REPO }}
-          ref: ${{ env.PHPCPP_REF }}
           path: PHP-CPP
 
       # Adds the toolset to the runner's Visual Studio; takes a few minutes.
@@ -237,11 +240,12 @@ jobs:
       - name: Write the build info
         shell: msys2 {0}
         run: |
-          dist=$(cygpath -u "$GITHUB_WORKSPACE")/dist
+          workspace=$(cygpath -u "$GITHUB_WORKSPACE")
+          dist=$workspace/dist
           {
             echo "php_gtk3.dll for PHP ${{ matrix.php }} (NTS, ${{ matrix.vs }}, x64, toolset ${{ matrix.toolset }})"
             echo "php-gtk3   ${{ github.sha }}"
-            echo "PHP-CPP    $PHPCPP_REPO@$PHPCPP_REF"
+            echo "PHP-CPP    $PHPCPP_REPO@$(git -C "$workspace/PHP-CPP" rev-parse HEAD)"
             echo "WebView2   $WEBVIEW2_VERSION"
             echo "GTK (MSYS2 UCRT64):"
             pacman -Q mingw-w64-ucrt-x86_64-gtk3 mingw-w64-ucrt-x86_64-gtksourceview3 mingw-w64-ucrt-x86_64-glade | sed 's/^/  /'
