@@ -33,29 +33,43 @@ inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlag
 }
 
 /**
- * Log writer that suppresses GDK's Win32 blur-behind warning
+ * Log writer that suppresses the GDK noise of a session without a desktop
  *
- * From Windows 8 on, GDK takes desktop composition for granted
- * (gdkscreen-win32.c sets always_composited for 6.2+, so gdk_screen_is_composited()
- * never asks DwmIsCompositionEnabled()) and calls DwmEnableBlurBehindWindow() for
- * every native window it creates, at the end of _gdk_window_impl_new(). Where
- * composition really is off - a remote desktop session, a session without a running
- * dwm.exe, a process carrying the DISABLEDWM compatibility layer - that call returns
- * DWM_E_COMPOSITIONDISABLED (0x80263001) and GDK warns, once per window, dialog, menu
- * and tooltip. GDK ignores the result: the window only misses blur-behind
- * transparency, which it would not have got on an uncomposited desktop anyway, so
- * nothing but the log noise is left to deal with.
+ * Two messages, one cause: a Windows session that has no real desktop - a remote
+ * desktop session, one without a running dwm.exe, a process started by a service
+ * or a scheduled task. A GitHub Actions runner installed as a service is one, and
+ * it is where both of these were found.
  *
- * This has to be a writer, not a g_log_set_handler() handler like the one above: GTK
+ * "DwmEnableBlurBehindWindow (...) failed: 80263001", once per native window: from
+ * Windows 8 on GDK takes desktop composition for granted (gdkscreen-win32.c sets
+ * always_composited for 6.2+, so gdk_screen_is_composited() never asks
+ * DwmIsCompositionEnabled()) and calls DwmEnableBlurBehindWindow() at the end of
+ * _gdk_window_impl_new(). Where composition is off the call returns
+ * DWM_E_COMPOSITIONDISABLED, and GDK warns although it ignores the result: the
+ * window only misses blur-behind transparency, which an uncomposited desktop would
+ * not have shown anyway.
+ *
+ * "gdk_monitor_get_workarea: assertion 'GDK_IS_MONITOR (monitor)' failed", and the
+ * same for get_geometry: GTK looks a monitor up and uses it without a NULL check -
+ * gtkwindow.c (every WIN_POS_CENTER window), gtkmenu.c, gtkcombobox.c,
+ * gtktreeview.c and four more call sites in 3.24. With no monitors in the session
+ * the lookup returns NULL, GDK refuses the call and GTK positions the window from
+ * an uninitialised rectangle. Dropping this one hides a real consequence, so it is
+ * a deliberate choice: the placement is undefined either way, no window is visible
+ * in such a session, and hundreds of lines per run are worse than the signal is
+ * worth. Only this assertion is dropped; every other Gdk critical still shows.
+ *
+ * Both have to be filtered here rather than in a g_log_set_handler() handler. GTK
  * is built with -DG_LOG_USE_STRUCTURED=1 (its meson.build), so a g_warning() in GDK
- * expands to g_log_structured_standard(), and the structured path goes straight to
- * the writer without ever consulting a legacy per-domain handler. The assertion
- * warnings are the other way round - g_return_if_fail_warning() calls plain g_log(),
- * which is why the handler above does work for those.
+ * expands to g_log_structured_standard() and goes straight to the writer without
+ * consulting a legacy per-domain handler. The assertions do come through g_log(),
+ * from g_return_if_fail_warning(), but with no handler registered for them they
+ * reach the writer as well, so one writer covers both.
  */
-inline GLogWriterOutput suppress_dwm_blur_behind_writer(GLogLevelFlags log_level,
-                                                        const GLogField *fields, gsize n_fields,
-                                                        gpointer user_data) {
+inline GLogWriterOutput suppress_gdk_desktopless_noise_writer(GLogLevelFlags log_level,
+                                                             const GLogField *fields,
+                                                             gsize n_fields,
+                                                             gpointer user_data) {
   const gchar *log_domain = nullptr;
   const gchar *message = nullptr;
   gssize message_length = -1;
@@ -70,14 +84,19 @@ inline GLogWriterOutput suppress_dwm_blur_behind_writer(GLogLevelFlags log_level
     }
   }
 
-  // Expected message:
-  // "gdk/win32/gdkwindow-win32.c:527: DwmEnableBlurBehindWindow (<hwnd>) failed: 80263001"
   // String matching is necessary as GDK doesn't provide error codes for log messages
-  if ((log_level & G_LOG_LEVEL_WARNING) != 0 && g_strcmp0(log_domain, "Gdk") == 0 &&
-      message != nullptr &&
-      g_strstr_len(message, message_length, "DwmEnableBlurBehindWindow") != nullptr) {
-    // Silently ignore this specific warning
-    return G_LOG_WRITER_HANDLED;
+  if (g_strcmp0(log_domain, "Gdk") == 0 && message != nullptr) {
+    // "gdk/win32/gdkwindow-win32.c:527: DwmEnableBlurBehindWindow (<hwnd>) failed: 80263001"
+    if ((log_level & G_LOG_LEVEL_WARNING) != 0 &&
+        g_strstr_len(message, message_length, "DwmEnableBlurBehindWindow") != nullptr) {
+      return G_LOG_WRITER_HANDLED;
+    }
+
+    // "gdk_monitor_get_workarea: assertion 'GDK_IS_MONITOR (monitor)' failed"
+    if ((log_level & G_LOG_LEVEL_CRITICAL) != 0 &&
+        g_strstr_len(message, message_length, "GDK_IS_MONITOR") != nullptr) {
+      return G_LOG_WRITER_HANDLED;
+    }
   }
 
   // Everything else is written the way GLib would have written it anyway
@@ -88,8 +107,9 @@ inline GLogWriterOutput suppress_dwm_blur_behind_writer(GLogLevelFlags log_level
  * Install the GDK log writer for the lifetime of the process
  *
  * Called once from Gtk::init(), before gtk_init(): unlike the scale factor warning
- * there is no call of ours to wrap, GDK emits this one whenever it creates a window.
- * Only the Windows build installs it; the warning comes from GDK's Win32 backend.
+ * there is no call of ours to wrap, GDK emits these whenever it creates or places a
+ * window. Only the Windows build installs it; both messages come from GDK's Win32
+ * backend, or from a monitor list only Windows leaves empty.
  *
  * GLib allows one writer per process and makes a second g_log_set_writer_func() a
  * g_error(), which aborts - so this must stay the only call in the process, and a
@@ -104,7 +124,7 @@ inline void install_gdk_log_suppression() {
   }
 
   installed = true;
-  g_log_set_writer_func(suppress_dwm_blur_behind_writer, nullptr, nullptr);
+  g_log_set_writer_func(suppress_gdk_desktopless_noise_writer, nullptr, nullptr);
 #endif
 }
 
