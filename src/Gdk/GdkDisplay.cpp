@@ -39,9 +39,20 @@ Php::Value GdkDisplay_::get_default() {
 
 /**
  * https://developer.gnome.org/gdk3/stable/GdkDisplay.html#gdk-display-get-primary-monitor
+ *
+ * The GDK function is documented (nullable): it returns NULL where the user
+ * configured no primary monitor, and the Win32 backend returns it whenever the
+ * session enumerated no monitors at all - a disconnected remote desktop
+ * session, or a process started without an interactive desktop. Wrapping that
+ * NULL would hand PHP a GdkMonitor whose every getter trips a GDK_IS_MONITOR
+ * assertion, so null comes back instead, as in get_monitor() below.
  */
 Php::Value GdkDisplay_::get_primary_monitor() {
   GdkMonitor *returndedValue = gdk_display_get_primary_monitor(GDK_DISPLAY(instance));
+
+  if (returndedValue == nullptr) {
+    return {};
+  }
 
   GdkMonitor_ *returnValue = new GdkMonitor_();
   returnValue->set_instance(returndedValue);
