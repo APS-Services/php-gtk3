@@ -33,7 +33,7 @@ inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlag
 }
 
 /**
- * Custom log handler to suppress GDK's Win32 blur-behind warning
+ * Log writer that suppresses GDK's Win32 blur-behind warning
  *
  * From Windows 8 on, GDK takes desktop composition for granted
  * (gdkscreen-win32.c sets always_composited for 6.2+, so gdk_screen_is_composited()
@@ -45,27 +45,55 @@ inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlag
  * and tooltip. GDK ignores the result: the window only misses blur-behind
  * transparency, which it would not have got on an uncomposited desktop anyway, so
  * nothing but the log noise is left to deal with.
+ *
+ * This has to be a writer, not a g_log_set_handler() handler like the one above: GTK
+ * is built with -DG_LOG_USE_STRUCTURED=1 (its meson.build), so a g_warning() in GDK
+ * expands to g_log_structured_standard(), and the structured path goes straight to
+ * the writer without ever consulting a legacy per-domain handler. The assertion
+ * warnings are the other way round - g_return_if_fail_warning() calls plain g_log(),
+ * which is why the handler above does work for those.
  */
-inline void suppress_dwm_blur_behind_warning(const gchar *log_domain, GLogLevelFlags log_level,
-                                             const gchar *message, gpointer user_data) {
-  // Expected message format:
-  // "gdk/win32/gdkwindow-win32.c:527: DwmEnableBlurBehindWindow (<hwnd>) failed: 80263001"
-  // String matching is necessary as GDK doesn't provide error codes for log messages
-  if (g_strstr_len(message, -1, "DwmEnableBlurBehindWindow")) {
-    // Silently ignore this specific warning
-    return;
+inline GLogWriterOutput suppress_dwm_blur_behind_writer(GLogLevelFlags log_level,
+                                                        const GLogField *fields, gsize n_fields,
+                                                        gpointer user_data) {
+  const gchar *log_domain = nullptr;
+  const gchar *message = nullptr;
+  gssize message_length = -1;
+
+  for (gsize i = 0; i < n_fields; i++) {
+    if (g_strcmp0(fields[i].key, "GLIB_DOMAIN") == 0) {
+      log_domain = (const gchar *)fields[i].value;
+    } else if (g_strcmp0(fields[i].key, "MESSAGE") == 0) {
+      message = (const gchar *)fields[i].value;
+      // Negative for a nul terminated string, which is what g_strstr_len() wants too
+      message_length = fields[i].length;
+    }
   }
 
-  // For all other messages, use default handler
-  g_log_default_handler(log_domain, log_level, message, user_data);
+  // Expected message:
+  // "gdk/win32/gdkwindow-win32.c:527: DwmEnableBlurBehindWindow (<hwnd>) failed: 80263001"
+  // String matching is necessary as GDK doesn't provide error codes for log messages
+  if ((log_level & G_LOG_LEVEL_WARNING) != 0 && g_strcmp0(log_domain, "Gdk") == 0 &&
+      message != nullptr &&
+      g_strstr_len(message, message_length, "DwmEnableBlurBehindWindow") != nullptr) {
+    // Silently ignore this specific warning
+    return G_LOG_WRITER_HANDLED;
+  }
+
+  // Everything else is written the way GLib would have written it anyway
+  return g_log_writer_default(log_level, fields, n_fields, user_data);
 }
 
 /**
- * Install the GDK log handler for the lifetime of the process
+ * Install the GDK log writer for the lifetime of the process
  *
  * Called once from Gtk::init(), before gtk_init(): unlike the scale factor warning
  * there is no call of ours to wrap, GDK emits this one whenever it creates a window.
  * Only the Windows build installs it; the warning comes from GDK's Win32 backend.
+ *
+ * GLib allows one writer per process and makes a second g_log_set_writer_func() a
+ * g_error(), which aborts - so this must stay the only call in the process, and a
+ * script must not install a writer of its own.
  */
 inline void install_gdk_log_suppression() {
 #ifdef G_OS_WIN32
@@ -76,7 +104,7 @@ inline void install_gdk_log_suppression() {
   }
 
   installed = true;
-  g_log_set_handler("Gdk", G_LOG_LEVEL_WARNING, suppress_dwm_blur_behind_warning, NULL);
+  g_log_set_writer_func(suppress_dwm_blur_behind_writer, nullptr, nullptr);
 #endif
 }
 
