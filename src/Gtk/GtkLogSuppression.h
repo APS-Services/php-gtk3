@@ -33,6 +33,54 @@ inline void suppress_scale_factor_warning(const gchar *log_domain, GLogLevelFlag
 }
 
 /**
+ * Custom log handler to suppress GDK's Win32 blur-behind warning
+ *
+ * From Windows 8 on, GDK takes desktop composition for granted
+ * (gdkscreen-win32.c sets always_composited for 6.2+, so gdk_screen_is_composited()
+ * never asks DwmIsCompositionEnabled()) and calls DwmEnableBlurBehindWindow() for
+ * every native window it creates, at the end of _gdk_window_impl_new(). Where
+ * composition really is off - a remote desktop session, a session without a running
+ * dwm.exe, a process carrying the DISABLEDWM compatibility layer - that call returns
+ * DWM_E_COMPOSITIONDISABLED (0x80263001) and GDK warns, once per window, dialog, menu
+ * and tooltip. GDK ignores the result: the window only misses blur-behind
+ * transparency, which it would not have got on an uncomposited desktop anyway, so
+ * nothing but the log noise is left to deal with.
+ */
+inline void suppress_dwm_blur_behind_warning(const gchar *log_domain, GLogLevelFlags log_level,
+                                             const gchar *message, gpointer user_data) {
+  // Expected message format:
+  // "gdk/win32/gdkwindow-win32.c:527: DwmEnableBlurBehindWindow (<hwnd>) failed: 80263001"
+  // String matching is necessary as GDK doesn't provide error codes for log messages
+  if (g_strstr_len(message, -1, "DwmEnableBlurBehindWindow")) {
+    // Silently ignore this specific warning
+    return;
+  }
+
+  // For all other messages, use default handler
+  g_log_default_handler(log_domain, log_level, message, user_data);
+}
+
+/**
+ * Install the GDK log handler for the lifetime of the process
+ *
+ * Called once from Gtk::init(), before gtk_init(): unlike the scale factor warning
+ * there is no call of ours to wrap, GDK emits this one whenever it creates a window.
+ * Only the Windows build installs it; the warning comes from GDK's Win32 backend.
+ */
+inline void install_gdk_log_suppression() {
+#ifdef G_OS_WIN32
+  static bool installed = false;
+
+  if (installed) {
+    return;
+  }
+
+  installed = true;
+  g_log_set_handler("Gdk", G_LOG_LEVEL_WARNING, suppress_dwm_blur_behind_warning, NULL);
+#endif
+}
+
+/**
  * RAII wrapper for GTK log suppression
  *
  * Automatically installs log handler on construction and removes it on destruction.

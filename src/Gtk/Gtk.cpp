@@ -1,5 +1,6 @@
 
 #include "Gtk.h"
+#include "GtkLogSuppression.h"
 
 // https://developer.gnome.org/gtk3/stable/gtkbase.html
 
@@ -252,5 +253,9 @@ Php::Value Gtk_::get_minor_version() {
 }
 
 void Gtk_::init() {
+  // Before the first window exists: GDK warns about desktop composition once per
+  // window it creates, see GtkLogSuppression.h
+  install_gdk_log_suppression();
+
   gtk_init(nullptr, nullptr);
 }
