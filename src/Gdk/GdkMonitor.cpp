@@ -12,6 +12,19 @@ GdkMonitor_::GdkMonitor_() = default;
 GdkMonitor_::~GdkMonitor_() = default;
 
 /**
+ * Whether the wrapped pointer is still a monitor
+ *
+ * The instance can be NULL - gdk_display_get_primary_monitor() returns NULL on
+ * a session that enumerated no monitors - and GDK drops the GdkMonitor when a
+ * monitor is unplugged. Passing either to GDK only prints a GDK_IS_MONITOR
+ * assertion and leaves the out parameter untouched, which would reach PHP as
+ * uninitialised stack values, so the getters below check first and return null.
+ */
+static bool monitor_is_valid(GdkMonitor *monitor) {
+  return monitor != nullptr && GDK_IS_MONITOR(monitor);
+}
+
+/**
  * Return original GtkWidget
  */
 GdkMonitor *GdkMonitor_::get_instance() {
@@ -29,6 +42,10 @@ void GdkMonitor_::set_instance(GdkMonitor *monitor) {
  * https://developer.gnome.org/gdk3/stable/GdkMonitor.html#gdk-monitor-get-width-mm
  */
 Php::Value GdkMonitor_::get_width_mm() {
+  if (!monitor_is_valid(instance)) {
+    return nullptr;
+  }
+
   return gdk_monitor_get_width_mm(GDK_MONITOR(instance));
 }
 
@@ -36,6 +53,10 @@ Php::Value GdkMonitor_::get_width_mm() {
  * https://developer.gnome.org/gdk3/stable/GdkMonitor.html#gdk-monitor-get-height-mm
  */
 Php::Value GdkMonitor_::get_height_mm() {
+  if (!monitor_is_valid(instance)) {
+    return nullptr;
+  }
+
   return gdk_monitor_get_height_mm(GDK_MONITOR(instance));
 }
 
@@ -43,8 +64,12 @@ Php::Value GdkMonitor_::get_height_mm() {
  * https://developer.gnome.org/gdk3/stable/GdkMonitor.html#gdk-monitor-get-workarea
  */
 Php::Value GdkMonitor_::get_workarea() {
+  if (!monitor_is_valid(instance)) {
+    return nullptr;
+  }
+
   // Allocate a GdkRectangle on the stack
-  GdkRectangle workarea;
+  GdkRectangle workarea = {0, 0, 0, 0};
 
   // Fill in the workarea details
   gdk_monitor_get_workarea(GDK_MONITOR(instance), &workarea);
@@ -60,7 +85,11 @@ Php::Value GdkMonitor_::get_workarea() {
 }
 
 Php::Value GdkMonitor_::get_geometry() {
-  GdkRectangle rect;
+  if (!monitor_is_valid(instance)) {
+    return nullptr;
+  }
+
+  GdkRectangle rect = {0, 0, 0, 0};
   gdk_monitor_get_geometry((GdkMonitor *)instance, &rect);
 
   Php::Value arr;
