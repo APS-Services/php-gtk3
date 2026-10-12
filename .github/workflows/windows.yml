@@ -268,4 +268,5 @@ jobs:
         with:
           name: php_gtk3-php${{ matrix.php }}-nts-${{ matrix.vs }}-x64
           path: dist
+          retention-days: 7
           if-no-files-found: error
