@@ -25,7 +25,7 @@ replaces the hand-made project described below:
 
 ```cmd
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64 ^
-      -DPHP_DEVEL_DIR=C:\php-devel\php-8.4.25-devel-vs17-x64 ^
+      -DPHP_DEVEL_DIR=C:\php-devel\php-8.4.27-devel-vs17-x64 ^
       -DPHPCPP_DIR=C:\php-dev\PHP-CPP ^
       -DMSYS2_PREFIX=C:\msys64\ucrt64 ^
       -DWEBVIEW2_SDK=C:\WebView2SDK
