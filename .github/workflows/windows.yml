@@ -53,7 +53,9 @@ jobs:
         # release is built with the toolset of the Visual Studio it came from.
         include:
           # 8.4 is what the PHP_8.4_GTK3 runtime ships (VS17 = toolset 14.44).
-          - php: "8.4.25"
+          # 8.4.27 fixes CVE-2026-109618 and CVE-2026-109619; "-1" is the Windows
+          # rebuild with Brotli 1.2.1 (CVE-2026-111497), same PHP source.
+          - php: "8.4.27-1"
             vs: vs17
             toolset: v143
             runner: windows-latest
