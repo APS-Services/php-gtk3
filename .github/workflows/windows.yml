@@ -12,13 +12,22 @@ name: Windows build
 # could otherwise ask for it and run on a VM that reaches /srv and MariaDB.)
 # The artifact is the bare extension; the redistributable runtime (php.exe,
 # GTK DLLs, themes) is assembled by PHP_8.4_GTK3's "Update bundle" workflow,
-# which picks up the newest successful build of master on its own schedule.
+# which takes the newest successful build of master when it is started.
 
 on:
   push:
     branches: [master]
   pull_request:
   workflow_dispatch:
+  # So that a build of master is never older than four days. The artifact
+  # lives for seven and a push was the only thing that built, so after a quiet
+  # week "Update bundle" found none and shipped the DLL it already had. A
+  # rebuild also takes in what no push here announces: a new commit on the
+  # PHP-CPP fork and a newer GTK in MSYS2.
+  # GitHub switches a schedule off after 60 days without a commit to the
+  # repository; a release run of "Update bundle" then stops and says so.
+  schedule:
+    - cron: "17 3 * * 1,4"
 
 permissions:
   contents: read
