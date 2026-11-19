@@ -280,6 +280,7 @@ time are those of the MSYS2 environment, as listed under "Dependent libs".
    _CRT_SECURE_NO_WARNINGS
    PHP_WIN32
    ZEND_WIN32
+   ENABLE_INTSAFE_SIGNED_FUNCTIONS	(PHP 8.5 and newer: zend_operators.h needs LongLongAdd)
    _MSC_VER=1929  			(look the version of MSC)
    PHP_COMPILER_ID="VS16" 	(look the version of vs code)
    _CRT_NONSTDC_NO_DEPRECATE

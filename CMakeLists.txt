@@ -179,8 +179,13 @@ target_include_directories(gtk3 PRIVATE
 # of it is imported or exported, and MSVC rejects dllexport on its thread_local
 # streams and on functions that value.h befriended without it. The one symbol
 # php.exe looks up, get_module, is exported by the linker below.
+#
+# ENABLE_INTSAFE_SIGNED_FUNCTIONS: PHP 8.5's zend_operators.h checks integer
+# overflow with intsafe.h's LongLongAdd/LongLongSub, which the Windows SDK only
+# declares with this define; php-src's own build sets it (confutils.js).
 target_compile_definitions(gtk3 PRIVATE
     _WINDOWS ZEND_DEBUG=0 PHP_WIN32 ZEND_WIN32 ZEND_WIN32_KEEP_INLINE
+    ENABLE_INTSAFE_SIGNED_FUNCTIONS
     _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_DEPRECATE _NOEXCEPT=noexcept NOMINMAX
     GLIB_COMPILATION GIO_COMPILATION GDK_PIXBUF_COMPILATION
     GDK_COMPILATION GTK_COMPILATION PHPCPP_EXPORT=
