@@ -14,10 +14,10 @@
 
 The extension is built on every push and pull request by
 `.github/workflows/windows.yml` (runs on GitHub's Windows runners), once per
-PHP release in its matrix, currently PHP 8.4 (VS17) and PHP 7.4 (VC15). The
-artifact `php_gtk3-php<version>-nts-<vs>-x64` holds `php_gtk3.dll`, its PDB,
-`gtk3.ini` and a `BUILD-INFO.txt` with the exact PHP, PHP-CPP, WebView2 and GTK
-versions. Another release is a new matrix entry: version, the Visual Studio
+PHP release in its matrix, currently PHP 8.5 and 8.4 (VS17) and PHP 7.4
+(VC15). The artifact `php_gtk3-php<version>-nts-<vs>-x64` holds
+`php_gtk3.dll`, its PDB, `gtk3.ini` and a `BUILD-INFO.txt` with the exact PHP,
+PHP-CPP, WebView2 and GTK versions. Another release is a new matrix entry: version, the Visual Studio
 it was built with, and the matching toolset.
 
 The same build works locally with Visual Studio 2022, CMake and MSYS2 and
@@ -35,9 +35,10 @@ cmake --build build --config RelWithDebInfo
 The toolset must not be newer than the one `php.exe` was built with: PHP
 refuses to load a module "linked with 14.51, but the core is linked with
 14.44" (PHP 7.4 even compares only the tens digit). For the VS17 releases
-(PHP 8.4) that is the v143 toolset, which Visual Studio 2022 uses by default;
-on Visual Studio 2026 add `-T v143`. PHP 7.4 (VC15) needs `-T v141`, the
-"MSVC v141 - VS 2017 C++ x64/x86 build tools" component of Visual Studio 2022.
+(PHP 8.4 and 8.5, both cores linked with 14.44) that is the v143 toolset,
+which Visual Studio 2022 uses by default; on Visual Studio 2026 add
+`-T v143`. PHP 7.4 (VC15) needs `-T v141`, the "MSVC v141 - VS 2017 C++
+x64/x86 build tools" component of Visual Studio 2022.
 
 CMake applies `windows/phpcpp-msvc.patch` to the PHP-CPP checkout (the
 `__vectorcall` calling convention the Zend engine uses on Windows x64, one

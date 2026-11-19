@@ -3,7 +3,8 @@ name: Windows build
 # Builds php_gtk3.dll for the official Windows PHP releases (NTS, x64) with
 # Visual Studio, following docs/compile-windows.md: PHP headers from the devel
 # pack on windows.php.net, GTK from MSYS2 (UCRT64, the environment the
-# PHP_8.4_GTK3 runtime ships), WebView2 from NuGet, PHP-CPP compiled in.
+# PHP_8.4_GTK3 and PHP_8.5_GTK3 runtimes ship), WebView2 from NuGet, PHP-CPP
+# compiled in.
 # The build itself is CMakeLists.txt.
 #
 # GitHub-hosted runners on purpose: the repository is public, so they are
@@ -11,8 +12,9 @@ name: Windows build
 # runner whose group excludes public repositories: a fork's pull request
 # could otherwise ask for it and run on a VM that reaches /srv and MariaDB.)
 # The artifact is the bare extension; the redistributable runtime (php.exe,
-# GTK DLLs, themes) is assembled by PHP_8.4_GTK3's "Update bundle" workflow,
-# which takes the newest successful build of master when it is started.
+# GTK DLLs, themes) is assembled by the "Update bundle" workflow of
+# PHP_8.4_GTK3 and of PHP_8.5_GTK3, each taking the artifact of its PHP minor
+# version from the newest successful build of master when it is started.
 
 on:
   push:
@@ -61,6 +63,13 @@ jobs:
         # even compares only the tens digit of the minor version), so each
         # release is built with the toolset of the Visual Studio it came from.
         include:
+          # 8.5 is what the PHP_8.5_GTK3 runtime ships. Still VS17: php8.dll of
+          # 8.5.12-1 is linked with 14.44 (PE header), like 8.4.27-1, and the
+          # v143 toolset ends at 14.44 (14.44.35207 on windows-2025-vs2026).
+          - php: "8.5.12-1"
+            vs: vs17
+            toolset: v143
+            runner: windows-latest
           # 8.4 is what the PHP_8.4_GTK3 runtime ships (VS17 = toolset 14.44).
           # 8.4.27 fixes CVE-2026-109618 and CVE-2026-109619; "-1" is the Windows
           # rebuild with Brotli 1.2.1 (CVE-2026-111497), same PHP source.
