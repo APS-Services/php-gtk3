@@ -539,6 +539,9 @@ Php::Value GtkTextBuffer_::create_tag(Php::Parameters &parameters) {
 
   // [property => value]: set_property converts each value by the property's type
   if (parameters.size() > 1) {
+    if (!parameters[1].isArray()) {
+      throw Php::Exception("create_tag() expects an array of properties");
+    }
     for (auto &property : parameters[1]) {
       tag.call("set_property", property.first, property.second);
     }

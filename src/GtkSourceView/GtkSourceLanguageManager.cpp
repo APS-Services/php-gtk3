@@ -86,16 +86,18 @@ Php::Value GtkSourceLanguageManager_::guess_language(Php::Parameters &parameters
   // inicialize the C params
   gchar *filename = nullptr;
   gchar *content_type = nullptr;
+  std::string s_filename;
+  std::string s_content_type;
 
   // if has filename
   if (!parameters.empty() && !parameters[0].isNull()) {
-    std::string s_filename = parameters[0];
+    s_filename = parameters[0].stringValue();
     filename = (gchar *)s_filename.c_str();
   }
 
   // if has content_type
   if (parameters.size() > 1 && !parameters[1].isNull()) {
-    std::string s_content_type = parameters[1];
+    s_content_type = parameters[1].stringValue();
     content_type = (gchar *)s_content_type.c_str();
   }
 
