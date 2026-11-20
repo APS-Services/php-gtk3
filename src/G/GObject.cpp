@@ -391,14 +391,28 @@ Php::Value GObject_::is_connected(Php::Parameters &parameters) {
 
 Php::Value GObject_::get_property(Php::Parameters &parameters) {
   std::string s_property_name = parameters[0];
-  gchar *property_name = (gchar *)s_property_name.c_str();
+  const gchar *property_name = s_property_name.c_str();
 
-  GValue gvalue = {0};
-  g_value_init(&gvalue, G_TYPE_OBJECT);
+  GParamSpec *prop = g_object_class_find_property(G_OBJECT_GET_CLASS(instance), property_name);
+  if (!prop) {
+    throw Php::Exception(std::string("there is no property ") + property_name + " on object " +
+                         g_type_name(G_OBJECT_TYPE(instance)));
+  }
 
+  // the GValue has to hold the property's own type, GLib refuses to fill in any other
+  GValue gvalue = G_VALUE_INIT;
+  g_value_init(&gvalue, prop->value_type);
   g_object_get_property(G_OBJECT(instance), property_name, &gvalue);
 
-  return phpgtk_get_phpvalue(&gvalue);
+  Php::Value ret;
+  try {
+    ret = phpgtk_get_phpvalue(&gvalue);
+  } catch (...) {
+    g_value_unset(&gvalue);
+    throw;
+  }
+  g_value_unset(&gvalue);
+  return ret;
 }
 
 void GObject_::set_property(Php::Parameters &parameters) {
@@ -422,10 +436,23 @@ void GObject_::set_property(Php::Parameters &parameters) {
       throw Php::Exception(error + "there is no property " + property_name + " on object " +
                            g_type_name(G_OBJECT_TYPE(instance)));
     }  // parse the param by the gtype
-    GValue value = phpgtk_get_gvalue(parameters[1], G_TYPE_FUNDAMENTAL(prop->value_type));
+    GType fundamental = G_TYPE_FUNDAMENTAL(prop->value_type);
+    GValue value = G_VALUE_INIT;
+    if (fundamental == G_TYPE_ENUM) {
+      g_value_init(&value, prop->value_type);
+      g_value_set_enum(&value, (int)parameters[1]);
+    } else if (fundamental == G_TYPE_FLAGS) {
+      g_value_init(&value, prop->value_type);
+      g_value_set_flags(&value, (guint)(int64_t)parameters[1]);
+    } else {
+      // g_object_set_property() converts an int to a guint/guchar property itself
+      bool is_unsigned = fundamental == G_TYPE_UINT || fundamental == G_TYPE_UCHAR;
+      value = phpgtk_get_gvalue(parameters[1], is_unsigned ? G_TYPE_INT : fundamental);
+    }
 
     // set property
     g_object_set_property(G_OBJECT(instance), property_name, &value);
+    g_value_unset(&value);
   }
 }
 
