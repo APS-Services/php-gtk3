@@ -176,9 +176,7 @@ void GtkComboBox_::set_id_column(Php::Parameters &parameters) {
 }
 
 Php::Value GtkComboBox_::get_active_id() {
-  std::string ret = gtk_combo_box_get_active_id(GTK_COMBO_BOX(instance));
-
-  return ret;
+  return gtk_combo_box_get_active_id(GTK_COMBO_BOX(instance));
 }
 
 void GtkComboBox_::set_active_id(Php::Parameters &parameters) {

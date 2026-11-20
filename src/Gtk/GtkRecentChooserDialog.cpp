@@ -196,11 +196,7 @@ Php::Value GtkRecentChooserDialog_::set_current_uri(Php::Parameters &parameters)
 }
 
 Php::Value GtkRecentChooserDialog_::get_current_uri() {
-  gchar *ret = gtk_recent_chooser_get_current_uri(GTK_RECENT_CHOOSER(instance));
-
-  std::string ret_str = ret;
-
-  return ret_str;
+  return phpgtk_take_string(gtk_recent_chooser_get_current_uri(GTK_RECENT_CHOOSER(instance)));
 }
 
 Php::Value GtkRecentChooserDialog_::get_current_item() {
@@ -257,14 +253,7 @@ Php::Value GtkRecentChooserDialog_::get_items() {
 Php::Value GtkRecentChooserDialog_::get_uris(Php::Parameters &parameters) {
   gsize length;
 
-  gchar **ret = gtk_recent_chooser_get_uris(GTK_RECENT_CHOOSER(instance), &length);
-
-  Php::Value ret_arr;
-  for (int index = 0; index < (int)g_strv_length(ret); index++) {
-    ret_arr[index] = (char *)ret[index];
-  }
-
-  return ret_arr;
+  return phpgtk_take_strv(gtk_recent_chooser_get_uris(GTK_RECENT_CHOOSER(instance), &length));
 }
 
 void GtkRecentChooserDialog_::add_filter(Php::Parameters &parameters) {

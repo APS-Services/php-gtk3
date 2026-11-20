@@ -80,9 +80,7 @@ void GtkCssProvider_::__construct() {
 }
 
 Php::Value GtkCssProvider_::to_string() {
-  std::string ret = gtk_css_provider_to_string(GTK_CSS_PROVIDER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_css_provider_to_string(GTK_CSS_PROVIDER(instance)));
 }
 
 Php::Value GtkCssProvider_::gtk_css_section_get_end_line() {

@@ -111,6 +111,17 @@
 	void phpgtk_throw_on_error(const char *call, GError *&error);
 
 	/**
+	 * A string GTK hands over (transfer full) as a PHP value: null for NULL,
+	 * otherwise copied and freed. A string GTK keeps (transfer none) needs no
+	 * helper: return the const gchar * as it is, Php::Value turns NULL into null.
+	 */
+	Php::Value phpgtk_take_string(gchar *str);
+	/** The same for a NULL-terminated string array: a PHP array, freed with g_strfreev(). */
+	Php::Value phpgtk_take_strv(gchar **strv);
+	/** Whether a PHP exception is pending, e.g. a warning an error handler turned into one. */
+	bool phpgtk_exception_pending();
+
+	/**
 	 * Build metadata ("built <date>, git <hash>") and the compiled-in optional
 	 * features ("webkit=yes, gladeui=no, ..."), defined in version.cpp - the
 	 * one translation unit the Makefile force-rebuilds so the values stay current.

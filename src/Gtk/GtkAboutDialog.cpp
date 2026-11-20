@@ -16,9 +16,7 @@ void GtkAboutDialog_::__construct() {
 }
 
 Php::Value GtkAboutDialog_::get_program_name() {
-  std::string ret = gtk_about_dialog_get_program_name(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_program_name(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_program_name(Php::Parameters &parameters) {
@@ -29,9 +27,7 @@ void GtkAboutDialog_::set_program_name(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_version() {
-  std::string ret = gtk_about_dialog_get_version(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_version(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_version(Php::Parameters &parameters) {
@@ -42,9 +38,7 @@ void GtkAboutDialog_::set_version(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_copyright() {
-  std::string ret = gtk_about_dialog_get_copyright(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_copyright(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_copyright(Php::Parameters &parameters) {
@@ -55,9 +49,7 @@ void GtkAboutDialog_::set_copyright(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_comments() {
-  std::string ret = gtk_about_dialog_get_comments(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_comments(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_comments(Php::Parameters &parameters) {
@@ -68,9 +60,7 @@ void GtkAboutDialog_::set_comments(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_license() {
-  std::string ret = gtk_about_dialog_get_license(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_license(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_license(Php::Parameters &parameters) {
@@ -106,9 +96,7 @@ void GtkAboutDialog_::set_license_type(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_website() {
-  std::string ret = gtk_about_dialog_get_website(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_website(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_website(Php::Parameters &parameters) {
@@ -119,9 +107,7 @@ void GtkAboutDialog_::set_website(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_website_label() {
-  std::string ret = gtk_about_dialog_get_website_label(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_website_label(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_website_label(Php::Parameters &parameters) {
@@ -174,9 +160,7 @@ void GtkAboutDialog_::set_documenters(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_translator_credits() {
-  std::string ret = gtk_about_dialog_get_translator_credits(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_translator_credits(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_translator_credits(Php::Parameters &parameters) {
@@ -209,9 +193,7 @@ void GtkAboutDialog_::set_logo(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAboutDialog_::get_logo_icon_name() {
-  std::string ret = gtk_about_dialog_get_logo_icon_name(GTK_ABOUT_DIALOG(instance));
-
-  return ret;
+  return gtk_about_dialog_get_logo_icon_name(GTK_ABOUT_DIALOG(instance));
 }
 
 void GtkAboutDialog_::set_logo_icon_name(Php::Parameters &parameters) {

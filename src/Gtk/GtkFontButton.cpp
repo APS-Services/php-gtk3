@@ -54,9 +54,7 @@ Php::Value GtkFontButton_::get_font_name() {
 }
 
 Php::Value GtkFontButton_::get_font() {
-  std::string ret = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(instance)));
 }
 
 void GtkFontButton_::set_show_style(Php::Parameters &parameters) {

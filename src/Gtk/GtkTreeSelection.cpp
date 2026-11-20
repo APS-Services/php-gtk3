@@ -196,11 +196,13 @@ Php::Value GtkTreeSelection_::get_selected_rows() {
 
   GList *ret = gtk_tree_selection_get_selected_rows(GTK_TREE_SELECTION(instance), &model);
 
-  Php::Value ret_arr;
+  Php::Array ret_arr;
 
-  for (int index = 0; GList *item = g_list_nth(ret, index); index++) {
-    ret_arr[index] = gtk_tree_path_to_string((GtkTreePath *)item->data);
+  int index = 0;
+  for (GList *item = ret; item != nullptr; item = item->next) {
+    ret_arr[index++] = phpgtk_take_string(gtk_tree_path_to_string((GtkTreePath *)item->data));
   }
+  g_list_free_full(ret, (GDestroyNotify)gtk_tree_path_free);
 
   GtkTreeModel_ *return_parsed_model = new GtkTreeModel_();
   return_parsed_model->set_model(model);

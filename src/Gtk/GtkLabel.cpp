@@ -256,9 +256,7 @@ void GtkLabel_::set_angle(Php::Parameters &parameters) {
 }
 
 Php::Value GtkLabel_::get_current_uri() {
-  std::string ret = gtk_label_get_current_uri(GTK_LABEL(instance));
-
-  return ret;
+  return gtk_label_get_current_uri(GTK_LABEL(instance));
 }
 
 void GtkLabel_::set_track_visited_links(Php::Parameters &parameters) {

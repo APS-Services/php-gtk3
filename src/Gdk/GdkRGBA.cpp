@@ -1,6 +1,8 @@
 
 #include "GdkRGBA.h"
 
+#include "../../php-gtk.h"
+
 GdkRGBA_::GdkRGBA_() = default;
 GdkRGBA_::~GdkRGBA_() = default;
 
@@ -49,7 +51,27 @@ Php::Value GdkRGBA_::parse(Php::Parameters &parameters) {
 }
 
 Php::Value GdkRGBA_::to_string(Php::Parameters &parameters) {
-  char *ret = gdk_rgba_to_string(&instance);
+  return phpgtk_take_string(gdk_rgba_to_string(&instance));
+}
 
-  return ret;
+bool phpgtk_to_rgba(const Php::Value &value, GdkRGBA &color, const char *call) {
+  if (value.isString()) {
+    std::string spec = value.stringValue();
+    if (gdk_rgba_parse(&color, spec.c_str())) {
+      return true;
+    }
+    Php::warning << call << ": cannot parse the color '" << spec << "'" << std::flush;
+    return false;
+  }
+  if (value.isObject() && value.instanceOf("GdkRGBA")) {
+    color = ((GdkRGBA_ *)value.implementation())->get_instance();
+    return true;
+  }
+  // what GdkRGBA::parse() returns for a color it cannot read: the same as an unparsable string
+  if (value.isBool() && !value.boolValue()) {
+    Php::warning << call << ": got false, not a color (a failed GdkRGBA::parse()?)" << std::flush;
+    return false;
+  }
+  throw Php::Exception(std::string(call) + ": expects a GdkRGBA or a color string, got " +
+                       phpgtk_type_to_string(value.type()));
 }

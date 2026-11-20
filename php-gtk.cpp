@@ -469,3 +469,22 @@ void phpgtk_throw_on_error(const char *call, GError *&error) {
 
   throw Php::Exception(std::string(call) + ": " + message);
 }
+
+Php::Value phpgtk_take_string(gchar *str) {
+  Php::Value value = str;
+  g_free(str);
+  return value;
+}
+
+Php::Value phpgtk_take_strv(gchar **strv) {
+  Php::Array array;
+  for (int index = 0; strv != nullptr && strv[index] != nullptr; index++) {
+    array[index] = strv[index];
+  }
+  g_strfreev(strv);
+  return array;
+}
+
+bool phpgtk_exception_pending() {
+  return EG(exception) != nullptr;
+}

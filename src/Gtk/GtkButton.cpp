@@ -99,9 +99,7 @@ Php::Value GtkButton_::get_relief() {
 }
 
 Php::Value GtkButton_::get_label() {
-  std::string ret = gtk_button_get_label(GTK_BUTTON(instance));
-
-  return ret;
+  return gtk_button_get_label(GTK_BUTTON(instance));
 }
 
 void GtkButton_::set_label(Php::Parameters &parameters) {

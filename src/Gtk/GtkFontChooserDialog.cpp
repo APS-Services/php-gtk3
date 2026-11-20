@@ -32,15 +32,11 @@ Php::Value GtkFontChooserDialog_::get_font_size() {
 }
 
 Php::Value GtkFontChooserDialog_::get_font() {
-  std::string ret = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(instance)));
 }
 
 Php::Value GtkFontChooserDialog_::get_preview_text() {
-  std::string ret = gtk_font_chooser_get_preview_text(GTK_FONT_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_font_chooser_get_preview_text(GTK_FONT_CHOOSER(instance)));
 }
 
 void GtkFontChooserDialog_::set_preview_text(Php::Parameters &parameters) {

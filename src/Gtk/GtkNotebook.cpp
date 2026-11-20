@@ -315,9 +315,7 @@ Php::Value GtkNotebook_::get_menu_label_text(Php::Parameters &parameters) {
     child = GTK_WIDGET(phpgtk_child->get_instance());
   }
 
-  std::string ret = gtk_notebook_get_menu_label_text(GTK_NOTEBOOK(instance), child);
-
-  return ret;
+  return gtk_notebook_get_menu_label_text(GTK_NOTEBOOK(instance), child);
 }
 
 Php::Value GtkNotebook_::get_scrollable() {
@@ -346,9 +344,7 @@ Php::Value GtkNotebook_::get_tab_label_text(Php::Parameters &parameters) {
     child = GTK_WIDGET(phpgtk_child->get_instance());
   }
 
-  std::string ret = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK(instance), child);
-
-  return ret;
+  return gtk_notebook_get_tab_label_text(GTK_NOTEBOOK(instance), child);
 }
 
 Php::Value GtkNotebook_::get_tab_pos() {
@@ -397,9 +393,7 @@ void GtkNotebook_::set_group_name(Php::Parameters &parameters) {
 }
 
 Php::Value GtkNotebook_::get_group_name() {
-  std::string ret = gtk_notebook_get_group_name(GTK_NOTEBOOK(instance));
-
-  return ret;
+  return gtk_notebook_get_group_name(GTK_NOTEBOOK(instance));
 }
 
 void GtkNotebook_::set_action_widget(Php::Parameters &parameters) {

@@ -39,9 +39,7 @@ Php::Value GtkTextMark_::get_deleted() {
 }
 
 Php::Value GtkTextMark_::get_name() {
-  std::string ret = gtk_text_mark_get_name(GTK_TEXT_MARK(instance));
-
-  return ret;
+  return gtk_text_mark_get_name(GTK_TEXT_MARK(instance));
 }
 
 Php::Value GtkTextMark_::get_buffer() {

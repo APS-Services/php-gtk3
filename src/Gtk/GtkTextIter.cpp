@@ -97,9 +97,7 @@ Php::Value GtkTextIter_::get_slice(Php::Parameters &parameters) {
   GtkTextIter_ *phpgtk_end = (GtkTextIter_ *)object_end.implementation();
   GtkTextIter end = phpgtk_end->get_instance();
 
-  std::string ret = gtk_text_iter_get_slice(&instance, &end);
-
-  return ret;
+  return phpgtk_take_string(gtk_text_iter_get_slice(&instance, &end));
 }
 
 Php::Value GtkTextIter_::get_text(Php::Parameters &parameters) {
@@ -108,9 +106,7 @@ Php::Value GtkTextIter_::get_text(Php::Parameters &parameters) {
   GtkTextIter_ *phpgtk_end = (GtkTextIter_ *)object_end.implementation();
   end = phpgtk_end->get_instance();
 
-  std::string ret = gtk_text_iter_get_text(&instance, &end);
-
-  return ret;
+  return phpgtk_take_string(gtk_text_iter_get_text(&instance, &end));
 }
 
 Php::Value GtkTextIter_::get_visible_slice(Php::Parameters &parameters) {
@@ -118,9 +114,7 @@ Php::Value GtkTextIter_::get_visible_slice(Php::Parameters &parameters) {
   GtkTextIter_ *phpgtk_end = (GtkTextIter_ *)object_end.implementation();
   GtkTextIter end = phpgtk_end->get_instance();
 
-  std::string ret = gtk_text_iter_get_visible_slice(&instance, &end);
-
-  return ret;
+  return phpgtk_take_string(gtk_text_iter_get_visible_slice(&instance, &end));
 }
 
 Php::Value GtkTextIter_::get_visible_text(Php::Parameters &parameters) {
@@ -128,9 +122,7 @@ Php::Value GtkTextIter_::get_visible_text(Php::Parameters &parameters) {
   GtkTextIter_ *phpgtk_end = (GtkTextIter_ *)object_end.implementation();
   GtkTextIter end = phpgtk_end->get_instance();
 
-  std::string ret = gtk_text_iter_get_visible_text(&instance, &end);
-
-  return ret;
+  return phpgtk_take_string(gtk_text_iter_get_visible_text(&instance, &end));
 }
 
 Php::Value GtkTextIter_::get_marks() {

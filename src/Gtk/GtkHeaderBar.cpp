@@ -23,9 +23,7 @@ void GtkHeaderBar_::set_title(Php::Parameters &parameters) {
 }
 
 Php::Value GtkHeaderBar_::get_title() {
-  std::string ret = gtk_header_bar_get_title(GTK_HEADER_BAR(instance));
-
-  return ret;
+  return gtk_header_bar_get_title(GTK_HEADER_BAR(instance));
 }
 
 void GtkHeaderBar_::set_subtitle(Php::Parameters &parameters) {
@@ -36,9 +34,7 @@ void GtkHeaderBar_::set_subtitle(Php::Parameters &parameters) {
 }
 
 Php::Value GtkHeaderBar_::get_subtitle() {
-  std::string ret = gtk_header_bar_get_subtitle(GTK_HEADER_BAR(instance));
-
-  return ret;
+  return gtk_header_bar_get_subtitle(GTK_HEADER_BAR(instance));
 }
 
 void GtkHeaderBar_::set_has_subtitle(Php::Parameters &parameters) {
@@ -115,7 +111,5 @@ void GtkHeaderBar_::set_decoration_layout(Php::Parameters &parameters) {
 }
 
 Php::Value GtkHeaderBar_::get_decoration_layout() {
-  std::string ret = gtk_header_bar_get_decoration_layout(GTK_HEADER_BAR(instance));
-
-  return ret;
+  return gtk_header_bar_get_decoration_layout(GTK_HEADER_BAR(instance));
 }

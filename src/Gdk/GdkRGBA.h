@@ -29,4 +29,12 @@ class GdkRGBA_ : public Php::Base {
   Php::Value to_string(Php::Parameters &parameters);
 };
 
+/**
+ * Reads a color argument: a GdkRGBA or a string gdk_rgba_parse() understands.
+ * An unparsable string (or false, from a failed GdkRGBA::parse()) warns and returns
+ * false with 'color' untouched; anything else, null included, throws. 'call' names
+ * the binding.
+ */
+bool phpgtk_to_rgba(const Php::Value &value, GdkRGBA &color, const char *call);
+
 #endif

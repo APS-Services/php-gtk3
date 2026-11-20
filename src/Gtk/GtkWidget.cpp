@@ -725,39 +725,41 @@ Php::Value GtkWidget_::get_composite_name() {
 }
 
 void GtkWidget_::override_background_color(Php::Parameters &parameters) {
-  int int_state = (int)parameters[0];
-  GtkStateFlags state = (GtkStateFlags)int_state;
+  if (parameters.size() < 2) {
+    throw Php::Exception("GtkWidget::override_background_color expects a state and a color");
+  }
+  GtkStateFlags state = (GtkStateFlags)(int)parameters[0];
 
-  GdkRGBA color;
-  if (parameters[1].isString()) {
-    std::string s_color = parameters[1];
-    gdk_rgba_parse(&color, s_color.c_str());
-  } else {
-    Php::Value object_color = parameters[1];
-    GdkRGBA_ *phpgtk_color = (GdkRGBA_ *)object_color.implementation();
-    color = phpgtk_color->get_instance();
+  // null undoes an earlier override
+  if (parameters[1].isNull()) {
+    gtk_widget_override_background_color(GTK_WIDGET(instance), state, nullptr);
+    return;
   }
 
-  gtk_widget_override_background_color(GTK_WIDGET(instance), state, &color);
+  GdkRGBA color;
+  if (phpgtk_to_rgba(parameters[1], color, "GtkWidget::override_background_color")) {
+    gtk_widget_override_background_color(GTK_WIDGET(instance), state, &color);
+  }
 
   // Php::deprecated << "GtkWidget_::override_background_color  is deprecated on Gtk 3.16";
 }
 
 void GtkWidget_::override_color(Php::Parameters &parameters) {
-  int int_state = (int)parameters[0];
-  GtkStateFlags state = (GtkStateFlags)int_state;
+  if (parameters.size() < 2) {
+    throw Php::Exception("GtkWidget::override_color expects a state and a color");
+  }
+  GtkStateFlags state = (GtkStateFlags)(int)parameters[0];
 
-  GdkRGBA color;
-  if (parameters[1].isString()) {
-    std::string s_color = parameters[1];
-    gdk_rgba_parse(&color, s_color.c_str());
-  } else {
-    Php::Value object_color = parameters[1];
-    GdkRGBA_ *phpgtk_color = (GdkRGBA_ *)object_color.implementation();
-    color = phpgtk_color->get_instance();
+  // null undoes an earlier override
+  if (parameters[1].isNull()) {
+    gtk_widget_override_color(GTK_WIDGET(instance), state, nullptr);
+    return;
   }
 
-  gtk_widget_override_color(GTK_WIDGET(instance), state, &color);
+  GdkRGBA color;
+  if (phpgtk_to_rgba(parameters[1], color, "GtkWidget::override_color")) {
+    gtk_widget_override_color(GTK_WIDGET(instance), state, &color);
+  }
 }
 
 void GtkWidget_::override_font(Php::Parameters &parameters) {
@@ -1409,9 +1411,7 @@ Php::Value GtkWidget_::keynav_failed(Php::Parameters &parameters) {
 }
 
 Php::Value GtkWidget_::get_tooltip_markup() {
-  std::string ret = gtk_widget_get_tooltip_markup(GTK_WIDGET(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_widget_get_tooltip_markup(GTK_WIDGET(instance)));
 }
 
 void GtkWidget_::set_tooltip_markup(Php::Parameters &parameters) {
@@ -1422,9 +1422,7 @@ void GtkWidget_::set_tooltip_markup(Php::Parameters &parameters) {
 }
 
 Php::Value GtkWidget_::get_tooltip_text() {
-  std::string ret = gtk_widget_get_tooltip_text(GTK_WIDGET(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_widget_get_tooltip_text(GTK_WIDGET(instance)));
 }
 
 void GtkWidget_::set_tooltip_text(Php::Parameters &parameters) {

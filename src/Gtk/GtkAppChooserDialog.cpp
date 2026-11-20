@@ -101,9 +101,7 @@ void GtkAppChooserDialog_::set_heading(Php::Parameters &parameters) {
 }
 
 Php::Value GtkAppChooserDialog_::get_heading() {
-  std::string ret = gtk_app_chooser_dialog_get_heading(GTK_APP_CHOOSER_DIALOG(instance));
-
-  return ret;
+  return gtk_app_chooser_dialog_get_heading(GTK_APP_CHOOSER_DIALOG(instance));
 }
 
 Php::Value GtkAppChooserDialog_::get_app_info() {
@@ -117,7 +115,7 @@ Php::Value GtkAppChooserDialog_::get_app_info() {
   arr[3] = arr["description"] = g_app_info_get_description(appinfo);
   arr[4] = arr["executable"] = g_app_info_get_executable(appinfo);
   arr[5] = arr["commandline"] = g_app_info_get_commandline(appinfo);
-  arr[6] = arr["icon"] = g_icon_to_string(g_app_info_get_icon(appinfo));
+  arr[6] = arr["icon"] = phpgtk_take_string(g_icon_to_string(g_app_info_get_icon(appinfo)));
   arr[7] = arr["supports_files"] = g_app_info_supports_files(appinfo);
   arr[8] = arr["supports_uris"] = g_app_info_supports_uris(appinfo);
   arr[9] = arr["should_show"] = g_app_info_should_show(appinfo);

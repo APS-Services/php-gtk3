@@ -39,13 +39,10 @@ Php::Value GtkColorChooserDialog_::get_rgba() {
 
 void GtkColorChooserDialog_::set_rgba(Php::Parameters &parameters) {
   GdkRGBA color;
-  if (!parameters.empty()) {
-    Php::Value object_color = parameters[0];
-    GdkRGBA_ *phpgtk_color = (GdkRGBA_ *)object_color.implementation();
-    color = phpgtk_color->get_instance();
+  if (phpgtk_to_rgba(parameters.empty() ? Php::Value() : parameters[0], color,
+                     "GtkColorChooserDialog::set_rgba")) {
+    gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(instance), &color);
   }
-
-  gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(instance), &color);
 }
 
 Php::Value GtkColorChooserDialog_::get_use_alpha() {

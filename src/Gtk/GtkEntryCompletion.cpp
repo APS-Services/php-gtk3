@@ -100,9 +100,8 @@ Php::Value GtkEntryCompletion_::compute_prefix(Php::Parameters &parameters) {
   std::string s_key = parameters[0];
   gchar *key = (gchar *)s_key.c_str();
 
-  std::string ret = gtk_entry_completion_compute_prefix(GTK_ENTRY_COMPLETION(instance), key);
-
-  return ret;
+  return phpgtk_take_string(
+      gtk_entry_completion_compute_prefix(GTK_ENTRY_COMPLETION(instance), key));
 }
 
 void GtkEntryCompletion_::complete() {
@@ -110,9 +109,7 @@ void GtkEntryCompletion_::complete() {
 }
 
 Php::Value GtkEntryCompletion_::get_completion_prefix() {
-  std::string ret = gtk_entry_completion_get_completion_prefix(GTK_ENTRY_COMPLETION(instance));
-
-  return ret;
+  return gtk_entry_completion_get_completion_prefix(GTK_ENTRY_COMPLETION(instance));
 }
 
 void GtkEntryCompletion_::insert_prefix() {

@@ -411,9 +411,7 @@ void GtkMenu_::set_accel_path(Php::Parameters &parameters) {
 }
 
 Php::Value GtkMenu_::get_accel_path() {
-  std::string ret = gtk_menu_get_accel_path(GTK_MENU(instance));
-
-  return ret;
+  return gtk_menu_get_accel_path(GTK_MENU(instance));
 }
 
 void GtkMenu_::set_monitor(Php::Parameters &parameters) {

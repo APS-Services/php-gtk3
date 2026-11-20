@@ -154,9 +154,7 @@ void GtkWidgetPath_::iter_clear_regions(Php::Parameters &parameters) {
 Php::Value GtkWidgetPath_::iter_get_name(Php::Parameters &parameters) {
   gint pos = (gint)parameters[0];
 
-  std::string ret = gtk_widget_path_iter_get_name(instance, pos);
-
-  return ret;
+  return gtk_widget_path_iter_get_name(instance, pos);
 }
 
 Php::Value GtkWidgetPath_::iter_get_object_name(Php::Parameters &parameters) {
@@ -369,7 +367,5 @@ void GtkWidgetPath_::prepend_type(Php::Parameters &parameters) {
 }
 
 Php::Value GtkWidgetPath_::to_string() {
-  char *ret = gtk_widget_path_to_string(instance);
-
-  return ret;
+  return phpgtk_take_string(gtk_widget_path_to_string(instance));
 }

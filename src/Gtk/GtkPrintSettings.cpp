@@ -77,9 +77,7 @@ Php::Value GtkPrintSettings_::get(Php::Parameters &parameters) {
   std::string s_key = parameters[0];
   gchar *key = (gchar *)s_key.c_str();
 
-  std::string ret = gtk_print_settings_get(GTK_PRINT_SETTINGS(instance), key);
-
-  return ret;
+  return gtk_print_settings_get(GTK_PRINT_SETTINGS(instance), key);
 }
 
 void GtkPrintSettings_::set(Php::Parameters &parameters) {
@@ -215,9 +213,7 @@ void GtkPrintSettings_::set_int(Php::Parameters &parameters) {
 }
 
 Php::Value GtkPrintSettings_::get_printer() {
-  std::string ret = gtk_print_settings_get_printer(GTK_PRINT_SETTINGS(instance));
-
-  return ret;
+  return gtk_print_settings_get_printer(GTK_PRINT_SETTINGS(instance));
 }
 
 void GtkPrintSettings_::set_printer(Php::Parameters &parameters) {
@@ -502,9 +498,7 @@ void GtkPrintSettings_::set_page_set(Php::Parameters &parameters) {
 }
 
 Php::Value GtkPrintSettings_::get_default_source() {
-  std::string ret = gtk_print_settings_get_default_source(GTK_PRINT_SETTINGS(instance));
-
-  return ret;
+  return gtk_print_settings_get_default_source(GTK_PRINT_SETTINGS(instance));
 }
 
 void GtkPrintSettings_::set_default_source(Php::Parameters &parameters) {
@@ -515,9 +509,7 @@ void GtkPrintSettings_::set_default_source(Php::Parameters &parameters) {
 }
 
 Php::Value GtkPrintSettings_::get_media_type() {
-  std::string ret = gtk_print_settings_get_media_type(GTK_PRINT_SETTINGS(instance));
-
-  return ret;
+  return gtk_print_settings_get_media_type(GTK_PRINT_SETTINGS(instance));
 }
 
 void GtkPrintSettings_::set_media_type(Php::Parameters &parameters) {
@@ -528,9 +520,7 @@ void GtkPrintSettings_::set_media_type(Php::Parameters &parameters) {
 }
 
 Php::Value GtkPrintSettings_::get_dither() {
-  std::string ret = gtk_print_settings_get_dither(GTK_PRINT_SETTINGS(instance));
-
-  return ret;
+  return gtk_print_settings_get_dither(GTK_PRINT_SETTINGS(instance));
 }
 
 void GtkPrintSettings_::set_dither(Php::Parameters &parameters) {
@@ -541,9 +531,7 @@ void GtkPrintSettings_::set_dither(Php::Parameters &parameters) {
 }
 
 Php::Value GtkPrintSettings_::get_finishings() {
-  std::string ret = gtk_print_settings_get_finishings(GTK_PRINT_SETTINGS(instance));
-
-  return ret;
+  return gtk_print_settings_get_finishings(GTK_PRINT_SETTINGS(instance));
 }
 
 void GtkPrintSettings_::set_finishings(Php::Parameters &parameters) {
@@ -554,9 +542,7 @@ void GtkPrintSettings_::set_finishings(Php::Parameters &parameters) {
 }
 
 Php::Value GtkPrintSettings_::get_output_bin() {
-  std::string ret = gtk_print_settings_get_output_bin(GTK_PRINT_SETTINGS(instance));
-
-  return ret;
+  return gtk_print_settings_get_output_bin(GTK_PRINT_SETTINGS(instance));
 }
 
 void GtkPrintSettings_::set_output_bin(Php::Parameters &parameters) {

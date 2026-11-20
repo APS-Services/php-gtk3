@@ -89,7 +89,5 @@ void GtkComboBoxText_::remove_all() {
 }
 
 Php::Value GtkComboBoxText_::get_active_text() {
-  std::string ret = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instance)));
 }

@@ -63,9 +63,7 @@ void GtkProgressBar_::set_text(Php::Parameters &parameters) {
 }
 
 Php::Value GtkProgressBar_::get_text() {
-  std::string ret = gtk_progress_bar_get_text(GTK_PROGRESS_BAR(instance));
-
-  return ret;
+  return gtk_progress_bar_get_text(GTK_PROGRESS_BAR(instance));
 }
 
 void GtkProgressBar_::set_ellipsize(Php::Parameters &parameters) {

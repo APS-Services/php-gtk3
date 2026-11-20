@@ -80,9 +80,7 @@ void GtkStack_::set_visible_child_name(Php::Parameters &parameters) {
 }
 
 Php::Value GtkStack_::get_visible_child_name() {
-  std::string ret = gtk_stack_get_visible_child_name(GTK_STACK(instance));
-
-  return ret;
+  return gtk_stack_get_visible_child_name(GTK_STACK(instance));
 }
 
 void GtkStack_::set_visible_child_full(Php::Parameters &parameters) {

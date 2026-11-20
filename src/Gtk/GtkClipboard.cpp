@@ -263,9 +263,7 @@ Php::Value GtkClipboard_::wait_for_contents(Php::Parameters &parameters) {
 }
 
 Php::Value GtkClipboard_::wait_for_text() {
-  std::string ret = gtk_clipboard_wait_for_text(GTK_CLIPBOARD(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_clipboard_wait_for_text(GTK_CLIPBOARD(instance)));
 }
 
 Php::Value GtkClipboard_::wait_for_image() {
@@ -348,7 +346,5 @@ void GtkClipboard_::set_can_store() {
 Php::Value GtkClipboard_::get_selection() {
   GdkAtom atom = gtk_clipboard_get_selection(GTK_CLIPBOARD(instance));
 
-  std::string ret = gdk_atom_name(atom);
-
-  return ret;
+  return phpgtk_take_string(gdk_atom_name(atom));
 }
