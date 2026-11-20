@@ -6,7 +6,9 @@
  * their text argument as a raw C string, which only a PHP string has: an int,
  * a float or null there (new GtkLabel($row['name']) with a NULL column) was a
  * segfault. create_tag() handed GTK an unterminated property list and crashed
- * on every call.
+ * on every call. A GtkTextTag kept its tag in a field of its own, so a tag
+ * made with new crashed in set_property() and one returned by GTK reached
+ * insert_with_tags() as NULL.
  *
  * Usage: php non_string_arguments.php    (needs a display on X11/Wayland, not on Windows)
  * Expected: exit status 0 and "OK" on stdout - no "BUG:" line, no crash.
@@ -41,6 +43,12 @@ $tag = $buffer->create_tag('66', ['weight' => 700]);
 $buffer->insert_with_tags_by_name($buffer->get_end_iter(), 'x', -1, 66);
 $expect('insert_with_tags_by_name(..., 66) tag', $buffer->get_start_iter()->has_tag($tag), true);
 $expect('create_tag() without a name', get_class($buffer->create_tag()), 'GtkTextTag');
+// a tag made with new and one from create_tag() work with the GObject and the text API alike
+$own = new GtkTextTag('own');
+$own->set_property('weight', 700);
+$buffer->get_tag_table()->add($own);
+$buffer->insert_with_tags($buffer->get_end_iter(), 'y', -1, $tag);
+$expect('insert_with_tags() with a created tag', $buffer->get_iter_at_offset(1)->has_tag($tag), true);
 // each one must throw, not be skipped or crash
 $calls = [
     'a second tag named 66' => fn () => $buffer->create_tag('66'),

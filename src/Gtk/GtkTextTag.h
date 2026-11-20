@@ -19,8 +19,7 @@ class GtkTextTag_ : public GObject_ {
    * Publics
    */
  public:
-  GtkTextTag *tag{};
-
+  // the tag is GObject_::instance, so the GObject methods (set_property, connect) reach it too
   GtkTextTag *get_tag();
   void set_tag(GtkTextTag *passed_tag);
 
