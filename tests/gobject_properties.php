@@ -53,17 +53,45 @@ $roundTrip($button, 'sensitive', false);        // boolean
 $roundTrip($button, 'border-width', 5);         // guint
 
 $view = new GtkTreeView();
-$view->set_model(new GtkListStore(GObject::TYPE_STRING));
-if (!$view->get_property('model') instanceof GtkListStore) {
+$store = new GtkListStore(GObject::TYPE_STRING);
+$view->set_model($store);
+$model = $view->get_property('model');
+if (!$model instanceof GtkListStore) {
     echo "BUG: GtkTreeView::model is no GtkListStore\n";
+    $failed = true;
+} else {
+    // the returned model must work as a store, not only carry the class name
+    $model->append(['row']);
+    $expect = $store->iter_n_children(null);
+    if ($expect !== 1) {
+        echo "BUG: a row appended to GtkTreeView::model gave $expect rows in the store\n";
+        $failed = true;
+    }
+}
+// a store is a GObject too: its signals reach the same object as its rows
+$inserted = 0;
+$store->connect('row-inserted', function () use (&$inserted) {
+    $inserted++;
+});
+$store->append(['another']);
+if ($inserted !== 1) {
+    echo "BUG: row-inserted on a GtkListStore ran $inserted times\n";
     $failed = true;
 }
 
-try {
-    $button->get_property('no-such-property');
-    echo "BUG: get_property() read a property that does not exist\n";
-    $failed = true;
-} catch (Exception $e) {
+// each must throw, not crash or hand back a default
+$calls = [
+    'a missing property' => fn () => $button->get_property('no-such-property'),
+    'a write-only property' => fn () => (new GtkCellRendererText())->get_property('background'),
+    'a missing property of a store' => fn () => $store->get_property('no-such-property'),
+];
+foreach ($calls as $what => $call) {
+    try {
+        $call();
+        echo "BUG: get_property() read $what\n";
+        $failed = true;
+    } catch (Exception $e) {
+    }
 }
 
 if ($failed) {

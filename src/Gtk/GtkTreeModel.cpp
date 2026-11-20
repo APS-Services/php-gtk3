@@ -22,7 +22,9 @@ GtkTreeModel *GtkTreeModel_::get_model() {
  * Set the original GtkTreeModel
  */
 void GtkTreeModel_::set_model(GtkTreeModel *passed_model) {
+  // GObject_'s methods (properties, connect) work on instance
   model = passed_model;
+  instance = (gpointer *)passed_model;
 }
 
 /**
