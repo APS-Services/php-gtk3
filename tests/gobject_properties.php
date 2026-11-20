@@ -46,6 +46,12 @@ $roundTrip($label, 'justify', 2);               // enum (GTK_JUSTIFY_CENTER)
 $roundTrip($label, 'xalign', 0.25);             // float
 $roundTrip(new GtkProgressBar(), 'fraction', 0.25); // double
 $roundTrip(new GtkEntry(), 'input-hints', 2);   // flags (GTK_INPUT_HINT_SPELLCHECK)
+$roundTrip(new GtkTextTag('t'), 'style', 2);    // enum on a text tag (PANGO_STYLE_ITALIC)
+$italic = (new GtkTextBuffer())->create_tag('italic', ['style' => 2]);
+if ($italic->get_property('style') !== 2) {
+    echo "BUG: create_tag() with an enum property gave style " . var_export($italic->get_property('style'), true) . "\n";
+    $failed = true;
+}
 $button = new GtkButton();
 $roundTrip($button, 'label', 'text');           // string
 $roundTrip($button, 'tooltip-text', null);      // string, unset
