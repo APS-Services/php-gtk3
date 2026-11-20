@@ -46,6 +46,7 @@ $calls = [
     'a second tag named 66' => fn () => $buffer->create_tag('66'),
     'an unknown property' => fn () => $buffer->create_tag('unknown', ['no-such-property' => 1]),
     'properties that are no array' => fn () => $buffer->create_tag('loose', 'foreground'),
+    'a model that is no GtkTreeModel' => fn () => $buffer->create_tag('model', ['model' => 1]),
 ];
 foreach ($calls as $what => $call) {
     try {
@@ -55,6 +56,8 @@ foreach ($calls as $what => $call) {
     } catch (Exception $e) {
     }
 }
+// a failed create_tag() leaves no tag behind, so its name is free again
+$expect('create_tag() after a failed one', get_class($buffer->create_tag('unknown')), 'GtkTextTag');
 
 if ($failed) {
     exit(1);

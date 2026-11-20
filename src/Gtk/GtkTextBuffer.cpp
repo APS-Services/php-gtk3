@@ -520,6 +520,10 @@ void GtkTextBuffer_::remove_all_tags(Php::Parameters &parameters) {
 }
 
 Php::Value GtkTextBuffer_::create_tag(Php::Parameters &parameters) {
+  if (parameters.size() > 1 && !parameters[1].isArray()) {
+    throw Php::Exception("create_tag() expects an array of properties");
+  }
+
   // no name (or null): an anonymous tag
   std::string s_tag_name;
   const gchar *tag_name = nullptr;
@@ -539,11 +543,14 @@ Php::Value GtkTextBuffer_::create_tag(Php::Parameters &parameters) {
 
   // [property => value]: set_property converts each value by the property's type
   if (parameters.size() > 1) {
-    if (!parameters[1].isArray()) {
-      throw Php::Exception("create_tag() expects an array of properties");
-    }
-    for (auto &property : parameters[1]) {
-      tag.call("set_property", property.first, property.second);
+    try {
+      for (auto &property : parameters[1]) {
+        tag.call("set_property", property.first, property.second);
+      }
+    } catch (...) {
+      // GTK added the tag before its properties: a failed call must not keep the name taken
+      gtk_text_tag_table_remove(gtk_text_buffer_get_tag_table(GTK_TEXT_BUFFER(instance)), ret);
+      throw;
     }
   }
   return tag;

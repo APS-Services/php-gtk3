@@ -409,7 +409,7 @@ void GObject_::set_property(Php::Parameters &parameters) {
   gpointer iface = g_type_default_interface_peek(G_OBJECT_TYPE(instance));
 
   // verify if property is "model", to set the instance, and not GValue
-  if (strcmp(property_name, "model") == 0) {
+  if (strcmp(property_name, "model") == 0 && parameters[1].instanceOf("GtkTreeModel")) {
     Php::Value a_object = parameters[1];
     GtkTreeModel_ *o_object = (GtkTreeModel_ *)a_object.implementation();
 
