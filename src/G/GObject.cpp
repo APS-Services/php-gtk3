@@ -389,15 +389,32 @@ Php::Value GObject_::is_connected(Php::Parameters &parameters) {
   return ret;
 }
 
+/**
+ * The spec of a property the wrapped object has and allows 'access' to (G_PARAM_READABLE or
+ * G_PARAM_WRITABLE). Throws otherwise, and for a wrapper that holds no object.
+ */
+static GParamSpec *phpgtk_find_property(gpointer *instance, const gchar *name, GParamFlags access) {
+  if (instance == nullptr) {
+    throw Php::Exception(std::string("there is no GObject behind this object to access ") + name);
+  }
+  GParamSpec *prop = g_object_class_find_property(G_OBJECT_GET_CLASS(instance), name);
+  if (!prop) {
+    throw Php::Exception(std::string("there is no property ") + name + " on object " +
+                         g_type_name(G_OBJECT_TYPE(instance)));
+  }
+  if ((prop->flags & access) == 0) {
+    throw Php::Exception(std::string("property ") + name + " of " +
+                         g_type_name(G_OBJECT_TYPE(instance)) +
+                         (access == G_PARAM_READABLE ? " cannot be read" : " cannot be written"));
+  }
+  return prop;
+}
+
 Php::Value GObject_::get_property(Php::Parameters &parameters) {
   std::string s_property_name = parameters[0];
   const gchar *property_name = s_property_name.c_str();
 
-  GParamSpec *prop = g_object_class_find_property(G_OBJECT_GET_CLASS(instance), property_name);
-  if (!prop) {
-    throw Php::Exception(std::string("there is no property ") + property_name + " on object " +
-                         g_type_name(G_OBJECT_TYPE(instance)));
-  }
+  GParamSpec *prop = phpgtk_find_property(instance, property_name, G_PARAM_READABLE);
 
   // the GValue has to hold the property's own type, GLib refuses to fill in any other
   GValue gvalue = G_VALUE_INIT;
@@ -419,8 +436,7 @@ void GObject_::set_property(Php::Parameters &parameters) {
   std::string s_property_name = parameters[0];
   const gchar *property_name = (const gchar *)s_property_name.c_str();
 
-  // get interface of instance
-  gpointer iface = g_type_default_interface_peek(G_OBJECT_TYPE(instance));
+  GParamSpec *prop = phpgtk_find_property(instance, property_name, G_PARAM_WRITABLE);
 
   // verify if property is "model", to set the instance, and not GValue
   if (strcmp(property_name, "model") == 0 && parameters[1].instanceOf("GtkTreeModel")) {
@@ -429,13 +445,7 @@ void GObject_::set_property(Php::Parameters &parameters) {
 
     g_object_set(G_OBJECT(instance), "model", o_object->get_model(), (char *)nullptr);
   } else {
-    // get the property spec
-    GParamSpec *prop = g_object_class_find_property(G_OBJECT_GET_CLASS(instance), property_name);
-    if (!prop) {
-      std::string error;
-      throw Php::Exception(error + "there is no property " + property_name + " on object " +
-                           g_type_name(G_OBJECT_TYPE(instance)));
-    }  // parse the param by the gtype
+    // parse the param by the gtype
     GType fundamental = G_TYPE_FUNDAMENTAL(prop->value_type);
     GValue value = G_VALUE_INIT;
     if (fundamental == G_TYPE_ENUM) {

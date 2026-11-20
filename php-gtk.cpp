@@ -1,5 +1,6 @@
 
 #include "php-gtk.h"
+#include "src/Gtk/GtkTreeModel.h"
 
 // EG(), zend_is_unwind_exit() and zend_bailout() for phpgtk_exit_pending()/phpgtk_finish_exit()
 #include <php.h>
@@ -262,6 +263,14 @@ Php::Value cobject_to_phpobject(gpointer *cobject) {
     throw Php::Exception(std::string("php-gtk3: no PHP class for ") +
                          g_type_name(G_TYPE_FROM_INSTANCE((gpointer *)cobject)) +
                          " or any of its ancestors");
+  }
+
+  // a model's methods read GtkTreeModel_::model, so it needs that wrapper (as
+  // GtkTreeView::get_model())
+  if (GTK_IS_TREE_MODEL(cobject)) {
+    GtkTreeModel_ *model = new GtkTreeModel_();
+    model->set_model(GTK_TREE_MODEL(cobject));
+    return Php::Object(g_type_name(type), model);
   }
 
   GtkWidget_ *return_parsed = new GtkWidget_();

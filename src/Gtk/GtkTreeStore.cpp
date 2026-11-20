@@ -24,7 +24,7 @@ void GtkTreeStore_::__construct(Php::Parameters &parameters) {
   }
 
   // Create the store
-  model = GTK_TREE_MODEL(gtk_tree_store_newv(n_columns, types));
+  set_model(GTK_TREE_MODEL(gtk_tree_store_newv(n_columns, types)));
 }
 
 void GtkTreeStore_::set_column_types(Php::Parameters &parameters) {
