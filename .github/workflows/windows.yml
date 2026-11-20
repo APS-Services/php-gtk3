@@ -253,11 +253,12 @@ jobs:
       # miss, a static name, callbacks and signals by name, an exception message), and what a
       # callback keeps alive: released on disconnect, destroy and timeout end, not before.
       # Text arguments that are not PHP strings (int, float, null) are converted, not crashed on.
-      - name: Names, callback data, event properties and non-string arguments in php.exe ${{ matrix.php }}
+      # GObject properties of every common type can be set and read back.
+      - name: Runtime tests in php.exe ${{ matrix.php }}
         run: |
           $deps = "$env:RUNNER_TEMP\deps"
           $env:PATH = '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin;' + $env:PATH
-          foreach ($test in @('runtime_names', 'callback_lifetime', 'event_properties', 'non_string_arguments')) {
+          foreach ($test in @('runtime_names', 'callback_lifetime', 'event_properties', 'non_string_arguments', 'gobject_properties')) {
             $out = "$env:RUNNER_TEMP\$test.txt"
             $p = Start-Process -FilePath "$deps\php\php.exe" -PassThru -NoNewWindow -RedirectStandardOutput $out `
               -ArgumentList @('-n', "-d extension_dir=$deps\php\ext", '-d extension=gtk3', '-d display_errors=1', "tests\$test.php")

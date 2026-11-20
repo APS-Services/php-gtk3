@@ -5007,64 +5007,48 @@ PHPCPP_EXPORT void *get_module() {
 }
 
 Php::Value phpgtk_get_phpvalue(GValue *gvalue) {
-  switch (g_value_get_gtype(gvalue)) {
-    case G_TYPE_INVALID:
-    case G_TYPE_NONE:
-      throw Php::Exception("G_TYPE_INVALID not implemented");
-      break;
-    case G_TYPE_INT:
-      return g_value_get_int(gvalue);
-      break;
+  // by the fundamental type: an enum, flags or object property holds a type derived from it
+  switch (G_TYPE_FUNDAMENTAL(G_VALUE_TYPE(gvalue))) {
     case G_TYPE_BOOLEAN:
-      return g_value_get_boolean(gvalue);
-      break;
-    case G_TYPE_DOUBLE:
-      return g_value_get_double(gvalue);
-      break;
-    case G_TYPE_FLOAT:
-      return g_value_get_float(gvalue);
-      break;
-    case G_TYPE_STRING:
-      return g_value_get_string(gvalue);
-      break;
+      return (bool)g_value_get_boolean(gvalue);
     case G_TYPE_CHAR:
-      return g_value_get_char(gvalue);
-      break;
-    case G_TYPE_LONG:
-      return (int64_t)g_value_get_int64(gvalue);
-      break;
-    case G_TYPE_ULONG:
-      return (int64_t)g_value_get_int64(gvalue);
-      break;
+      return g_value_get_schar(gvalue);
     case G_TYPE_UCHAR:
       return g_value_get_uchar(gvalue);
-      break;
-    case G_TYPE_OBJECT: {
-      gpointer *ret = (gpointer *)g_value_get_object(gvalue);
-      return cobject_to_phpobject(ret);
-      break;
-    }
-    case G_TYPE_INTERFACE:
-      throw Php::Exception("G_TYPE_INTERFACE not implemented");
-      break;
-    case G_TYPE_PARAM:
-      throw Php::Exception("G_TYPE_PARAM not implemented");
-      break;
-    case G_TYPE_BOXED:
-      throw Php::Exception("G_TYPE_BOXED not implemented");
-      break;
-    case G_TYPE_POINTER:
-      throw Php::Exception("G_TYPE_POINTER not implemented");
-      break;
-    case G_TYPE_FLAGS:
-      throw Php::Exception("G_TYPE_FLAGS not implemented");
-      break;
+    case G_TYPE_INT:
+      return g_value_get_int(gvalue);
+    case G_TYPE_UINT:
+      return (int64_t)g_value_get_uint(gvalue);
+    case G_TYPE_LONG:
+      return (int64_t)g_value_get_long(gvalue);
+    case G_TYPE_ULONG:
+      return (int64_t)g_value_get_ulong(gvalue);
+    case G_TYPE_INT64:
+      return (int64_t)g_value_get_int64(gvalue);
+    case G_TYPE_UINT64:
+      return (int64_t)g_value_get_uint64(gvalue);
     case G_TYPE_ENUM:
-      throw Php::Exception("G_TYPE_ENUM not implemented");
+      return g_value_get_enum(gvalue);
+    case G_TYPE_FLAGS:
+      return (int64_t)g_value_get_flags(gvalue);
+    case G_TYPE_FLOAT:
+      return g_value_get_float(gvalue);
+    case G_TYPE_DOUBLE:
+      return g_value_get_double(gvalue);
+    case G_TYPE_STRING:
+      return g_value_get_string(gvalue);
+    case G_TYPE_OBJECT:
+    case G_TYPE_INTERFACE:
+      // an interface property (GtkTreeView::model) holds an object as well
+      if (G_VALUE_HOLDS_OBJECT(gvalue)) {
+        return cobject_to_phpobject((gpointer *)g_value_get_object(gvalue));
+      }
+      break;
+    default:
       break;
   }
-
-  return -1;
+  throw Php::Exception(std::string("a value of type ") + G_VALUE_TYPE_NAME(gvalue) +
+                       " cannot be read into PHP yet");
 }
 
 GValue phpgtk_get_gvalue(const Php::Value &phpgtk_value, GType type_column) {
