@@ -15,25 +15,30 @@ GtkTextTag_::~GtkTextTag_() = default;
  * Return original GtkTreeIter
  */
 GtkTextTag *GtkTextTag_::get_tag() {
-  return tag;
+  return GTK_TEXT_TAG(instance);
 }
 
 /**
  * Set the original GtkTextTag
  */
 void GtkTextTag_::set_tag(GtkTextTag *passed_tag) {
-  tag = passed_tag;
+  instance = (gpointer *)passed_tag;
 }
 
 void GtkTextTag_::__construct(Php::Parameters &parameters) {
-  std::string s_name = parameters[0];
-  gchar *name = (gchar *)s_name.c_str();
+  // no name (or null): an anonymous tag
+  std::string s_name;
+  const gchar *name = nullptr;
+  if (!parameters.empty() && !parameters[0].isNull()) {
+    s_name = parameters[0].stringValue();
+    name = s_name.c_str();
+  }
 
-  tag = gtk_text_tag_new(name);
+  instance = (gpointer *)gtk_text_tag_new(name);
 }
 
 Php::Value GtkTextTag_::get_priority() {
-  gint ret = gtk_text_tag_get_priority(tag);
+  gint ret = gtk_text_tag_get_priority(get_tag());
 
   return ret;
 }
@@ -41,7 +46,7 @@ Php::Value GtkTextTag_::get_priority() {
 void GtkTextTag_::set_priority(Php::Parameters &parameters) {
   gint priority = (gint)parameters[0];
 
-  gtk_text_tag_set_priority(tag, priority);
+  gtk_text_tag_set_priority(get_tag(), priority);
 }
 
 Php::Value GtkTextTag_::event(Php::Parameters &parameters) {
@@ -70,5 +75,5 @@ Php::Value GtkTextTag_::event(Php::Parameters &parameters) {
 void GtkTextTag_::tag_changed(Php::Parameters &parameters) {
   gboolean size_changed = (gboolean)parameters[0];
 
-  gtk_text_tag_changed(tag, size_changed);
+  gtk_text_tag_changed(get_tag(), size_changed);
 }
