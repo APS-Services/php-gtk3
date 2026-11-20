@@ -4,7 +4,8 @@
  * freed where GTK hands them over; color arguments must be checked.
  *
  * The getters copied GTK's string into a std::string: a NULL (no tooltip, no
- * active combo entry, an empty GtkStack) aborted the process, and a string GTK
+ * active combo entry, an empty GtkStack, a menu item without a label, a paper
+ * size not from a PPD) aborted the process, and a string GTK
  * hands over (GdkRGBA::to_string(), get_selected_rows() paths, text buffer
  * text) was never freed - a POS that colors its buttons through to_string()
  * grew all day. override_background_color() used uninitialised memory for a
@@ -39,6 +40,10 @@ $expect('get_tooltip_text() without a tooltip', (new GtkButton())->get_tooltip_t
 $expect('get_active_text() with nothing active', (new GtkComboBoxText())->get_active_text(), null);
 $expect('get_visible_child_name() of an empty stack', (new GtkStack())->get_visible_child_name(), null);
 $expect('get_label() of a button without one', (new GtkButton())->get_label(), null);
+$item = new GtkMenuItem();
+$item->add(new GtkBox(GtkOrientation::HORIZONTAL));
+$expect('get_label() of a menu item whose child is no label', $item->get_label(), null);
+$expect('get_ppd_name() of a custom paper size', GtkPaperSize::new_custom('custom_x', 'X', 100, 100, GtkUnit::MM)->get_ppd_name(), null);
 
 // GTK has a string: it arrives intact, and one GTK keeps is not freed by reading it
 $button = new GtkButton();
@@ -47,6 +52,8 @@ $expect('get_tooltip_text()', $button->get_tooltip_text(), 'tip');
 $expect('GdkRGBA::to_string()', GdkRGBA::parse('#ff0000')->to_string(), 'rgb(255,0,0)');
 $frame = new GtkFrame('lbl');
 $expect('get_label() twice', [$frame->get_label(), $frame->get_label()], ['lbl', 'lbl']);
+$expect('get_label() of a menu item', GtkMenuItem::new_with_label('item')->get_label(), 'item');
+$expect('get_ppd_name() of a standard paper size', (new GtkPaperSize('iso_a4'))->get_ppd_name(), 'A4');
 
 $store = new GtkListStore(GObject::TYPE_STRING);
 $first = $store->append(['a']);
