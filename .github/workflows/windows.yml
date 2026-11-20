@@ -252,11 +252,12 @@ jobs:
       # The other places a script's string crosses into the extension (property lookups that
       # miss, a static name, callbacks and signals by name, an exception message), and what a
       # callback keeps alive: released on disconnect, destroy and timeout end, not before.
-      - name: Names stay intact, callback data is freed and event properties are declared in php.exe ${{ matrix.php }}
+      # Text arguments that are not PHP strings (int, float, null) are converted, not crashed on.
+      - name: Names, callback data, event properties and non-string arguments in php.exe ${{ matrix.php }}
         run: |
           $deps = "$env:RUNNER_TEMP\deps"
           $env:PATH = '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin;' + $env:PATH
-          foreach ($test in @('runtime_names', 'callback_lifetime', 'event_properties')) {
+          foreach ($test in @('runtime_names', 'callback_lifetime', 'event_properties', 'non_string_arguments')) {
             $out = "$env:RUNNER_TEMP\$test.txt"
             $p = Start-Process -FilePath "$deps\php\php.exe" -PassThru -NoNewWindow -RedirectStandardOutput $out `
               -ArgumentList @('-n', "-d extension_dir=$deps\php\ext", '-d extension=gtk3', '-d display_errors=1', "tests\$test.php")

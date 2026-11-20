@@ -183,7 +183,7 @@ void GtkTextBuffer_::insert_with_tags_by_name(Php::Parameters &parameters) {
   const gchar *first_tag_name = nullptr;
   std::string s_first_tag_name;
   if (parameters.size() >= 4) {
-    s_first_tag_name.assign((const char *)parameters[3]);
+    s_first_tag_name = parameters[3].stringValue();
     first_tag_name = s_first_tag_name.c_str();
   }
 
@@ -520,18 +520,30 @@ void GtkTextBuffer_::remove_all_tags(Php::Parameters &parameters) {
 }
 
 Php::Value GtkTextBuffer_::create_tag(Php::Parameters &parameters) {
-  std::string s_tag_name = parameters[0];
-  gchar *tag_name = (gchar *)s_tag_name.c_str();
+  // no name (or null): an anonymous tag
+  std::string s_tag_name;
+  const gchar *tag_name = nullptr;
+  if (!parameters.empty() && !parameters[0].isNull()) {
+    s_tag_name = parameters[0].stringValue();
+    tag_name = s_tag_name.c_str();
+  }
 
-  std::string s_first_property_name = parameters[1];
-  gchar *first_property_name = (gchar *)s_first_property_name.c_str();
-
-  GtkTextTag *ret =
-      gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(instance), tag_name, first_property_name);
+  GtkTextTag *ret = gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(instance), tag_name, nullptr);
+  if (ret == nullptr) {
+    throw Php::Exception("there is already a tag named " + s_tag_name + " in the tag table");
+  }
 
   GtkTextTag_ *return_parsed = new GtkTextTag_();
   return_parsed->set_instance((gpointer *)ret);
-  return Php::Object("GtkTextTag", return_parsed);
+  Php::Object tag("GtkTextTag", return_parsed);
+
+  // [property => value]: set_property converts each value by the property's type
+  if (parameters.size() > 1) {
+    for (auto &property : parameters[1]) {
+      tag.call("set_property", property.first, property.second);
+    }
+  }
+  return tag;
 }
 
 Php::Value GtkTextBuffer_::get_iter_at_line_offset(Php::Parameters &parameters) {
