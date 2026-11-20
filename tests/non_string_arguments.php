@@ -1,0 +1,61 @@
+<?php
+/**
+ * A text argument that is not a PHP string must be converted, not crash.
+ *
+ * GtkLabel's and GtkFrame's constructors and insert_with_tags_by_name() read
+ * their text argument as a raw C string, which only a PHP string has: an int,
+ * a float or null there (new GtkLabel($row['name']) with a NULL column) was a
+ * segfault. create_tag() handed GTK an unterminated property list and crashed
+ * on every call.
+ *
+ * Usage: php non_string_arguments.php    (needs a display on X11/Wayland, not on Windows)
+ * Expected: exit status 0 and "OK" on stdout - no "BUG:" line, no crash.
+ */
+// Windows GTK needs no display server; X11/Wayland hosts do, and gtk_init()
+// aborts the process rather than failing when it cannot open one
+if (PHP_OS_FAMILY !== 'Windows'
+    && getenv('DISPLAY') === false
+    && getenv('WAYLAND_DISPLAY') === false
+) {
+    echo "SKIP: Gtk::init() needs a display\n";
+    exit(0);
+}
+
+Gtk::init();
+
+$failed = false;
+$expect = function (string $what, $actual, $expected) use (&$failed): void {
+    if ($actual !== $expected) {
+        echo "BUG: $what gave " . var_export($actual, true) . ', expected ' . var_export($expected, true) . "\n";
+        $failed = true;
+    }
+};
+
+$expect('new GtkLabel(66)', (new GtkLabel(66))->get_text(), '66');
+$expect('new GtkLabel(1.5)', (new GtkLabel(1.5))->get_text(), '1.5');
+$expect('new GtkLabel(null)', (new GtkLabel(null))->get_text(), '');
+$expect('new GtkFrame(66)', (new GtkFrame(66))->get_label(), '66');
+
+$buffer = new GtkTextBuffer();
+$tag = $buffer->create_tag('66', ['weight' => 700]);
+$buffer->insert_with_tags_by_name($buffer->get_end_iter(), 'x', -1, 66);
+$expect('insert_with_tags_by_name(..., 66) tag', $buffer->get_start_iter()->has_tag($tag), true);
+$expect('create_tag() without a name', get_class($buffer->create_tag()), 'GtkTextTag');
+// each one must throw, not be skipped or crash
+$calls = [
+    'a second tag named 66' => fn () => $buffer->create_tag('66'),
+    'an unknown property' => fn () => $buffer->create_tag('unknown', ['no-such-property' => 1]),
+];
+foreach ($calls as $what => $call) {
+    try {
+        $call();
+        echo "BUG: create_tag() accepted $what\n";
+        $failed = true;
+    } catch (Exception $e) {
+    }
+}
+
+if ($failed) {
+    exit(1);
+}
+echo "OK\n";
