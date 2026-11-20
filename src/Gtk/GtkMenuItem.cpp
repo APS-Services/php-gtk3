@@ -47,9 +47,7 @@ Php::Value GtkMenuItem_::new_with_mnemonic(Php::Parameters &parameters) {
 }
 
 Php::Value GtkMenuItem_::get_label() {
-  std::string ret = gtk_menu_item_get_label(GTK_MENU_ITEM(instance));
-
-  return ret;
+  return gtk_menu_item_get_label(GTK_MENU_ITEM(instance));
 }
 
 void GtkMenuItem_::set_label(Php::Parameters &parameters) {

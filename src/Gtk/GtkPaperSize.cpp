@@ -133,9 +133,7 @@ Php::Value GtkPaperSize_::get_display_name() {
 }
 
 Php::Value GtkPaperSize_::get_ppd_name() {
-  std::string ret = gtk_paper_size_get_ppd_name(instance);
-
-  return ret;
+  return gtk_paper_size_get_ppd_name(instance);
 }
 
 Php::Value GtkPaperSize_::get_width(Php::Parameters &parameters) {
