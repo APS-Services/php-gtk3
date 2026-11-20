@@ -45,6 +45,7 @@ $expect('create_tag() without a name', get_class($buffer->create_tag()), 'GtkTex
 $calls = [
     'a second tag named 66' => fn () => $buffer->create_tag('66'),
     'an unknown property' => fn () => $buffer->create_tag('unknown', ['no-such-property' => 1]),
+    'properties that are no array' => fn () => $buffer->create_tag('loose', 'foreground'),
 ];
 foreach ($calls as $what => $call) {
     try {
