@@ -786,6 +786,9 @@ PHPCPP_EXPORT void *get_module() {
   gdkevent.property("button", nullptr);
   gdkevent.property("key", nullptr);
   gdkevent.property("focus_change", nullptr);
+  gdkevent.property("scroll", nullptr);
+  gdkevent.property("motion", nullptr);
+  gdkevent.property("crossing", nullptr);
   gdkevent.property("touch", nullptr);
   gdkevent.property("configure", nullptr);
 
