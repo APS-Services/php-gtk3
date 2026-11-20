@@ -27,11 +27,13 @@ Php::Value GtkColorButton_::new_with_color() {
 }
 
 Php::Value GtkColorButton_::new_with_rgba(Php::Parameters &parameters) {
-  GdkRGBA rgba;
-  if (!parameters.empty()) {
-    Php::Value object_rgba = parameters[0];
-    GdkRGBA_ *phpgtk_rgba = (GdkRGBA_ *)object_rgba.implementation();
-    rgba = phpgtk_rgba->get_instance();
+  // an unparsable color string leaves the button black, as gtk_color_button_new() does
+  GdkRGBA rgba = {0, 0, 0, 1};
+  if (!phpgtk_to_rgba(parameters.empty() ? Php::Value() : parameters[0], rgba,
+                      "GtkColorButton::new_with_rgba") &&
+      phpgtk_exception_pending()) {
+    // an error handler turned the warning into an exception: let that one through
+    return {};
   }
 
   gpointer *ret = (gpointer *)gtk_color_button_new_with_rgba(&rgba);
@@ -87,13 +89,10 @@ void GtkColorButton_::get_alpha(Php::Parameters &parameters) {
 
 void GtkColorButton_::set_rgba(Php::Parameters &parameters) {
   GdkRGBA color;
-  if (!parameters.empty()) {
-    Php::Value object_color = parameters[0];
-    GdkRGBA_ *phpgtk_color = (GdkRGBA_ *)object_color.implementation();
-    color = phpgtk_color->get_instance();
+  if (phpgtk_to_rgba(parameters.empty() ? Php::Value() : parameters[0], color,
+                     "GtkColorButton::set_rgba")) {
+    gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(instance), &color);
   }
-
-  gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(instance), &color);
 }
 
 Php::Value GtkColorButton_::get_rgba(Php::Parameters &parameters) {

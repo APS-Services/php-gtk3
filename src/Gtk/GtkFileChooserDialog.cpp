@@ -120,9 +120,7 @@ void GtkFileChooserDialog_::set_current_name(Php::Parameters &parameters) {
 }
 
 Php::Value GtkFileChooserDialog_::get_current_name() {
-  std::string ret = gtk_file_chooser_get_current_name(GTK_FILE_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_file_chooser_get_current_name(GTK_FILE_CHOOSER(instance)));
 }
 
 Php::Value GtkFileChooserDialog_::set_filename(Php::Parameters &parameters) {
@@ -135,9 +133,7 @@ Php::Value GtkFileChooserDialog_::set_filename(Php::Parameters &parameters) {
 }
 
 Php::Value GtkFileChooserDialog_::get_filename() {
-  std::string ret = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(instance)));
 }
 
 Php::Value GtkFileChooserDialog_::select_filename(Php::Parameters &parameters) {
@@ -173,6 +169,8 @@ Php::Value GtkFileChooserDialog_::get_filenames() {
     ret_arr[index] = (char *)item->data;
   }
 
+  g_slist_free_full(ret, g_free);
+
   return ret_arr;
 }
 
@@ -186,15 +184,11 @@ Php::Value GtkFileChooserDialog_::set_current_folder(Php::Parameters &parameters
 }
 
 Php::Value GtkFileChooserDialog_::get_current_folder() {
-  std::string ret = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(instance)));
 }
 
 Php::Value GtkFileChooserDialog_::get_uri() {
-  std::string ret = gtk_file_chooser_get_preview_filename(GTK_FILE_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(instance)));
 }
 
 Php::Value GtkFileChooserDialog_::set_uri(Php::Parameters &parameters) {
@@ -231,6 +225,8 @@ Php::Value GtkFileChooserDialog_::get_uris() {
     ret_arr[index] = (char *)item->data;
   }
 
+  g_slist_free_full(ret, g_free);
+
   return ret_arr;
 }
 
@@ -244,9 +240,7 @@ Php::Value GtkFileChooserDialog_::set_current_folder_uri(Php::Parameters &parame
 }
 
 Php::Value GtkFileChooserDialog_::get_current_folder_uri() {
-  std::string s_uri = gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(instance));
-
-  return s_uri.c_str();
+  return phpgtk_take_string(gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(instance)));
 }
 
 void GtkFileChooserDialog_::set_preview_widget(Php::Parameters &parameters) {
@@ -294,9 +288,7 @@ Php::Value GtkFileChooserDialog_::get_use_preview_label() {
 }
 
 Php::Value GtkFileChooserDialog_::get_preview_uri() {
-  std::string ret = gtk_file_chooser_get_preview_uri(GTK_FILE_CHOOSER(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_file_chooser_get_preview_uri(GTK_FILE_CHOOSER(instance)));
 }
 
 void GtkFileChooserDialog_::set_extra_widget(Php::Parameters &parameters) {

@@ -274,10 +274,8 @@ Php::Value GtkTextBuffer_::get_text(Php::Parameters &parameters) {
 
   gboolean include_hidden_chars = (gboolean)parameters[2];
 
-  std::string ret =
-      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(instance), &start, &end, include_hidden_chars);
-
-  return ret;
+  return phpgtk_take_string(
+      gtk_text_buffer_get_text(GTK_TEXT_BUFFER(instance), &start, &end, include_hidden_chars));
 }
 
 Php::Value GtkTextBuffer_::get_slice(Php::Parameters &parameters) {
@@ -291,10 +289,8 @@ Php::Value GtkTextBuffer_::get_slice(Php::Parameters &parameters) {
 
   gboolean include_hidden_chars = (gboolean)parameters[2];
 
-  std::string ret =
-      gtk_text_buffer_get_slice(GTK_TEXT_BUFFER(instance), &start, &end, include_hidden_chars);
-
-  return ret;
+  return phpgtk_take_string(
+      gtk_text_buffer_get_slice(GTK_TEXT_BUFFER(instance), &start, &end, include_hidden_chars));
 }
 
 void GtkTextBuffer_::insert_pixbuf(Php::Parameters &parameters) {

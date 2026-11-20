@@ -182,19 +182,15 @@ void GtkApplication_::remove_accelerator(Php::Parameters &parameters) {
 }
 
 Php::Value GtkApplication_::list_action_descriptions() {
-  std::string ret = *gtk_application_list_action_descriptions(GTK_APPLICATION(instance));
-
-  return ret;
+  return phpgtk_take_strv(gtk_application_list_action_descriptions(GTK_APPLICATION(instance)));
 }
 
 Php::Value GtkApplication_::get_accels_for_action(Php::Parameters &parameters) {
   std::string s_detailed_action_name = parameters[0];
   gchar *detailed_action_name = (gchar *)s_detailed_action_name.c_str();
 
-  std::string ret =
-      *gtk_application_get_accels_for_action(GTK_APPLICATION(instance), detailed_action_name);
-
-  return ret;
+  return phpgtk_take_strv(
+      gtk_application_get_accels_for_action(GTK_APPLICATION(instance), detailed_action_name));
 }
 
 void GtkApplication_::set_accels_for_action(Php::Parameters &parameters) {

@@ -1,6 +1,8 @@
 
 #include "GtkTreeModel.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Constructor
  */
@@ -90,18 +92,16 @@ Php::Value GtkTreeModel_::get_value(Php::Parameters &parameters) {
       return (int64_t)g_value_get_long(&value);
     }
     case G_TYPE_ULONG: {
-      return (int64_t)g_value_get_int64(&value);
+      return (int64_t)g_value_get_ulong(&value);
     }
     case G_TYPE_FLOAT: {
       return g_value_get_float(&value);
     }
     case G_TYPE_STRING: {
-      const gchar *cstr = g_value_get_string(&value);
-      if (cstr != nullptr) {
-        std::string ret = std::string(cstr);
-        return ret;
-      }
-      return {nullptr};
+      // gtk_tree_model_get_value() hands over a copy of the string; null stays null
+      Php::Value ret = g_value_get_string(&value);
+      g_value_unset(&value);
+      return ret;
     }
     case G_TYPE_OBJECT: {
       GObject *object = G_OBJECT(g_value_get_object(&value));
@@ -130,8 +130,10 @@ Php::Value GtkTreeModel_::get_path(Php::Parameters &parameters) {
   GtkTreeIter iter = phpgtk_iter->get_instance();
 
   GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(model), &iter);
+  Php::Value ret = phpgtk_take_string(gtk_tree_path_to_string(path));
+  gtk_tree_path_free(path);
 
-  return gtk_tree_path_to_string(path);
+  return ret;
 }
 
 Php::Value GtkTreeModel_::get_iter_from_string(Php::Parameters &parameters) {

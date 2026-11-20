@@ -63,6 +63,8 @@ Php::Value GtkIconTheme_::list_icons(Php::Parameters &parameters) {
     ret_arr[index] = (char *)item->data;
   }
 
+  g_list_free_full(ret, g_free);
+
   return ret_arr;
 }
 

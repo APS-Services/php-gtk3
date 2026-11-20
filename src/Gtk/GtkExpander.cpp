@@ -63,9 +63,7 @@ void GtkExpander_::set_label(Php::Parameters &parameters) {
 }
 
 Php::Value GtkExpander_::get_label() {
-  std::string ret = gtk_expander_get_label(GTK_EXPANDER(instance));
-
-  return ret;
+  return gtk_expander_get_label(GTK_EXPANDER(instance));
 }
 
 void GtkExpander_::set_use_underline(Php::Parameters &parameters) {

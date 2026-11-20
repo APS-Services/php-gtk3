@@ -27,9 +27,7 @@ void GtkToolButton_::set_label(Php::Parameters &parameters) {
 }
 
 Php::Value GtkToolButton_::get_label() {
-  std::string ret = gtk_tool_button_get_label(GTK_TOOL_BUTTON(instance));
-
-  return ret;
+  return gtk_tool_button_get_label(GTK_TOOL_BUTTON(instance));
 }
 
 void GtkToolButton_::set_use_underline(Php::Parameters &parameters) {
@@ -52,9 +50,7 @@ void GtkToolButton_::set_icon_name(Php::Parameters &parameters) {
 }
 
 Php::Value GtkToolButton_::get_icon_name() {
-  std::string ret = gtk_tool_button_get_icon_name(GTK_TOOL_BUTTON(instance));
-
-  return ret;
+  return gtk_tool_button_get_icon_name(GTK_TOOL_BUTTON(instance));
 }
 
 void GtkToolButton_::set_icon_widget(Php::Parameters &parameters) {

@@ -56,9 +56,7 @@ void GtkFrame_::set_shadow_type(Php::Parameters &parameters) {
 }
 
 Php::Value GtkFrame_::get_label() {
-  std::string ret = gtk_frame_get_label(GTK_FRAME(instance));
-
-  return ret;
+  return gtk_frame_get_label(GTK_FRAME(instance));
 }
 
 Php::Value GtkFrame_::get_label_align(Php::Parameters &parameters) {

@@ -1,6 +1,8 @@
 
 #include "GdkPixbufFormat.h"
 
+#include "../../php-gtk.h"
+
 /**
  * Constructor
  */
@@ -28,6 +30,6 @@ void GdkPixbufFormat_::set_instance(GdkPixbufFormat *pixbuf_format) {
   Php::Value self(this);
 
   // initialize a public property
-  self["mime_types"] = gdk_pixbuf_format_get_name(pixbuf_format);
+  self["mime_types"] = phpgtk_take_string(gdk_pixbuf_format_get_name(pixbuf_format));
   // self["any"] = Php::Object("GdkEventAny", &event->any);
 }

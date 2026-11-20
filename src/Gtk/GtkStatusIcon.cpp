@@ -223,15 +223,11 @@ Php::Value GtkStatusIcon_::get_has_tooltip() {
 }
 
 Php::Value GtkStatusIcon_::get_tooltip_text() {
-  gchar *ret = gtk_status_icon_get_tooltip_text(GTK_STATUS_ICON(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_status_icon_get_tooltip_text(GTK_STATUS_ICON(instance)));
 }
 
 Php::Value GtkStatusIcon_::get_tooltip_markup() {
-  gchar *ret = gtk_status_icon_get_tooltip_markup(GTK_STATUS_ICON(instance));
-
-  return ret;
+  return phpgtk_take_string(gtk_status_icon_get_tooltip_markup(GTK_STATUS_ICON(instance)));
 }
 
 /*

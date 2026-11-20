@@ -100,9 +100,7 @@ void GtkMenuItem_::set_accel_path(Php::Parameters &parameters) {
 }
 
 Php::Value GtkMenuItem_::get_accel_path() {
-  std::string ret = gtk_menu_item_get_accel_path(GTK_MENU_ITEM(instance));
-
-  return ret;
+  return gtk_menu_item_get_accel_path(GTK_MENU_ITEM(instance));
 }
 
 void GtkMenuItem_::select() {
