@@ -108,25 +108,20 @@ $calls = [
     'get_value()' => [fn () => $store->get_value($long, 0), 200000],
 ];
 $measure = function (callable $call, int $rounds) use ($peak): int {
-    for ($i = 0; $i < 1000; $i++) {
-        $call();
-    }
     $before = $peak();
     for ($i = 0; $i < $rounds; $i++) {
         $call();
     }
     return $peak() - $before;
 };
-// the calls themselves, with no string GTK hands over: php.exe on Windows CI grew by some 11 MB
-// per 1000000 of them, so only what a check keeps on top of that counts
-$label = new GtkLabel('kept by GTK');
-$base = $measure(fn () => $label->get_text(), 1000000);
-echo 'INFO: 1000000 calls without an owned string kept ' . round($base / 1048576, 1) . " MB\n";
 foreach ($calls as $what => [$call, $rounds]) {
-    $grown = $measure($call, $rounds) - $base * $rounds / 1000000;
-    // leaking, each keeps some 30-50 MB on top; freed, about nothing
+    // a leak grows again on a second pass; growth only the first pass shows is set-up, not a leak
+    $first = $measure($call, $rounds);
+    $grown = $measure($call, $rounds);
+    echo "INFO: $rounds $what calls: " . round($first / 1048576, 1) . ' MB, then ' . round($grown / 1048576, 1) . " MB\n";
+    // leaking, each keeps some 30-50 MB a pass; freed, about nothing
     if ($grown > 4 * 1024 * 1024) {
-        echo "BUG: $rounds $what calls kept " . round($grown / 1048576, 1) . " MB more than calls without an owned string\n";
+        echo "BUG: $rounds $what calls kept " . round($grown / 1048576, 1) . " MB\n";
         $failed = true;
     }
 }
