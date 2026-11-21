@@ -28,10 +28,10 @@ If something here appears incomplete or inconsistent with the current tree, you 
   When in doubt about behavior or signatures, consult the GTK 3.24 C API in that repository or its associated documentation.
 
 **PHP compatibility goal:**  
-Code should remain compatible with **PHP 7.4 and all newer PHP versions** that PHP-CPP supports. When you make changes:
+Code should remain compatible with **PHP 8.4 and all newer PHP versions** that PHP-CPP supports (PHP 7.4 is no longer supported). When you make changes:
 
 - Avoid relying on PHP API features that are version-specific unless guarded appropriately.
-- Keep the extension’s behavior consistent across PHP 7.4 and newer PHP 8.x releases.
+- Keep the extension’s behavior consistent across PHP 8.4 and newer releases.
 
 ---
 
@@ -128,9 +128,9 @@ When implementing new functionality or fixing bugs in existing bindings:
      - Respect GTK reference counting (`g_object_ref`, `g_object_unref`, etc.) when needed.
      - Ensure that PHP object lifetimes do not lead to leaks or premature frees of GTK objects.
 
-5. **Compatibility with PHP 7.4 and newer:**
-   - Use APIs and patterns supported by PHP-CPP across both PHP 7.4 and newer PHP 8.x versions.
-   - Avoid relying on PHP-internal behavior that changed between PHP 7 and PHP 8.
+5. **Compatibility with PHP 8.4 and newer:**
+   - Use APIs and patterns supported by PHP-CPP across PHP 8.4 and newer versions.
+   - Avoid relying on PHP-internal behavior that changes between PHP 8.x releases.
    - When behavior differences are unavoidable, strive for **consistent observable behavior in PHP**.
 
 ### 3.2. Cross-cutting concerns
@@ -182,7 +182,7 @@ When receiving a task related to this repository:
    - Modify `main.cpp`/`php-gtk.cpp`/`php-gtk.h` only when you need to update registration or extension metadata.
    - Use **GTK 3.24.48** in the upstream GTK repository as your authoritative behavioral reference.
 
-3. **Preserve compatibility with PHP 7.4 and all newer PHP versions:**
+3. **Preserve compatibility with PHP 8.4 and all newer PHP versions:**
 
    - Keep PHP-facing APIs stable and predictable.
    - Avoid introducing behaviors that rely on undefined or version-specific differences in PHP internals.

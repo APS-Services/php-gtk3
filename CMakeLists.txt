@@ -8,7 +8,7 @@
 #
 # Inputs (cache variables):
 #   PHP_DEVEL_DIR   unpacked PHP "devel pack" from windows.php.net
-#                   (include/, lib/php7.lib or php8.lib). Its VS/NTS/x64
+#                   (include/, lib/php8.lib). Its VS/NTS/x64
 #                   flavour decides which php.exe the DLL loads into, and the
 #                   toolset (-T) must not be newer than that Visual Studio's.
 #   PHPCPP_DIR      PHP-CPP source checkout. Its zend/ and common/ sources are
@@ -47,7 +47,7 @@ foreach(var PHP_DEVEL_DIR PHPCPP_DIR)
         message(FATAL_ERROR "${var} must point to an existing directory (got '${${var}}')")
     endif()
 endforeach()
-# php7.lib for PHP 7.x, php8.lib for 8.x.
+# lib/php8.lib for PHP 8.x.
 file(GLOB php_lib "${PHP_DEVEL_DIR}/lib/php[0-9].lib")
 if(NOT php_lib)
     message(FATAL_ERROR "No lib/php<N>.lib under ${PHP_DEVEL_DIR}: PHP_DEVEL_DIR must be a PHP devel pack")
