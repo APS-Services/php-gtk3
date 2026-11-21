@@ -6,7 +6,7 @@ if [ "$EUID" -ne 0 ]; then
     exec sudo PHPCPP_BASE="$PHPCPP_BASE" "$0" "$@"
 fi
 
-# Base directory containing per-version libphpcpp folders (e.g. php7.4/, php8.4/)
+# Base directory containing per-version libphpcpp folders (e.g. php8.4/)
 # Override by setting PHPCPP_BASE before running, e.g.:
 #   PHPCPP_BASE=/custom/path ./build-all.sh
 PHPCPP_BASE="${PHPCPP_BASE:-/mnt/share/dev/code/PHP-CPP/dist}"
@@ -15,7 +15,6 @@ PHPCPP_BASE="${PHPCPP_BASE:-/mnt/share/dev/code/PHP-CPP/dist}"
 # so_dest: system extension dir where php8.x binary loads extensions from
 # enabled: 1=build by default, 0=skip by default
 BUILDS=(
-    "7.4:/opt/php/php-7.4.33/bin/php-config:/etc/php/7.4/mods-available:/usr/lib/php/20190902:1:1"
    # "8.2:/opt/php/php-8.2.29/bin/php-config:/etc/php/8.2/mods-available:/usr/lib/php/20220829:1:0"
    # "8.3:/opt/php/php8.3/bin/php-config:/etc/php/8.3/mods-available:/usr/lib/php/20230831:1:0"
     "8.4:/opt/php/php-8.4.14/bin/php-config:/etc/php/8.4/mods-available:/usr/lib/php/20240924:0:1"

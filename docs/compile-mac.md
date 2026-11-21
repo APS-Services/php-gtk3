@@ -10,11 +10,11 @@ $ export PATH="/usr/local/opt/bison/bin:$PATH"
 
 $ brew install autoconf automake libtool re2c bison flex git
 
-$ git clone -b PHP-7.4 https://github.com/php/php-src.git php7.4
+$ git clone -b PHP-8.4 https://github.com/php/php-src.git php8.4
 
 $ ./buildconf --force
 
-$ ./configure --disable-all --enable-cli --prefix=/opt/php7.4
+$ ./configure --disable-all --enable-cli --prefix=/opt/php8.4
 
 $ make
 

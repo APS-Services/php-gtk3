@@ -53,14 +53,13 @@ env:
 jobs:
   build:
     name: php_gtk3.dll for PHP ${{ matrix.php }}
-    runs-on: ${{ matrix.runner }}
+    runs-on: windows-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         # php.exe refuses a module linked with a newer MSVC than its own core
-        # (8.4: "linked with 14.51, but the core is linked with 14.44"; 7.4
-        # even compares only the tens digit of the minor version), so each
+        # (8.4: "linked with 14.51, but the core is linked with 14.44"), so each
         # release is built with the toolset of the Visual Studio it came from.
         include:
           # 8.5 is what the PHP_8.5_GTK3 runtime ships. Still VS17: php8.dll of
@@ -69,22 +68,12 @@ jobs:
           - php: "8.5.12-1"
             vs: vs17
             toolset: v143
-            runner: windows-latest
           # 8.4 is what the PHP_8.4_GTK3 runtime ships (VS17 = toolset 14.44).
           # 8.4.27 fixes CVE-2026-109618 and CVE-2026-109619; "-1" is the Windows
           # rebuild with Brotli 1.2.1 (CVE-2026-111497), same PHP source.
           - php: "8.4.27-1"
             vs: vs17
             toolset: v143
-            runner: windows-latest
-          # 7.4 is what the Freeclimber servers still run (VC15 = toolset
-          # 14.16). No runner image has v141 any more; VS 2022 on
-          # windows-2022 can still install it, VS 2026 cannot.
-          - php: "7.4.33"
-            vs: vc15
-            toolset: v141
-            runner: windows-2022
-            toolset-component: Microsoft.VisualStudio.Component.VC.v141.x86.x64
     defaults:
       run:
         shell: pwsh
@@ -108,22 +97,6 @@ jobs:
           if ($sha -notmatch '^[0-9a-f]{40}$') { throw "could not read the PHP-CPP commit, got '$sha'" }
           "PHPCPP_SHA=$sha" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           Write-Host "PHP-CPP at $sha"
-
-      # Adds the toolset to the runner's Visual Studio; takes a few minutes.
-      - name: Install the ${{ matrix.toolset }} toolset
-        if: matrix.toolset-component != ''
-        run: |
-          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
-          $vs = & "$installer\vswhere.exe" -latest -property installationPath
-          if (& "$installer\vswhere.exe" -latest -requires '${{ matrix.toolset-component }}' -property installationPath) {
-            Write-Host "${{ matrix.toolset-component }} is already installed"
-          } else {
-            $p = Start-Process -Wait -PassThru "$installer\setup.exe" -ArgumentList @(
-              'modify', '--installPath', "`"$vs`"", '--add', '${{ matrix.toolset-component }}',
-              '--quiet', '--norestart', '--nocache')
-            if ($p.ExitCode -notin 0, 3010) { throw "Visual Studio installer exited with $($p.ExitCode)" }
-          }
-          Write-Host "MSVC toolsets: $((Get-ChildItem "$vs\VC\Tools\MSVC").Name -join ', ')"
 
       - name: Install GTK from MSYS2 (UCRT64)
         id: msys2
@@ -233,10 +206,7 @@ jobs:
         run: |
           $deps = "$env:RUNNER_TEMP\deps"
           $env:PATH = '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin;' + $env:PATH
-          $cases = @(@{ Mode = 'probe'; Status = 0; Text = 'OK' })
-          # The fatal error of a call to a missing method is only checked on PHP 8: on 7.4 (vc15)
-          # php.exe sometimes aborts (0xC0000409) after printing it, and 7.4 ships no till.
-          if ('${{ matrix.php }}' -notlike '7.*') { $cases += @{ Mode = 'call'; Status = 255; Text = 'Undefined method attachEvents' } }
+          $cases = @(@{ Mode = 'probe'; Status = 0; Text = 'OK' }, @{ Mode = 'call'; Status = 255; Text = 'Undefined method attachEvents' })
           foreach ($case in $cases) {
             $out = "$env:RUNNER_TEMP\lookup-$($case.Mode).txt"
             $p = Start-Process -FilePath "$deps\php\php.exe" -PassThru -NoNewWindow -RedirectStandardOutput $out `

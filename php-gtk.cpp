@@ -82,12 +82,7 @@ void phpgtk_report_callback_exception(const std::string &message, long int code,
  * unwind exception is still pending in EG(exception).
  */
 bool phpgtk_exit_pending() {
-#if PHP_VERSION_ID >= 80000
   return EG(exception) != nullptr && zend_is_unwind_exit(EG(exception));
-#else
-  // Before PHP 8, exit() bailed out directly and never reached a catch
-  return false;
-#endif
 }
 
 /**
