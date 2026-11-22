@@ -63,15 +63,18 @@ jobs:
         # release is built with the toolset of the Visual Studio it came from.
         include:
           # 8.5 is what the PHP_8.5_GTK3 runtime ships. Still VS17: php8.dll of
-          # 8.5.12-1 is linked with 14.44 (PE header), like 8.4.27-1, and the
+          # 8.5.13 is linked with 14.44 (PE header), like 8.4.28, and the
           # v143 toolset ends at 14.44 (14.44.35207 on windows-2025-vs2026).
-          - php: "8.5.12-1"
+          # 8.5.13 and 8.4.28 (19 Nov 2026) are security releases (18 and 14
+          # CVEs, among them FFI, streams and the CLI).
+          - php: "8.5.13"
             vs: vs17
             toolset: v143
           # 8.4 is what the PHP_8.4_GTK3 runtime ships (VS17 = toolset 14.44).
-          # 8.4.27 fixes CVE-2026-109618 and CVE-2026-109619; "-1" is the Windows
-          # rebuild with Brotli 1.2.1 (CVE-2026-111497), same PHP source.
-          - php: "8.4.27-1"
+          # A Windows rebuild of the same PHP source carries a "-N" suffix
+          # (8.4.27-1 was one, with Brotli 1.2.1); the matrix takes the name as
+          # the download has it.
+          - php: "8.4.28"
             vs: vs17
             toolset: v143
     defaults:
