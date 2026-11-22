@@ -3,7 +3,8 @@ name: Windows build
 # Builds php_gtk3.dll for the official Windows PHP releases (NTS, x64) with
 # Visual Studio, following docs/compile-windows.md: PHP headers from the devel
 # pack on windows.php.net, GTK from MSYS2 (UCRT64, the environment the
-# PHP_8.4_GTK3 and PHP_8.5_GTK3 runtimes ship), WebView2 from NuGet, PHP-CPP
+# PHP_8.4_GTK3, PHP_8.5_GTK3 and PHP_8.6_GTK3 runtimes ship), WebView2 from
+# NuGet, PHP-CPP
 # compiled in.
 # The build itself is CMakeLists.txt.
 #
@@ -13,7 +14,7 @@ name: Windows build
 # could otherwise ask for it and run on a VM that reaches /srv and MariaDB.)
 # The artifact is the bare extension; the redistributable runtime (php.exe,
 # GTK DLLs, themes) is assembled by the "Update bundle" workflow of
-# PHP_8.4_GTK3 and of PHP_8.5_GTK3, each taking the artifact of its PHP minor
+# PHP_8.4_GTK3, PHP_8.5_GTK3 and PHP_8.6_GTK3, each taking the artifact of its PHP minor
 # version from the newest successful build of master when it is started.
 
 on:
@@ -62,6 +63,14 @@ jobs:
         # (8.4: "linked with 14.51, but the core is linked with 14.44"), so each
         # release is built with the toolset of the Visual Studio it came from.
         include:
+          # 8.6 is for the PHP_8.6_GTK3 runtime, the first minor built with
+          # Visual Studio 2026: php8.dll of 8.6.0 is linked with 14.51, which is
+          # what v145 gives on windows-2025-vs2026 today (the 14.51 above). When
+          # the image moves to a newer v145, php.exe refuses the DLL and the
+          # load step below fails, until a PHP 8.6 release is linked with it too.
+          - php: "8.6.0"
+            vs: vs18
+            toolset: v145
           # 8.5 is what the PHP_8.5_GTK3 runtime ships. Still VS17: php8.dll of
           # 8.5.12-1 is linked with 14.44 (PE header), like 8.4.27-1, and the
           # v143 toolset ends at 14.44 (14.44.35207 on windows-2025-vs2026).
