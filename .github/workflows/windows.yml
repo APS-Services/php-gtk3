@@ -63,10 +63,10 @@ jobs:
         # release is built with the toolset of the Visual Studio it came from.
         include:
           # 8.5 is what the PHP_8.5_GTK3 runtime ships. Still VS17: php8.dll of
-          # 8.5.13 is linked with 14.44 (PE header), like 8.4.28, and the
+          # the 8.5 and 8.4 releases is linked with 14.44 (PE header), and the
           # v143 toolset ends at 14.44 (14.44.35207 on windows-2025-vs2026).
-          # 8.5.13 and 8.4.28 (19 Nov 2026) are security releases (18 and 14
-          # CVEs, among them FFI, streams and the CLI).
+          # Patch releases are often security releases: the runtimes only get
+          # one once its line here has moved.
           - php: "8.5.13"
             vs: vs17
             toolset: v143
