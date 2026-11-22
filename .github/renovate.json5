@@ -1,0 +1,46 @@
+// Renovate, run by the configs repo's .github/workflows/renovate.yml as the organisation's GitHub App, so the
+// PRs get CI. Only the PHP releases of the Windows build: the PHP_8.x_GTK3 runtimes take their PHP release
+// from this workflow's artifact name, so a PHP patch release reaches them only once the matrix moves.
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended", ":semanticCommits"],
+  timezone: "UTC",
+  // PHP patch releases are mostly security releases: any day, as soon as they are out.
+  schedule: ["at any time"],
+  prHourlyLimit: 0,
+  enabledManagers: ["custom.regex"],
+  customDatasources: {
+    // windows.php.net's index of the newest release of each minor. The version comes from the zip's name,
+    // which carries the "-N" of a Windows rebuild (8.4.27-1) that "version" leaves out.
+    "php-windows": {
+      defaultRegistryUrlTemplate: "https://downloads.php.net/~windows/releases/releases.json",
+      format: "json",
+      transformTemplates: [
+        '{"releases": [$each($, function($v) { $v.*[$contains(zip.path, /^php-[0-9.]+(-[0-9]+)?-nts-Win32-vs[0-9]+-x64\\.zip$/)].{"version": $match(zip.path, /^php-([0-9.]+(?:-[0-9]+)?)-nts-/).groups[0], "releaseTimestamp": mtime} })]}',
+      ],
+    },
+  },
+  customManagers: [
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/workflows/windows\\.yml$/"],
+      matchStrings: ['- php: "(?<currentValue>\\d+\\.\\d+\\.\\d+(?:-\\d+)?)"'],
+      depNameTemplate: "php-windows",
+      datasourceTemplate: "custom.php-windows",
+      // build: a Windows rebuild of the same source (8.4.27 -> 8.4.27-1) is newer, not a pre-release
+      versioningTemplate: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:-(?<build>\\d+))?$",
+    },
+  ],
+  packageRules: [
+    {
+      // Each matrix line stays on its minor: a new minor is a new runtime repository, not an update.
+      matchDatasources: ["custom.php-windows"],
+      separateMinorPatch: true,
+    },
+    {
+      matchDatasources: ["custom.php-windows"],
+      matchUpdateTypes: ["major", "minor"],
+      enabled: false,
+    },
+  ],
+}
