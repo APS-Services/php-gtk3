@@ -59,5 +59,10 @@
       groupName: "github actions",
       schedule: ["before 7am on monday"],
     },
+    {
+      // The runner images stay where they are: codechecks.yml needs 24.04 (26.04 has no libgladeui-dev).
+      matchDatasources: ["github-runners"],
+      enabled: false,
+    },
   ],
 }
