@@ -1,6 +1,7 @@
 // Renovate, run by the configs repo's .github/workflows/renovate.yml as the organisation's GitHub App, so the
-// PRs get CI. Only the PHP releases of the Windows build: the PHP_8.x_GTK3 runtimes take their PHP release
+// PRs get CI. The PHP releases of the Windows build: the PHP_8.x_GTK3 runtimes take their PHP release
 // from this workflow's artifact name, so a PHP patch release reaches them only once the matrix moves.
+// Also the WebView2 SDK of that build, and the GitHub Actions (weekly, in one PR).
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended", ":semanticCommits"],
@@ -8,7 +9,7 @@
   // PHP patch releases are mostly security releases: any day, as soon as they are out.
   schedule: ["at any time"],
   prHourlyLimit: 0,
-  enabledManagers: ["custom.regex"],
+  enabledManagers: ["custom.regex", "github-actions"],
   customDatasources: {
     // windows.php.net's index of the newest release of each minor. The version comes from the zip's name,
     // which carries the "-N" of a Windows rebuild (8.4.27-1) that "version" leaves out.
@@ -30,6 +31,17 @@
       // build: a Windows rebuild of the same source (8.4.27 -> 8.4.27-1) is newer, not a pre-release
       versioningTemplate: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:-(?<build>\\d+))?$",
     },
+    {
+      // The WebView2 SDK the Windows build compiles php_gtk3.dll's WebView against (windows.yml env).
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/workflows/windows\\.yml$/"],
+      matchStrings: ["WEBVIEW2_VERSION: (?<currentValue>\\d+\\.\\d+\\.\\d+\\.\\d+)"],
+      depNameTemplate: "Microsoft.Web.WebView2",
+      datasourceTemplate: "nuget",
+      // NuGet versioning reads a bare version as "this or newer", so it would never propose one; four
+      // numbers only, so the SDK's "-prerelease" builds are not versions at all
+      versioningTemplate: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
+    },
   ],
   packageRules: [
     {
@@ -41,6 +53,11 @@
       matchDatasources: ["custom.php-windows"],
       matchUpdateTypes: ["major", "minor"],
       enabled: false,
+    },
+    {
+      matchManagers: ["github-actions"],
+      groupName: "github actions",
+      schedule: ["before 7am on monday"],
     },
   ],
 }
