@@ -49,7 +49,7 @@ env:
   # ref to move back to. BUILD-INFO.txt records the commit each DLL was
   # built from, which is what makes a build reproducible after the fact.
   PHPCPP_REPO: APS-Services/PHP-CPP
-  WEBVIEW2_VERSION: 1.0.4191.47
+  WEBVIEW2_VERSION: 1.0.4370.26
 
 jobs:
   build:
