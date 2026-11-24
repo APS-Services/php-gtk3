@@ -47,7 +47,7 @@ This will create and install libphpcpp.so.2.3
 Clone source
 
 ```sh
-:$ git clone https://github.com/apss-pohl/PHP-CPP.git
+:$ git clone https://github.com/APS-Services/PHP-CPP.git
 :$ cd PHP-CPP
 ```
 

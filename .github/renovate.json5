@@ -23,6 +23,17 @@
   },
   customManagers: [
     {
+      // The PHP-CPP headers codechecks.yml analyses against: a commit of our fork's default branch (master),
+      // the one windows.yml builds from unpinned. A commit has no release date and this config sets no
+      // minimum release age, so no rule is needed for that.
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/workflows/codechecks\\.yml$/"],
+      matchStrings: ["git clone (?<packageName>https://github\\.com/APS-Services/PHP-CPP)\\.git [^\\n]+\\n\\s+git -C [^ ]+ checkout (?<currentDigest>[0-9a-f]{40})"],
+      depNameTemplate: "APS-Services/PHP-CPP",
+      currentValueTemplate: "master",
+      datasourceTemplate: "git-refs",
+    },
+    {
       customType: "regex",
       managerFilePatterns: ["/^\\.github/workflows/windows\\.yml$/"],
       matchStrings: ['- php: "(?<currentValue>\\d+\\.\\d+\\.\\d+(?:-\\d+)?)"'],
@@ -57,6 +68,11 @@
     {
       matchManagers: ["github-actions"],
       groupName: "github actions",
+      schedule: ["before 7am on monday"],
+    },
+    {
+      // The headers' pin: weekly is enough, the build itself always takes the fork's newest commit.
+      matchDepNames: ["APS-Services/PHP-CPP"],
       schedule: ["before 7am on monday"],
     },
     {
