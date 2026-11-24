@@ -40,12 +40,14 @@ jobs:
       # clone's include/ directory doesn't match that layout, so replicate it
       # here without needing PHP-CPP's own build/configure.
       #
-      # Pinned to a commit so analysis results are reproducible and don't
-      # shift when the fork's default branch moves.
+      # Our fork, the one windows.yml builds php_gtk3.dll against, so the
+      # analysis sees the headers the DLL is compiled with. Pinned to a commit
+      # so results are reproducible and don't shift when the fork's default
+      # branch moves; Renovate moves the pin (.github/renovate.json5).
       - name: Fetch PHP-CPP public headers
         run: |
-          git clone https://github.com/fast-debug/PHP-CPP.git /tmp/phpcpp-src
-          git -C /tmp/phpcpp-src checkout 640d12b1fee231e73b4dbbb8b0e10284bfbfb170
+          git clone https://github.com/APS-Services/PHP-CPP.git /tmp/phpcpp-src
+          git -C /tmp/phpcpp-src checkout 1bb3ae7b45d9e3f88d835559d56e2404d33ae650
           mkdir -p /tmp/PHP-CPP/phpcpp
           cp /tmp/phpcpp-src/phpcpp.h /tmp/PHP-CPP/
           cp /tmp/phpcpp-src/include/*.h /tmp/PHP-CPP/phpcpp/
