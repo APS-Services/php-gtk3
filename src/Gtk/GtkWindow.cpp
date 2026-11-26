@@ -186,6 +186,10 @@ void GtkWindow_::set_transient_for(Php::Parameters &parameters) {
  */
 Php::Value GtkWindow_::get_transient_for() {
   GtkWindow *returnedWindow = gtk_window_get_transient_for(GTK_WINDOW(instance));
+  // documented nullable: no parent is null, not a GtkWindow wrapping NULL
+  if (returnedWindow == nullptr) {
+    return Php::Value();
+  }
 
   GtkWindow_ *returnWindow = new GtkWindow_();
   returnWindow->set_instance((gpointer *)returnedWindow);

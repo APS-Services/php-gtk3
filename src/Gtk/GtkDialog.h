@@ -26,7 +26,7 @@ class GtkDialog_ : public GtkWindow_ {
   GtkDialog_();
   virtual ~GtkDialog_();
 
-  void __construct();
+  void __construct(Php::Parameters &parameters);
 
   static Php::Value new_with_buttons(Php::Parameters &parameters);
 

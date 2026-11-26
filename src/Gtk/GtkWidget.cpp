@@ -1434,7 +1434,10 @@ void GtkWidget_::set_tooltip_text(Php::Parameters &parameters) {
 
 Php::Value GtkWidget_::get_tooltip_window() {
   GtkWindow *ret = gtk_widget_get_tooltip_window(GTK_WIDGET(instance));
-
+  // documented nullable: no window is null, not a GtkWindow wrapping NULL
+  if (ret == nullptr) {
+    return Php::Value();
+  }
   GtkWindow_ *return_parsed = new GtkWindow_();
   return_parsed->set_instance((gpointer *)ret);
   return Php::Object("GtkWindow", return_parsed);

@@ -62,7 +62,10 @@ Php::Value GtkApplication_::get_window_by_id(Php::Parameters &parameters) {
   guint id = (int)parameters[0];
 
   GtkWindow *ret = gtk_application_get_window_by_id(GTK_APPLICATION(instance), id);
-
+  // documented nullable: no window is null, not a GtkWindow wrapping NULL
+  if (ret == nullptr) {
+    return Php::Value();
+  }
   GtkWindow_ *return_parsed = new GtkWindow_();
   return_parsed->set_instance((gpointer *)ret);
   return Php::Object("GtkWindow", return_parsed);
@@ -70,7 +73,10 @@ Php::Value GtkApplication_::get_window_by_id(Php::Parameters &parameters) {
 
 Php::Value GtkApplication_::get_active_window() {
   GtkWindow *ret = gtk_application_get_active_window(GTK_APPLICATION(instance));
-
+  // documented nullable: no window is null, not a GtkWindow wrapping NULL
+  if (ret == nullptr) {
+    return Php::Value();
+  }
   GtkWindow_ *return_parsed = new GtkWindow_();
   return_parsed->set_instance((gpointer *)ret);
   return Php::Object("GtkWindow", return_parsed);
