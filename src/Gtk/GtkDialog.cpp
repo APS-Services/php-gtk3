@@ -11,8 +11,29 @@ GtkDialog_::GtkDialog_() = default;
  */
 GtkDialog_::~GtkDialog_() = default;
 
-void GtkDialog_::__construct() {
-  instance = (gpointer *)gtk_dialog_new();
+/**
+ * new GtkDialog([string $title [, ?GtkWindow $parent [, int $flags]]])
+ *
+ * All three are optional, as gtk_dialog_new_with_buttons() takes them; they used to be ignored, so
+ * a dialog asked for as modal and transient for a window was neither.
+ */
+void GtkDialog_::__construct(Php::Parameters &parameters) {
+  std::string title;
+  bool has_title = !parameters.empty() && !parameters[0].isNull();
+  if (has_title) {
+    title = parameters[0].stringValue();
+  }
+
+  GtkWindow *parent = nullptr;
+  if (parameters.size() > 1 && parameters[1].instanceOf("GtkWindow")) {
+    GtkWindow_ *phpgtk_parent = (GtkWindow_ *)parameters[1].implementation();
+    parent = GTK_WINDOW(phpgtk_parent->get_instance());
+  }
+
+  int flags = parameters.size() > 2 ? (int)parameters[2] : 0;
+
+  instance = (gpointer *)gtk_dialog_new_with_buttons(has_title ? title.c_str() : nullptr, parent,
+                                                     (GtkDialogFlags)flags, nullptr, nullptr);
 }
 
 Php::Value GtkDialog_::new_with_buttons(Php::Parameters &parameters) {
